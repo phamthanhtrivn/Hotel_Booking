@@ -1,0 +1,7 @@
+-HTuan: Booking, Payment, AdminSideBar
+-BTuan: DashBoard, RoomM, ReviewM
+-Tung: RoomTypeDetail, RoomTypes, BookingHistory
+-Thanh: CustomerM, BookingM
+-Tri: Facilities, Contact, Footer
+-TTri: Header, Home, Login, ForgotPassword, Register
+-Hieu: AboutUs, AccountInfo, AdminHeader
