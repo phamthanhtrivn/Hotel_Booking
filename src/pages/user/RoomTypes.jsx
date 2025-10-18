@@ -8,6 +8,10 @@ const RoomTypes = () => {
   const rooms = roomsDummyData;
   const roomPackages = roomPackageDummyData;
   const navigate = useNavigate();
+
+  const onDetail = (id) => {
+    navigate(`/room-types/${id}`)
+  }
   return (
     <div className="bg-background text-foreground font-sans">
       <section className="max-w-4xl mx-auto px-6 sm:px-8 lg:mx-12 py-16 md:py-24 text-left">
@@ -39,7 +43,7 @@ const RoomTypes = () => {
 
       <section className="relative left-1/2 right-1/2 -mx-[50.51vw] w-screen overflow-hidden space-y-1">
         {rooms.map((room, index) => (
-          <RoomTypeCard key={index} room={room} />
+          <RoomTypeCard key={index} room={room} onDetail={onDetail} />
         ))}
       </section>
       <section className="w-full flex items-center justify-between px-12 lg:px-24 py-16 md:py-24 text-left bg-white">

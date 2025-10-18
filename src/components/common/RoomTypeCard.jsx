@@ -1,26 +1,8 @@
-import {
-  ArrowLeft,
-  ArrowLeftIcon,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+
 import React, { useState } from "react";
+import ImageSlider from "./ImageSlide";
 
-const RoomTypeCard = ({ room }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const prevSlide = () => {
-    const isFirstSlide = currentIndex === 0;
-    const newIndex = isFirstSlide ? room.hinhAnh.length - 1 : currentIndex - 1;
-    setCurrentIndex(newIndex);
-  };
-
-  const nextSlide = () => {
-    const isLastSlide = currentIndex === room.hinhAnh.length - 1;
-    const newIndex = isLastSlide ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
-  };
-
+const RoomTypeCard = ({ room, onDetail }) => {
   return (
     <section className="w-full bg-foreground text-background font-sans overflow-x-hidden">
       <div className="flex flex-col lg:flex-row w-full max-w-none mx-auto h-[500px] shadow-xl overflow-hidden">
@@ -63,40 +45,23 @@ const RoomTypeCard = ({ room }) => {
             </div>
           </div>
 
-          <button className="mt-6 border border-background text-background py-2.5 px-8 text-sm uppercase tracking-wide hover:bg-chart-2 hover:border-none hover:scale-90 transition-all duration-300 self-start cursor-pointer">
+          <button
+            onClick={() => {
+              onDetail(room.maLoaiPhong);
+            }}
+            className="mt-6 border border-background text-background py-2.5 px-8 text-sm uppercase tracking-wide hover:bg-chart-2 hover:border-none hover:scale-90 transition-all duration-300 self-start cursor-pointer"
+          >
             View detail
           </button>
         </div>
 
         {/* Cột phải - hình ảnh phòng */}
         <div className="relative w-full lg:w-2/3 h-full">
-          <div className="overflow-hidden h-full">
-            <div
-              className="flex transition-transform ease-in-out duration-700 h-full"
-              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-            >
-              {room.hinhAnh.map((src, index) => (
-                <img
-                  key={index}
-                  src={src}
-                  alt={`room-${index}`}
-                  className="w-full h-full object-cover flex-shrink-0"
-                />
-              ))}
-            </div>
-          </div>
-          <button
-            onClick={prevSlide}
-            className="absolute top-1/2 left-4 -translate-y-1/2 bg-background/60 hover:bg-background text-foreground/70 rounded-full p-2.5 transition-all z-10"
-          >
-            <ChevronLeft className="h-6 w-6" />
-          </button>
-          <button
-            onClick={nextSlide}
-            className="absolute top-1/2 right-4 -translate-y-1/2 bg-background/60 hover:bg-background text-foreground/70 rounded-full p-2.5 transition-all z-10"
-          >
-            <ChevronRight className="h-6 w-6" />
-          </button>
+          <ImageSlider
+            images={room?.hinhAnh || []}
+            visibleCount={1}
+            height="70vh"
+          />
         </div>
       </div>
     </section>
