@@ -7,7 +7,7 @@ export default function UserLayout() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <main className="flex-1 w-full px-4 mx-auto max-w-7xl">
+      <main className="flex-1 w-full px-4 mx-auto max-w-8xl">
         <Outlet />
       </main>
 
@@ -15,3 +15,4 @@ export default function UserLayout() {
     </div>
   );
 }
+
