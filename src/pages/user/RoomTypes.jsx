@@ -1,29 +1,126 @@
-import { hotel, roomPackageDummyData, roomsDummyData } from "@/assets/assets";
+import { hotel, roomPackageDummyData, roomsDummyData, roomTypeOptionDummyData } from "@/assets/assets";
 import RoomTypeCard from "@/components/common/RoomTypeCard";
 import { Button } from "@/components/ui/button";
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const RoomTypes = () => {
   const rooms = roomsDummyData;
+  const roomTypeOptions = roomTypeOptionDummyData
   const roomPackages = roomPackageDummyData;
+
+  const [filteredRooms, setFilteredRooms] = useState(rooms);
+  const [filters, setFilters] = useState({
+    checkIn: "",
+    checkOut: "",
+    guests: 2,
+    roomType: "Twin Bed",
+  });
   const navigate = useNavigate();
+  const roomSectionRef = useRef(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSearch = () => {
+    const result = rooms.filter((room) => {
+      const guestMatch = room.soKhach === Number(filters.guests);
+
+      const roomTypeLower = filters.roomType.toLowerCase();
+      const typeMatch =
+        room.tenLoaiPhong.toLowerCase().includes(roomTypeLower) ||
+        room.loaiGiuong.toLowerCase().includes(roomTypeLower);
+
+      return guestMatch && typeMatch;
+    });
+
+    setFilteredRooms(result);
+
+    if (roomSectionRef.current) {
+      roomSectionRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   const onDetail = (id) => {
-    navigate(`/room-types/${id}`)
-  }
+    navigate(`/room-types/${id}`);
+  };
   return (
     <div className="bg-background text-foreground font-sans">
-      <section className="max-w-4xl mx-auto px-6 sm:px-8 lg:mx-12 py-16 md:py-24 text-left">
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-tight text-primary">
-          Khách sạn Twan tại Hồ Tràm
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-          Làm chậm nhịp sống hiện đại. Mở cánh cửa bước vào một kỳ quan của thế
-          giới.
-        </p>
+      <section className="w-full mx-auto py-16 md:py-24 text-left">
+        <div className="px-6 sm:px-8 lg:mx-12">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-tight text-primary">
+            Khách sạn Twan tại Hồ Tràm
+          </h1>
+          <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
+            Làm chậm nhịp sống hiện đại. Mở cánh cửa bước vào một kỳ quan của
+            thế giới.
+          </p>
+        </div>
+        <div className="mt-10 bg-background shadow-lg rounded-xl p-6 flex flex-col md:flex-row gap-4 md:items-center">
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium text-muted-foreground">
+              Check-in
+            </label>
+            <input
+              type="date"
+              name="checkIn"
+              onChange={handleChange}
+              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium text-muted-foreground">
+              Check-out
+            </label>
+            <input
+              type="date"
+              name="checkOut"
+              onChange={handleChange}
+              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium text-muted-foreground">
+              Số khách
+            </label>
+            <input
+              type="number"
+              min="1"
+              name="guests"
+              defaultValue={2}
+              onChange={handleChange}
+              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium text-muted-foreground">
+              Loại phòng / giường
+            </label>
+            <select
+              name="roomType"
+              onChange={handleChange}
+              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+            >
+              {roomTypeOptions.map((type, index) => (
+                <option key={index} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={handleSearch}
+            className="w-full md:w-auto h-[48px] p-5 flex items-center justify-center bg-chart-2 text-background text-sm rounded-2xl hover:bg-chart-2/90 transition"
+          >
+            Tìm phòng
+          </button>
+        </div>
       </section>
-
       <section className="relative left-1/2 right-1/2 -mx-[50.51vw] w-screen overflow-hidden">
         <img src={hotel} alt="" className="w-full h-screen object-cover" />
       </section>
@@ -41,10 +138,15 @@ const RoomTypes = () => {
         </p>
       </section>
 
-      <section className="relative left-1/2 right-1/2 -mx-[50.51vw] w-screen overflow-hidden space-y-1">
-        {rooms.map((room, index) => (
+      <section
+        ref={roomSectionRef}
+        className="relative left-1/2 right-1/2 -mx-[50.51vw] w-screen overflow-hidden space-y-1"
+      >
+        {filteredRooms && filteredRooms.length > 0 ? filteredRooms.map((room, index) => (
           <RoomTypeCard key={index} room={room} onDetail={onDetail} />
-        ))}
+        )) : (<div className="flex items-center justify-center p-10">
+          <p className="text-2xl text-foreground/80">Hiện tại không có loại phòng phù hợp với bạn. Vui lòng chọn một loại phòng khác!!!</p>
+        </div>)}
       </section>
       <section className="w-full flex items-center justify-between px-12 lg:px-24 py-16 md:py-24 text-left bg-white">
         <div className="max-w-3xl">

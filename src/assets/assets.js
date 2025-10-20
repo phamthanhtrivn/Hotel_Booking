@@ -324,3 +324,12 @@ export const feedbackDummyData = [
     { month: "Dec", revenue: 200000000 },
   ],
 };
+
+export const roomTypeOptionDummyData = [
+  "Superior Room",
+  "Deluxe Room",
+  "Signature Room",
+  "Luxury Suite Room",
+  "King Bed",
+  "Twin Bed",
+];
