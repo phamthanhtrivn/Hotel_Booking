@@ -1,0 +1,38 @@
+package iuh.fit.hotel_booking_backend.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "chi_tiet_tien_nghi")
+public class ChiTietTienNghi {
+
+    @EmbeddedId
+    private ChiTietTienNghiId id;
+
+    @ManyToOne
+    @MapsId("tienNghi")
+    @JoinColumn(name = "ma_tien_nghi", nullable = false)
+    private TienNghi tienNghi;
+
+    @ManyToOne
+    @MapsId("loaiPhong")
+    @JoinColumn(name = "ma_loai_phong", nullable = false)
+    private LoaiPhong loaiPhong;
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Embeddable
+    public static class ChiTietTienNghiId implements Serializable {
+        private String tienNghi;
+        private String loaiPhong;
+    }
+}
