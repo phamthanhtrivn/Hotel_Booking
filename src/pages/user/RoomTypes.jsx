@@ -50,18 +50,18 @@ const RoomTypes = () => {
     navigate(`/room-types/${id}`);
   };
   return (
-    <div className="bg-background text-foreground font-sans">
-      <section className="w-full mx-auto py-16 md:py-24 text-left">
+    <div className="font-sans bg-background text-foreground">
+      <section className="w-full py-16 mx-auto text-left md:py-24">
         <div className="px-6 sm:px-8 lg:mx-12">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-tight text-primary">
+          <h1 className="text-4xl font-light leading-tight tracking-tight sm:text-5xl lg:text-6xl text-primary">
             Khách sạn Twan tại Hồ Tràm
           </h1>
-          <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
+          <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
             Làm chậm nhịp sống hiện đại. Mở cánh cửa bước vào một kỳ quan của
             thế giới.
           </p>
         </div>
-        <div className="mt-10 bg-background shadow-lg rounded-xl p-6 flex flex-col md:flex-row gap-4 md:items-center">
+        <div className="flex flex-col gap-4 p-6 mt-10 shadow-lg bg-background rounded-xl md:flex-row md:items-center">
           <div className="flex flex-col w-full">
             <label className="text-sm font-medium text-muted-foreground">
               Check-in
@@ -70,7 +70,7 @@ const RoomTypes = () => {
               type="date"
               name="checkIn"
               onChange={handleChange}
-              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+              className="px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-chart-2"
             />
           </div>
           <div className="flex flex-col w-full">
@@ -81,7 +81,7 @@ const RoomTypes = () => {
               type="date"
               name="checkOut"
               onChange={handleChange}
-              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+              className="px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-chart-2"
             />
           </div>
           <div className="flex flex-col w-full">
@@ -94,7 +94,7 @@ const RoomTypes = () => {
               name="guests"
               defaultValue={2}
               onChange={handleChange}
-              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+              className="px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-chart-2"
             />
           </div>
           <div className="flex flex-col w-full">
@@ -104,7 +104,7 @@ const RoomTypes = () => {
             <select
               name="roomType"
               onChange={handleChange}
-              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+              className="px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-chart-2"
             >
               {roomTypeOptions.map((type, index) => (
                 <option key={index} value={type}>
@@ -122,14 +122,14 @@ const RoomTypes = () => {
         </div>
       </section>
       <section className="relative left-1/2 right-1/2 -mx-[50.51vw] w-screen overflow-hidden">
-        <img src={hotel} alt="" className="w-full h-screen object-cover" />
+        <img src={hotel} alt="" className="object-cover w-full h-screen" />
       </section>
 
-      <section className="max-w-4xl mx-auto px-6 sm:px-8 lg:mx-12 py-16 md:py-24 text-left">
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light tracking-tight text-primary">
+      <section className="max-w-4xl px-6 py-16 mx-auto text-left sm:px-8 lg:mx-12 md:py-24">
+        <h2 className="text-3xl font-light tracking-tight sm:text-4xl lg:text-5xl text-primary">
           Hoà hợp với thiên nhiên
         </h2>
-        <p className="mt-4 text-base text-muted-foreground leading-relaxed">
+        <p className="mt-4 text-base leading-relaxed text-muted-foreground">
           Bức ảnh phòng chụp phong cách “photo booth” mang hơi hướng nghệ thuật
           đường phố của Banksy, phong cách tinh tế, thủ công và độc đáo. Bia thủ
           công hảo hạng kết hợp với seitan (món chay từ gluten), ảnh phòng chụp
@@ -148,12 +148,12 @@ const RoomTypes = () => {
           <p className="text-2xl text-foreground/80">Hiện tại không có loại phòng phù hợp với bạn. Vui lòng chọn một loại phòng khác!!!</p>
         </div>)}
       </section>
-      <section className="w-full flex items-center justify-between px-12 lg:px-24 py-16 md:py-24 text-left bg-white">
+      <section className="flex items-center justify-between w-full px-12 py-16 text-left bg-white lg:px-24 md:py-24">
         <div className="max-w-3xl">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-tight text-primary">
+          <h1 className="text-4xl font-light leading-tight tracking-tight sm:text-5xl lg:text-6xl text-primary">
             The Twan Spa
           </h1>
-          <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
+          <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
             Một dấu ấn đặc trưng trong trải nghiệm tại Twan Hotel, Twan Spa đưa
             tâm trí và cơ thể bạn bước vào những chiều không gian mới của sự
             bình yên và tái tạo năng lượng.
@@ -161,10 +161,7 @@ const RoomTypes = () => {
         </div>
 
         <Button
-          className="bg-chart-2/60 text-background font-medium uppercase py-3 px-10 text-sm tracking-wide rounded-md
-               transition-all duration-300 ease-in-out
-               hover:bg-chart-2 hover:scale-90 hover:shadow-md
-               active:scale-95 cursor-pointer"
+          className="px-10 py-3 text-sm font-medium tracking-wide uppercase transition-all duration-300 ease-in-out rounded-md cursor-pointer bg-chart-2/60 text-background hover:bg-chart-2 hover:scale-90 hover:shadow-md active:scale-95"
           onClick={() => navigate("/")}
         >
           View offers
@@ -182,15 +179,15 @@ const RoomTypes = () => {
               <img
                 src={pkg.image}
                 alt=""
-                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-110"
               />
 
               {/* Overlay tối */}
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-500"></div>
+              <div className="absolute inset-0 transition-colors duration-500 bg-black/40 group-hover:bg-black/50"></div>
 
               {/* Text nằm giữa ảnh */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6">
-                <h3 className="text-2xl md:text-3xl font-light leading-tight mb-3">
+              <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
+                <h3 className="mb-3 text-2xl font-light leading-tight md:text-3xl">
                   {pkg.title}
                 </h3>
                 <a
