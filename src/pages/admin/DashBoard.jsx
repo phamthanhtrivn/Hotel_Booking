@@ -22,11 +22,11 @@ const DashBoard = () => {
   const feedbackData = feedbackDummyData;
   const revenueData = revenueDummyData
   return (
-    <div className="bg-foreground/10 flex flex-col space-y-6 max-w-7xl p-5">
+    <div className="flex flex-col p-5 space-y-6 bg-foreground/10">
       <Overview overviewData={overviewData} />
       <RoomStatus roomStatic={roomStatic} />
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-        <div className="md:col-span-3 flex flex-col space-y-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-5">
+        <div className="flex flex-col space-y-6 md:col-span-3">
            <FloorStatus floorStatus={floorStatus} />
           <OccupancyStatistics occupancyData={occupancyData} />
           <RevenueStatistics revenueData={revenueData}/>
