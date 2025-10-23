@@ -52,7 +52,7 @@ const AdminSidebar = () => {
         <div className="flex items-center gap-2">
           <img src={HotelLogo} className="h-15" />
           <div>
-            <div className="font-semibold text-lg">Twan Hotel</div>
+            <div className="text-lg font-semibold">Twan Hotel</div>
             <div className="text-xs text-muted-foreground">Management</div>
           </div>
         </div>
@@ -88,8 +88,8 @@ const AdminSidebar = () => {
       <SidebarFooter>
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
-            <button className="flex w-full items-center gap-3 rounded-md p-2 hover:bg-accent">
-              <Avatar className="h-8 w-8">
+            <button className="flex items-center w-full gap-3 p-2 rounded-md hover:bg-accent">
+              <Avatar className="w-8 h-8">
                 <AvatarImage
                   src="https://github.com/shadcn.png"
                   alt="@shadcn"
@@ -102,7 +102,7 @@ const AdminSidebar = () => {
                   m@example.com
                 </div>
               </div>
-              <ChevronDown className="h-4 w-4 opacity-50" />
+              <ChevronDown className="w-4 h-4 opacity-50" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
@@ -112,7 +112,7 @@ const AdminSidebar = () => {
             <DropdownMenuItem>Notifications</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <LogOut className="mr-2 h-4 w-4" /> Log out
+              <LogOut className="w-4 h-4 mr-2" /> Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
