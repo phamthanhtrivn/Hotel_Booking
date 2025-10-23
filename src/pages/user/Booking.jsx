@@ -26,7 +26,7 @@ const Booking = () => {
     <div className="flex bg-background gap-10 justify-center min-h-fit py-8">
       <div className="w-full md:w-1/2 grid grid-cols-1 gap-10">
         {/* Phần này là phần nhập thông tin khách hàng */}
-        <div className="shadow-lg rounded-md overflow-hidden">
+        <div className="shadow-lg rounded-md overflow-hidden border-[1px]">
           <div className="w-full border-b">
             <h2 className="text-3xl p-4">Customer</h2>
           </div>
