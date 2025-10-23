@@ -30,6 +30,8 @@ public class DonDatPhong {
     private Phong phong;
     @Column(name = "tong_tien")
     private double tongTien;
+    @Column(name = "tong_tien_tt")
+    private double tongTienTT;
     @Column(name = "check_in")
     private LocalDateTime checkIn;
     @Column(name = "check_out")
@@ -42,4 +44,7 @@ public class DonDatPhong {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ma_danh_gia", unique = true)
     private DanhGia danhGia;
+    private int VAT;
+    private boolean lanDau;
+    private double giamGiaDiemTichLuy;
 }
