@@ -12,7 +12,7 @@ import familyImg from "../../assets/bg01.jpg";
 import poolImg from "../../assets/bg11.jpg";
 import spaImg from "../../assets/bg01.jpg";
 import restaurantImg from "../../assets/bg13.jpg";
-import gymImg from "../../assets/bg01.jpg"; 
+import gymImg from "../../assets/bg01.jpg";
 import barImg from "../../assets/bg10.jpg";
 
 const fadeInUp = {
