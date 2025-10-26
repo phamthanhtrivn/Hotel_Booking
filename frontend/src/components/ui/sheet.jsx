@@ -1,8 +1,3 @@
-<<<<<<< HEAD:src/components/ui/sheet.jsx
-"use client"
-
-=======
->>>>>>> 68686a04740a5d2402e7d41b17c17d4649b001e6:frontend/src/components/ui/sheet.jsx
 import * as React from "react"
 import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"
