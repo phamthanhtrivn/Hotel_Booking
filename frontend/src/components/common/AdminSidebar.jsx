@@ -33,6 +33,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import HotelLogo from "@/assets/hotelLogo/HotelLogo.jpg";
 import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const items = [
   { name: "Dashboard", icon: ChartPie, url: "/admin/dashboard" },
@@ -45,6 +46,7 @@ const items = [
 
 const AdminSidebar = () => {
   const [open, setOpen] = useState(false);
+  const location = useLocation();
 
   return (
     <Sidebar>
@@ -68,15 +70,17 @@ const AdminSidebar = () => {
                 const Icon = item.icon;
                 return (
                   <SidebarMenuItem>
-                    <SidebarMenuButton>
-                      <a
-                        className="flex items-center space-x-3"
-                        href={item.url ? item.url : "#"}
+                    <Link
+                      to={item.url ? item.url : "#"}
+                      className="flex items-center space-x-3"
+                    >
+                      <SidebarMenuButton
+                        isActive={location.pathname.startsWith(item.url)}
                       >
                         <Icon className="h-4" />
                         <span>{item.name}</span>
-                      </a>
-                    </SidebarMenuButton>
+                      </SidebarMenuButton>
+                    </Link>
                   </SidebarMenuItem>
                 );
               })}
