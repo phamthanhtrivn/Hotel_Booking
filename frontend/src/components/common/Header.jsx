@@ -17,7 +17,7 @@ const Header = () => {
   const menuItems = [
     { to: "/", label: "TRANG CHỦ" },
     { to: "/about", label: "GIỚI THIỆU" },
-    { to: "/booking", label: "ĐẶT PHÒNG" },
+    { to: "/room-types", label: "ĐẶT PHÒNG" },
     { to: "/facilities", label: "CƠ SỞ VẬT CHẤT" },
     { to: "/contact", label: "LIÊN HỆ" },
   ];
