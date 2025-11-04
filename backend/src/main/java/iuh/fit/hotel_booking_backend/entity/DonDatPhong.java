@@ -45,6 +45,8 @@ public class DonDatPhong {
     @JoinColumn(name = "ma_danh_gia", unique = true)
     private DanhGia danhGia;
     private int VAT;
+    @Column(name = "lan_dau")
     private boolean lanDau;
+    @Column(name = "giam_gia_diem_tich_luy")
     private double giamGiaDiemTichLuy;
 }
