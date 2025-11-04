@@ -29,7 +29,4 @@ public class DanhGia {
     private LoaiPhong loaiPhong;
     @Column(name = "thoi_gian_danh_gia")
     private LocalDateTime thoiGianDanhGia;
-
-    @OneToOne(mappedBy = "danhGia")
-    private DonDatPhong donDatPhong;
 }
