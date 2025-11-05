@@ -1,53 +1,99 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Edit2, Trash2, Search, Eye } from "lucide-react";
+import { useFetch } from "../../hooks/useFetch";
+import toast from "react-hot-toast";
+
+const baseURL = "http://localhost:8080/api/";
 
 const CustomerManagement = () => {
-  const [customers, setCustomers] = useState([
-    { id: 1, name: "Nguyễn Tâm Thành", email: "a@gmail.com", phone: "0909123456" },
-    { id: 2, name: "Nguyễn Tâm Thành", email: "b@gmail.com", phone: "0909345678" },
-    { id: 3, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 4, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 5, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 6, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 7, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 8, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 9, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 10, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 11, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 12, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 13, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 14, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 15, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 16, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-    { id: 17, name: "Nguyễn Tâm Thành", email: "c@gmail.com", phone: "0909567890" },
-  ]);
-
-  const [search, setSearch] = useState("");
+  const [customers, setCustomers] = useState([]);
+  const [searchName, setSearchName] = useState("");
+  const [searchPhone, setSearchPhone] = useState("");
+  const [searchEmail, setSearchEmail] = useState("");
   const [editing, setEditing] = useState(null);
   const [viewing, setViewing] = useState(null);
 
-  const filtered = customers.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.email.toLowerCase().includes(search.toLowerCase()) ||
-      c.phone.includes(search)
-  );
+  const { isLoading, error, get, put } = useFetch(baseURL);
 
-  const handleDelete = (id) => {
-  if (window.confirm("Bạn có chắc muốn xóa khách hàng này?")) {
-    setCustomers((prev) => prev.filter((c) => Number(c.id) !== Number(id)));
-    setViewing(null);
-    setEditing(null);
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      const data = await get("taikhoan");
+      console.log("👉 Data:", data);
+      if (data) setCustomers(data);
+    };
+    fetchCustomers();
+  }, []);
+
+  // Lọc khách hàng theo từng tiêu chí
+  const filtered = customers.filter((c) => {
+    const nameMatch = c.khachHang?.hoTenKH
+      ?.toLowerCase()
+      .includes(searchName.toLowerCase());
+    const phoneMatch = c.khachHang?.soDienThoai
+      ?.toLowerCase()
+      .includes(searchPhone.toLowerCase());
+    const emailMatch = c.email
+      ?.toLowerCase()
+      .includes(searchEmail.toLowerCase());
+    return nameMatch && phoneMatch && emailMatch;
+  });
+
+  const handleDelete = async (maTaiKhoan) => {
+    if (window.confirm("Bạn có chắc muốn xóa khách hàng này?")) {
+      try {
+        const response = await fetch(`${baseURL}taikhoan/${maTaiKhoan}`, {
+          method: "DELETE",
+        });
+        const message = await response.text();
+        if (!response.ok) {
+          toast.error(message || "Không thể xóa tài khoản!");
+          return;
+        }
+        toast.success(message || "Xóa tài khoản thành công!");
+        setCustomers((prev) =>
+          prev.filter((c) => c.maTaiKhoan !== maTaiKhoan)
+        );
+      } catch (error) {
+        console.error("Lỗi khi xóa:", error);
+        toast.error("Lỗi kết nối máy chủ!");
+      }
     }
   };
 
+const handleSave = async () => {
+  try {
+    if (!editing || !editing.khachHang) {
+      toast.error("Không có dữ liệu để cập nhật!");
+      return;
+    }
+    const updatedCustomer = {
+      maKhachHang: editing.khachHang.maKhachHang,
+      hoTenKH: editing.khachHang.hoTenKH,
+      soDienThoai: editing.khachHang.soDienThoai,
+      diemTichLuy: editing.khachHang.diemTichLuy,
+    };
 
-  const handleSave = () => {
+    const response = await put(`khachhang/${updatedCustomer.maKhachHang}`, updatedCustomer);
+    if (error || !response) {
+      toast.error("Cập nhật thất bại!");
+      return;
+    }
     setCustomers((prev) =>
-      prev.map((c) => (c.id === editing.id ? editing : c))
+      prev.map((c) =>
+        c.khachHang?.maKhachHang === updatedCustomer.maKhachHang
+          ? { ...c, khachHang: updatedCustomer }
+          : c
+      )
     );
+
+    toast.success("Lưu thành công!");
     setEditing(null);
-  };
+  } catch (err) {
+    console.error("Lỗi khi lưu:", err);
+    toast.error("Lưu thất bại do lỗi hệ thống!");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text)] p-8">
@@ -66,19 +112,46 @@ const CustomerManagement = () => {
         Quản Lý Thông Tin Khách Hàng
       </h1>
 
-      {/* tìm kiếm */}
-      <div className="flex items-center bg-[#2b3a4b] p-3 rounded-xl mb-7 shadow-md">
-        <Search className="text-[var(--color-muted)] mr-3" />
-        <input
-          type="text"
-          placeholder="Tìm kiếm khách hàng..."
-          className="bg-transparent flex-1 outline-none text-[var(--color-text)]"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      {/* 🔍 Thanh tìm kiếm ngang */}
+      <div className="flex flex-wrap gap-4 bg-[#2b3a4b] p-4 rounded-xl mb-7 shadow-md justify-between">
+        {/* Tìm theo tên */}
+        <div className="flex items-center bg-[#1E2A38] p-2 rounded-lg flex-1 min-w-[250px]">
+          <Search className="text-[var(--color-muted)] mr-2" />
+          <input
+            type="text"
+            placeholder="Tìm theo tên..."
+            className="bg-transparent flex-1 outline-none text-[var(--color-text)]"
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+          />
+        </div>
+
+        {/* Tìm theo số điện thoại */}
+        <div className="flex items-center bg-[#1E2A38] p-2 rounded-lg flex-1 min-w-[250px]">
+          <Search className="text-[var(--color-muted)] mr-2" />
+          <input
+            type="text"
+            placeholder="Tìm theo số điện thoại..."
+            className="bg-transparent flex-1 outline-none text-[var(--color-text)]"
+            value={searchPhone}
+            onChange={(e) => setSearchPhone(e.target.value)}
+          />
+        </div>
+
+        {/* Tìm theo email */}
+        <div className="flex items-center bg-[#1E2A38] p-2 rounded-lg flex-1 min-w-[250px]">
+          <Search className="text-[var(--color-muted)] mr-2" />
+          <input
+            type="text"
+            placeholder="Tìm theo email..."
+            className="bg-transparent flex-1 outline-none text-[var(--color-text)]"
+            value={searchEmail}
+            onChange={(e) => setSearchEmail(e.target.value)}
+          />
+        </div>
       </div>
 
-      {/* bảng */}
+      {/* 🧾 Bảng dữ liệu */}
       <div className="rounded-xl shadow-lg bg-[#2b3a4b] overflow-hidden">
         <div className="max-h-[550px] overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--color-primary)] scrollbar-track-[#2b3a4b]">
           <table className="w-full text-left">
@@ -88,6 +161,7 @@ const CustomerManagement = () => {
                 <th className="py-3 px-4">Họ và Tên</th>
                 <th className="py-3 px-4">Email</th>
                 <th className="py-3 px-4">Số điện thoại</th>
+                <th className="py-3 px-4">Điểm tích lũy</th>
                 <th className="py-3 px-4 text-center">Hành động</th>
               </tr>
             </thead>
@@ -95,13 +169,18 @@ const CustomerManagement = () => {
               {filtered.length > 0 ? (
                 filtered.map((c, i) => (
                   <tr
-                    key={c.id}
+                    key={c.khachHang?.maKhachHang || c.maTaiKhoan || i}
                     className="border-b border-gray-700 hover:bg-[#32465a] transition"
                   >
                     <td className="py-3 px-4">{i + 1}</td>
-                    <td className="py-3 px-4">{c.name}</td>
+                    <td className="py-3 px-4">{c.khachHang?.hoTenKH || "—"}</td>
                     <td className="py-3 px-4">{c.email}</td>
-                    <td className="py-3 px-4">{c.phone}</td>
+                    <td className="py-3 px-4">
+                      {c.khachHang?.soDienThoai || "—"}
+                    </td>
+                    <td className="py-3 px-4">
+                      {c.khachHang?.diemTichLuy ?? 0}
+                    </td>
                     <td className="py-3 px-4 text-center space-x-4">
                       <button
                         onClick={() => setViewing(c)}
@@ -118,7 +197,7 @@ const CustomerManagement = () => {
                         <Edit2 size={18} />
                       </button>
                       <button
-                        onClick={() => handleDelete(c.id)}
+                        onClick={() => handleDelete(c.maTaiKhoan)}
                         className="hover:text-red-400 transition"
                         title="Xóa"
                       >
@@ -130,7 +209,7 @@ const CustomerManagement = () => {
               ) : (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="text-center py-6 text-[var(--color-muted)]"
                   >
                     Không tìm thấy khách hàng nào
@@ -142,7 +221,7 @@ const CustomerManagement = () => {
         </div>
       </div>
 
-      {/* cập nhật */}
+      {/* ✏️ Modal Chỉnh sửa */}
       {editing && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-[#2b3a4b] p-8 rounded-2xl w-[550px] shadow-2xl">
@@ -152,30 +231,56 @@ const CustomerManagement = () => {
             <div className="space-y-4">
               <input
                 type="text"
-                value={editing.name}
+                value={editing.khachHang?.hoTenKH ?? ""}
                 onChange={(e) =>
-                  setEditing({ ...editing, name: e.target.value })
+                  setEditing((prev) => ({
+                    ...prev,
+                    khachHang: { ...prev.khachHang, hoTenKH: e.target.value },
+                  }))
                 }
                 className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
                 placeholder="Họ tên"
               />
               <input
                 type="email"
-                value={editing.email}
+                value={editing.email ?? ""}
                 onChange={(e) =>
-                  setEditing({ ...editing, email: e.target.value })
+                  setEditing((prev) => ({ ...prev, email: e.target.value }))
                 }
                 className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
                 placeholder="Email"
+                disabled
               />
               <input
                 type="text"
-                value={editing.phone}
+                value={editing.khachHang?.soDienThoai ?? ""}
                 onChange={(e) =>
-                  setEditing({ ...editing, phone: e.target.value })
+                  setEditing((prev) => ({
+                    ...prev,
+                    khachHang: {
+                      ...prev.khachHang,
+                      soDienThoai: e.target.value,
+                    },
+                  }))
                 }
                 className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
                 placeholder="Số điện thoại"
+              />
+              <input
+                type="number"
+                value={editing.khachHang?.diemTichLuy ?? 0}
+                onChange={(e) =>
+                  setEditing((prev) => ({
+                    ...prev,
+                    khachHang: {
+                      ...prev.khachHang,
+                      diemTichLuy: Number(e.target.value) || 0,
+                    },
+                  }))
+                }
+                className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
+                placeholder="Điểm tích lũy"
+                min={0}
               />
             </div>
             <div className="flex justify-end mt-6 space-x-4">
@@ -196,7 +301,7 @@ const CustomerManagement = () => {
         </div>
       )}
 
-      {/* xem chi tiết */}
+      {/* 👁️ Modal Xem chi tiết */}
       {viewing && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-[#2b3a4b] p-8 rounded-2xl w-[550px] shadow-2xl text-[var(--color-text)]">
@@ -208,19 +313,25 @@ const CustomerManagement = () => {
                 <span className="font-semibold text-[var(--color-accent)]">
                   Họ tên:
                 </span>{" "}
-                {viewing.name}
+                {viewing.khachHang?.hoTenKH ?? "—"}
               </p>
               <p>
                 <span className="font-semibold text-[var(--color-accent)]">
                   Email:
                 </span>{" "}
-                {viewing.email}
+                {viewing.email ?? "—"}
               </p>
               <p>
                 <span className="font-semibold text-[var(--color-accent)]">
                   Số điện thoại:
                 </span>{" "}
-                {viewing.phone}
+                {viewing.khachHang?.soDienThoai ?? "—"}
+              </p>
+              <p>
+                <span className="font-semibold text-[var(--color-accent)]">
+                  Điểm tích lũy:
+                </span>{" "}
+                {viewing.khachHang?.diemTichLuy ?? 0}
               </p>
             </div>
             <div className="flex justify-end mt-8">

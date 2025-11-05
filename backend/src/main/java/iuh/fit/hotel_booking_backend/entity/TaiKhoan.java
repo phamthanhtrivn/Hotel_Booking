@@ -26,4 +26,5 @@ public class TaiKhoan {
     private String matKhau;
     @Column(name = "is_active")
     private boolean isActive;
+
 }

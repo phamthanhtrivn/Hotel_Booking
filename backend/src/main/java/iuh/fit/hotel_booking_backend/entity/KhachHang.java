@@ -20,6 +20,5 @@ public class KhachHang {
     private String soDienThoai;
     @Column(name = "diem_tich_luy")
     private int diemTichLuy;
-    @OneToOne(mappedBy = "khachHang")
-    private TaiKhoan taiKhoan;
+
 }

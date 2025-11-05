@@ -29,4 +29,8 @@ public class DonDatPhongService {
     public void deleteById(String id) {
         repo.deleteById(id);
     }
+
+    public int countByKhachHangId(String maKhachHang) {
+        return repo.countByKhachHangId(maKhachHang);
+    }
 }
