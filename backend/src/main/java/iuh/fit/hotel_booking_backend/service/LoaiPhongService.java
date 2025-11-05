@@ -31,8 +31,15 @@ public class LoaiPhongService {
     public void deleteById(String id) {
         repo.deleteById(id);
     }
-
+// Tim loai phong trong theo checkIn-checkOut
     public List<LoaiPhongDTO> timLoaiPhongTrong(LocalDateTime checkIn, LocalDateTime checkOut) {
         return repo.findAvailableRoomTypes(checkIn, checkOut);
     }
+
+//    Tim loai phong theo nhieu tieu chi
+    public List<LoaiPhong> searchLoaiPhong(String tenLoaiPhong, Integer soKhach, Double minGia,
+                                           Double maxGia, Double minDienTich, Double maxDienTich) {
+        return repo.searchLoaiPhong(tenLoaiPhong, soKhach, minGia, maxGia, minDienTich, maxDienTich);
+    }
+
 }

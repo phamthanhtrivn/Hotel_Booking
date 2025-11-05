@@ -1,6 +1,7 @@
 package iuh.fit.hotel_booking_backend.controller;
 
 import iuh.fit.hotel_booking_backend.dto.LoaiPhongDTO;
+import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.service.LoaiPhongService;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,5 +34,18 @@ public class LoaiPhongController {
 
         List<LoaiPhongDTO> availableRooms = loaiPhongService.timLoaiPhongTrong(checkIn, checkOut);
         return ResponseEntity.ok(availableRooms);
+    }
+
+//    Tim loai phong theo nhieu tieu chi
+    @GetMapping("/search")
+    public ResponseEntity<List<LoaiPhong>> searchLoaiPhong(
+            @RequestParam(required = false) String tenLoaiPhong,
+            @RequestParam(required = false) Integer soKhac,
+            @RequestParam(required = false) Double minGia,
+            @RequestParam(required = false) Double maxGia,
+            @RequestParam(required = false) Double minDienTich,
+            @RequestParam(required = false) Double maxDienTich
+    ){
+        return ResponseEntity.ok(loaiPhongService.searchLoaiPhong(tenLoaiPhong, soKhac, minGia, maxGia, minDienTich, maxDienTich));
     }
 }

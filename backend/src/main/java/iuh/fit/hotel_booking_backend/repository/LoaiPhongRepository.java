@@ -30,4 +30,23 @@ public interface LoaiPhongRepository extends JpaRepository<LoaiPhong, String> {
             @Param("checkIn") LocalDateTime checkIn,
             @Param("checkOut") LocalDateTime checkOut
             );
+
+//    Tìm kiếm loại phòng theo nhiều tiêu chí
+    @Query("""
+        select lp from LoaiPhong lp
+        where (:tenLoaiPhong is null or lower(lp.tenLoaiPhong) like lower(concat('%', :tenLoaoiPhong, '%'))) 
+            and (:soKhach is null or lp.soKhach >= :soKach) 
+            and (:minGia is null or lp.gia >= :minGia)
+            and (:maxGia is null or lp.gia <= :maxGia)
+            and (:minDienTich IS NULL OR lp.dienTich >= :minDienTich)
+            and (:maxDienTich IS NULL OR lp.dienTich <= :maxDienTich)
+    """)
+    public List<LoaiPhong> searchLoaiPhong(
+            @Param("tenLoaiPhong") String tenLoaiPhong,
+            @Param("soKhach") Integer soKhach,
+            @Param("minGia") Double minGia,
+            @Param("maxGia") Double maxGia,
+            @Param("minDienTich") Double minDienTich,
+            @Param("maxDienTich") Double maxDienTich
+    );
 }
