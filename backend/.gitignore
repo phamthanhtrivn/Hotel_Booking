@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignore application.properties (chứa thông tin nhạy cảm)
+backend/src/main/resources/application.properties
