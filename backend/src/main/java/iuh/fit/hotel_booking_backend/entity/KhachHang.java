@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,4 +21,7 @@ public class KhachHang {
     private String soDienThoai;
     @Column(name = "diem_tich_luy")
     private int diemTichLuy;
+    @OneToOne(mappedBy = "khachHang")
+    @JsonIgnore
+    private TaiKhoan taiKhoan;
 }
