@@ -1,15 +1,11 @@
 package iuh.fit.hotel_booking_backend.controller;
 
-import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.dto.LoginRequest;
 import iuh.fit.hotel_booking_backend.dto.SignUpRequest;
 import iuh.fit.hotel_booking_backend.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/")
@@ -25,5 +21,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @GetMapping("/verify-token")
+    public ResponseEntity<?> verifyToken(@RequestHeader("Authorization") String authHeader) {
+
     }
 }

@@ -9,14 +9,18 @@ import iuh.fit.hotel_booking_backend.entity.LoaiTaiKhoan;
 import iuh.fit.hotel_booking_backend.entity.TaiKhoan;
 import iuh.fit.hotel_booking_backend.repository.KhachHangRepository;
 import iuh.fit.hotel_booking_backend.repository.TaiKhoanRepository;
+import iuh.fit.hotel_booking_backend.security.CustomerUserDetails;
 import iuh.fit.hotel_booking_backend.util.IdUtil;
 import iuh.fit.hotel_booking_backend.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -133,5 +137,47 @@ public class AuthService {
             throw e;
         }
         return response;
+    }
+
+    public ResponseEntity<APIResponse<TaiKhoan>> verifyToken(String authHeader) {
+        APIResponse<TaiKhoan> response = new APIResponse<>();
+        response.setSuccess(false);
+        response.setData(null);
+
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                response.setMessage("Thiếu token hoặc token không hợp lệ");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+
+            String token = authHeader.substring(7);
+            String email = jwtUtil.extractEmail(token);
+
+            // Lấy tài khoản theo email
+            TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(email);
+            if (taiKhoan == null) {
+                response.setMessage("Không tìm thấy tài khoản");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            CustomerUserDetails userDetails = new CustomerUserDetails(taiKhoan);
+
+            // Kiểm tra token hợp lệ
+            if (!jwtUtil.isTokenValid(token, userDetails)) {
+                response.setMessage("Token không hợp lệ hoặc đã hết hạn");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+
+            // Thành công
+            response.setSuccess(true);
+            response.setMessage("Token hợp lệ");
+            response.setData(taiKhoan);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.setMessage("Lỗi xác thực token: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }
