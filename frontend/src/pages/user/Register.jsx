@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -13,11 +14,119 @@ import bg02 from "../../assets/bg02.jpg";
 import bg03 from "../../assets/bg03.jpg";
 import bg04 from "../../assets/bg04.jpg";
 import ImgSlider from "@/components/common/ImgSlider";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
+import { AuthContext } from "@/context/AuthContext";
 
 const Register = () => {
+  const baseUrl = import.meta.env.VITE_BASE_API_URL;
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const nameRef = useRef();
+  const emailRef = useRef();
+  const phoneRef = useRef();
+  const passwordRef = useRef();
+  const confirmPasswordRef = useRef();
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (user) {
+      if (user.vaiTro === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
+    }
+  }, []);
+
+  const handleRegister = async () => {
+    const nameRegex = /^[\p{L}]+(?: [\p{L}]+)+$/u;
+    const emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$/;
+    const phoneRegex = /^(0[3|5|7|8|9])[0-9]{8}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+    const newErrors = {
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+    };
+
+    if (!name || !nameRegex.test(name)) {
+      newErrors.name =
+        "Họ tên không hợp lệ! (Phải có ít nhất 2 từ và không chứa số)";
+    }
+    if (!email || !emailRegex.test(email)) {
+      newErrors.email = "Email không hợp lệ!";
+    }
+    if (!phone || !phoneRegex.test(phone)) {
+      newErrors.phone = "Số điện thoại không hợp lệ!";
+    }
+    if (!password || !passwordRegex.test(password)) {
+      newErrors.password =
+        "Mật khẩu phải chứa ít nhất 1 chữ cái, 1 số và từ 6 ký tự trở lên!";
+    }
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Xác nhận mật khẩu không trùng khớp!";
+    }
+
+    setErrors(newErrors);
+
+    if (newErrors.name) {
+      nameRef.current.focus();
+      return;
+    }
+    if (newErrors.phone) {
+      phoneRef.current.focus();
+      return;
+    }
+    if (newErrors.email) {
+      emailRef.current.focus();
+      return;
+    }
+    if (newErrors.password) {
+      passwordRef.current.focus();
+      return;
+    }
+    if (newErrors.confirmPassword) {
+      confirmPasswordRef.current.focus();
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await axios.post(`${baseUrl}/register`, {
+        hoTenKH: name,
+        soDienThoai: phone,
+        email,
+        matKhau: password,
+      });
+      if (response.data.success) {
+        toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
+        navigate("/login");
+      }
+    } catch (err) {
+      toast.error(err.message || "Đăng ký thất bại!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-[#e2ecf7] to-[#f9fafc] overflow-hidden">
@@ -64,7 +173,13 @@ const Register = () => {
                 type="text"
                 placeholder="Nhập họ và tên của bạn"
                 className="focus-visible:ring-[var(--color-background)] rounded-xl"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                ref={nameRef}
               />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name}</p>
+              )}
             </div>
 
             {/* Số điện thoại */}
@@ -77,7 +192,13 @@ const Register = () => {
                 type="tel"
                 placeholder="Nhập số điện thoại"
                 className="focus-visible:ring-[var(--color-background)] rounded-xl"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                ref={phoneRef}
               />
+              {errors.phone && (
+                <p className="text-red-500 text-sm">{errors.phone}</p>
+              )}
             </div>
 
             {/* Email */}
@@ -90,7 +211,13 @@ const Register = () => {
                 type="email"
                 placeholder="Nhập email của bạn"
                 className="focus-visible:ring-[var(--color-background)] rounded-xl"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                ref={emailRef}
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
             </div>
 
             {/* Mật khẩu */}
@@ -104,6 +231,9 @@ const Register = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Nhập mật khẩu"
                   className="focus-visible:ring-[var(--color-background)] rounded-xl pr-10"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  ref={passwordRef}
                 />
                 <button
                   type="button"
@@ -113,6 +243,9 @@ const Register = () => {
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-red-500 text-sm">{errors.password}</p>
+              )}
             </div>
 
             {/* Xác nhận mật khẩu */}
@@ -126,6 +259,9 @@ const Register = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Nhập lại mật khẩu"
                   className="focus-visible:ring-[var(--color-background)] rounded-xl pr-10"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  ref={confirmPasswordRef}
                 />
                 <button
                   type="button"
@@ -135,11 +271,25 @@ const Register = () => {
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
+              )}
             </div>
 
             {/* Button Register */}
-            <Button className="w-full bg-[var(--color-background)] cursor-pointer font-semibold hover:bg-[#2a4b70] transition-colors duration-300 rounded-xl shadow-md">
-              Đăng Ký
+            <Button
+              onClick={handleRegister}
+              disabled={isLoading}
+              className="w-full bg-[var(--color-background)] cursor-pointer font-semibold hover:bg-[#2a4b70] transition-colors duration-300 rounded-xl shadow-md flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin h-5 w-5 text-white" />
+                  Đang đăng ký...
+                </>
+              ) : (
+                "Đăng Ký"
+              )}
             </Button>
 
             {/* Separator */}

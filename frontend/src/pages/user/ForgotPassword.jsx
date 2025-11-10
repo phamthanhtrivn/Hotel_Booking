@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -13,10 +14,23 @@ import bg02 from "../../assets/bg02.jpg";
 import bg03 from "../../assets/bg03.jpg";
 import bg04 from "../../assets/bg04.jpg";
 import ImgSlider from "@/components/common/ImgSlider";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "@/context/AuthContext";
 
 const ForgotPassword = () => {
-  
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      if (user.vaiTro === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
+    }
+  }, []);
+
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-[#e2ecf7] to-[#f9fafc] overflow-hidden">
       {/* LEFT IMAGE */}
@@ -70,9 +84,7 @@ const ForgotPassword = () => {
             </div>
 
             {/* Button */}
-            <Button
-              className="w-full bg-[var(--color-background)] cursor-pointer font-semibold hover:bg-[#2a4b70] transition-colors duration-300 rounded-xl shadow-md"
-            >
+            <Button className="w-full bg-[var(--color-background)] cursor-pointer font-semibold hover:bg-[#2a4b70] transition-colors duration-300 rounded-xl shadow-md">
               Gửi liên kết khôi phục
             </Button>
 

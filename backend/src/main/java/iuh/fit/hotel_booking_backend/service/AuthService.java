@@ -109,10 +109,6 @@ public class AuthService {
                 response.setMessage("Tài khoản không tồn tại!");
                 return response;
             }
-            if (Boolean.FALSE.equals(taiKhoan.isActive())) {
-                taiKhoan.setActive(true);
-                taiKhoanRepository.save(taiKhoan);
-            }
             String token = jwtUtil.generateToken(taiKhoan.getEmail(), taiKhoan.getVaiTro().name());
 
             LoginResponse loginResponse = new LoginResponse();

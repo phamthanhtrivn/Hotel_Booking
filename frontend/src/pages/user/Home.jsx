@@ -14,6 +14,8 @@ import spaImg from "../../assets/bg01.jpg";
 import restaurantImg from "../../assets/bg13.jpg";
 import gymImg from "../../assets/bg01.jpg"; 
 import barImg from "../../assets/bg10.jpg";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthContext";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 50 },
@@ -40,6 +42,9 @@ const Section = ({ children }) => {
 };
 
 export default function Home() {
+  const {user} = useContext(AuthContext);
+  console.log(user);
+  
   return (
     <div className="text-gray-800 bg-white">
       {/* HERO SECTION */}

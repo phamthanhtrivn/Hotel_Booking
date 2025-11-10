@@ -25,6 +25,6 @@ public class AuthController {
 
     @GetMapping("/verify-token")
     public ResponseEntity<?> verifyToken(@RequestHeader("Authorization") String authHeader) {
-
+        return authService.verifyToken(authHeader);
     }
 }
