@@ -121,6 +121,9 @@ const Register = () => {
         toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
         navigate("/login");
       }
+      else {
+        toast.error(response.data.message);
+      }
     } catch (err) {
       toast.error(err.message || "Đăng ký thất bại!");
     } finally {

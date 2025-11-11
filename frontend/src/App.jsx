@@ -22,6 +22,7 @@ import BookingManagement from "./pages/admin/BookingManagement";
 import ReviewManagement from "./pages/admin/ReviewManagement";
 import NotFound from "./pages/NotFound";
 import Contact from "./pages/user/Contact";
+import ResetPassword from "./pages/user/ResetPassword";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
         <Route path="facilities" element={<Facilities />} />
         <Route path="about" element={<AboutUs />} />
         <Route path="contact" element={<Contact />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Route>
 
       {/* MEMBER */}

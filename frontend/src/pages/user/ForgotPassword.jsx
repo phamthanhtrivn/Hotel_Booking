@@ -16,10 +16,43 @@ import bg04 from "../../assets/bg04.jpg";
 import ImgSlider from "@/components/common/ImgSlider";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "@/context/AuthContext";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
 
 const ForgotPassword = () => {
+  const baseUrl = import.meta.env.VITE_BASE_API_URL;
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast.error("Vui lòng nhập email của bạn.");
+      return;
+    }
+    if (!email.match(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)) {
+      toast.error("Email không hợp lệ.");
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const response = await axios.post(`${baseUrl}/forgot-password`, {
+        email,
+      });
+      if (response.data.success) {
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -80,12 +113,27 @@ const ForgotPassword = () => {
                 placeholder="Nhập email của bạn"
                 className="focus-visible:ring-[var(--color-background)] rounded-xl"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
             {/* Button */}
-            <Button className="w-full bg-[var(--color-background)] cursor-pointer font-semibold hover:bg-[#2a4b70] transition-colors duration-300 rounded-xl shadow-md">
-              Gửi liên kết khôi phục
+            <Button
+              onClick={handleForgotPassword}
+              disabled={isLoading}
+              className={`w-full bg-[var(--color-background)] font-semibold rounded-xl shadow-md transition-colors duration-300 hover:bg-[#2a4b70] flex items-center justify-center gap-2 cursor-pointer ${
+                isLoading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin w-5 h-5" />
+                  Đang gửi...
+                </>
+              ) : (
+                "Gửi liên kết khôi phục"
+              )}
             </Button>
 
             {/* Separator */}

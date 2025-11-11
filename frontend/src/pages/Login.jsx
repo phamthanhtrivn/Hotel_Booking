@@ -63,6 +63,9 @@ const Login = () => {
           navigate("/");
         }
       }
+      else {
+        toast.error(data.message);
+      }
     } catch (error) {
       toast.error("Đăng nhập thất bại. Vui lòng thử lại.");
     } finally {
