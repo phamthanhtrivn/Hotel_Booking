@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,5 +32,6 @@ public class DanhGia {
     private LocalDateTime thoiGianDanhGia;
 
     @OneToOne(mappedBy = "danhGia")
+    @JsonIgnore
     private DonDatPhong donDatPhong;
 }

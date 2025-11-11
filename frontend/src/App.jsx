@@ -27,7 +27,7 @@ function App() {
   return (
     <Routes>
       {/* GUEST */}
-      <Route  
+      <Route
         path="/"
         element={
           <ProtectedRoutes>

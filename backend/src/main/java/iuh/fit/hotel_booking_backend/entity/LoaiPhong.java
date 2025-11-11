@@ -33,4 +33,8 @@ public class LoaiPhong {
     private List<String> hinhAnh;
     @Column(name = "mo_ta")
     private String moTa;
+
+    public LoaiPhong(String maLoaiPhong) {
+        this.maLoaiPhong = maLoaiPhong;
+    }
 }
