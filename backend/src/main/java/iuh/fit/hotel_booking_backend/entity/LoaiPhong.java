@@ -1,6 +1,8 @@
 package iuh.fit.hotel_booking_backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,8 +18,12 @@ public class LoaiPhong {
     @Id
     @Column(name = "ma_loai_phong")
     private String maLoaiPhong;
+
+    @NotBlank
     @Column(name = "ten_loai_phong", nullable = false, unique = true)
     private String tenLoaiPhong;
+
+    @Min(value = 25, message = "Diên tích phải lớn hơn 25 m2")
     @Column(name = "dien_tich")
     private double dienTich;
     @Column(name = "so_khach")

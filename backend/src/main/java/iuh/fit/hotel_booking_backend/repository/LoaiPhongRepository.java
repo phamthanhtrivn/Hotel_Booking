@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LoaiPhongRepository extends JpaRepository<LoaiPhong, String> {
+    boolean existsLoaiPhongByMaLoaiPhong(String code);
 }
