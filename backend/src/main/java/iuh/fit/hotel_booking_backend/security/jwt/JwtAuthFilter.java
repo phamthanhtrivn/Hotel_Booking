@@ -1,4 +1,4 @@
-package iuh.fit.hotel_booking_backend.security;
+package iuh.fit.hotel_booking_backend.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import iuh.fit.hotel_booking_backend.dto.APIResponse;

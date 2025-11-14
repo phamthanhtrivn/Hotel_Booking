@@ -1,4 +1,4 @@
-package iuh.fit.hotel_booking_backend.service;
+package iuh.fit.hotel_booking_backend.security.jwt;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
@@ -10,7 +10,6 @@ import iuh.fit.hotel_booking_backend.entity.LoaiTaiKhoan;
 import iuh.fit.hotel_booking_backend.entity.TaiKhoan;
 import iuh.fit.hotel_booking_backend.repository.KhachHangRepository;
 import iuh.fit.hotel_booking_backend.repository.TaiKhoanRepository;
-import iuh.fit.hotel_booking_backend.security.CustomerUserDetails;
 import iuh.fit.hotel_booking_backend.util.IdUtil;
 import iuh.fit.hotel_booking_backend.util.JwtUtil;
 import jakarta.mail.internet.MimeMessage;
@@ -23,8 +22,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -136,7 +133,7 @@ public class AuthService {
         } catch (Exception e) {
             response.setSuccess(false);
             response.setMessage("Lỗi hệ thống!");
-            throw e;
+            return response;
         }
         return response;
     }
@@ -231,7 +228,6 @@ public class AuthService {
     }
 
     public APIResponse<Object> validateResetToken(String token) {
-        System.out.println(token);
         try {
             if (!jwtUtil.validateResetPasswordToken(token)) {
                 return new APIResponse<>(false, "Token không hợp lệ hoặc đã hết hạn", null);
@@ -263,4 +259,5 @@ public class AuthService {
             return new APIResponse<>(false, "Lỗi khi đặt lại mật khẩu: " + e.getMessage(), null);
         }
     }
+
 }

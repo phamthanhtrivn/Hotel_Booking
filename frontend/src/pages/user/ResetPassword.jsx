@@ -35,9 +35,10 @@ const ResetPassword = () => {
       }
 
       try {
-        const response = await axios.post(`${baseUrl}/validate-reset-token`, {
-          token,
-        });
+        const response = await axios.get(
+          `${baseUrl}/validate-reset-token`,
+          { params: { token } } 
+        );
 
         if (!response.data.success) {
           toast.error(response.data.message);

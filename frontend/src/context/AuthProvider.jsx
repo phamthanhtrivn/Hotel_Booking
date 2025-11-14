@@ -1,8 +1,10 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import { Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 export const AuthProvider = ({ children }) => {
   const baseUrl = import.meta.env.VITE_BASE_API_URL;
@@ -21,6 +23,7 @@ export const AuthProvider = ({ children }) => {
         try {
           const res = await axios.get(`${baseUrl}/verify-token`, {
             headers: { Authorization: `Bearer ${token}` },
+            validateStatus: () => true,
           });
           if (res.data.success) setUser(res.data.data);
           else {
@@ -28,7 +31,7 @@ export const AuthProvider = ({ children }) => {
             setUser(null);
           }
         } catch (err) {
-          console.error("Token invalid:", err);
+          toast.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
           setToken(null);
           setUser(null);
         } finally {
@@ -59,7 +62,7 @@ export const AuthProvider = ({ children }) => {
     );
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, setToken, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

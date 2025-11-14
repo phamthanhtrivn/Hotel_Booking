@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
-import { FaFacebook } from "react-icons/fa";
 import { motion } from "framer-motion";
 import bg01 from "../../assets/bg01.jpg";
 import bg02 from "../../assets/bg02.jpg";
@@ -151,11 +150,6 @@ const ForgotPassword = () => {
               >
                 <FcGoogle size={22} />
                 <span>Đăng nhập bằng Google</span>
-              </Button>
-
-              <Button className="flex items-center justify-center gap-2 bg-[#1877F2] hover:bg-[#166fe5] cursor-pointer rounded-xl transition shadow-md">
-                <FaFacebook size={22} />
-                <span>Đăng nhập bằng Facebook</span>
               </Button>
             </div>
 

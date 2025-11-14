@@ -1,7 +1,7 @@
 package iuh.fit.hotel_booking_backend.controller;
 
 import iuh.fit.hotel_booking_backend.dto.*;
-import iuh.fit.hotel_booking_backend.service.AuthService;
+import iuh.fit.hotel_booking_backend.security.jwt.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +33,8 @@ public class AuthController {
         return ResponseEntity.ok(authService.sendResetPasswordEmail(email));
     }
 
-    @PostMapping("/validate-reset-token")
-    public ResponseEntity<?> validateResetToken(@RequestBody String token) {
+    @GetMapping("/validate-reset-token")
+    public ResponseEntity<?> validateResetToken(@RequestParam String token) {
         return ResponseEntity.ok(authService.validateResetToken(token));
     }
 
