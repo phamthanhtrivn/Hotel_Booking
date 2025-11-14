@@ -218,3 +218,29 @@ INSERT INTO khach_hang (ma_khach_hang, ho_ten_khach_hang, so_dien_thoai, diem_ti
 INSERT INTO tai_khoan (ma_tai_khoan, email, mat_khau, vai_tro, is_active, ma_khach_hang) VALUES
 ('TK1','admin@twan.com','$2b$12$gVEMON8fOApW73iTp4lf3.3ivcOk2.5Tp7IbE3Udc0VpF8l7SIRFy','ADMIN',1,NULL),
 ('TK2','vana@gmail.com','$2b$12$gVEMON8fOApW73iTp4lf3.3ivcOk2.5Tp7IbE3Udc0VpF8l7SIRFy','MEMBER',1,'KH1');
+
+INSERT INTO don_dat_phong (
+    ma_dat_phong,
+    ho_ten_khach_hang,
+    so_dien_thoai,
+    email,
+    ma_khach_hang,
+    ma_phong,
+    tong_tien,
+    tong_tien_tt,
+    check_in,
+    check_out,
+    trang_thai,
+    ghi_chu,
+    VAT,
+    lan_dau,
+    giam_gia_diem_tich_luy
+) VALUES
+      ('DDP001', 'Nguyen Van A', '0901234567', 'vana@gmail.com', 'KH1', 'P101', 500000, 500000,
+       '2025-11-20 14:00:00', '2025-11-22 12:00:00', 'CHUA_THANH_TOAN', 'Khách muốn phòng gần thang máy', 10, true, 0),
+      ('DDP002', 'Nguyen Van A', '0901234567', 'vana@gmail.com', 'KH1', 'P102', 600000, 600000,
+       '2025-11-21 14:00:00', '2025-11-23 12:00:00', 'DA_THANH_TOAN', 'Khách đặt theo gói khuyến mãi', 10, false, 50000),
+      ('DDP003', 'Nguyen Van A', '0901234567', 'vana@gmail.com', 'KH1', 'P201', 900000, 900000,
+       '2025-11-25 14:00:00', '2025-11-27 12:00:00', 'DA_HUY', 'Khách hủy do thay đổi lịch trình', 10, true, 0),
+      ('DDP004', 'Nguyen Van A', '0901234567', 'vana@gmail.com', 'KH1', 'P203', 1100000, 1100000,
+       '2025-12-01 14:00:00', '2025-12-03 12:00:00', 'CHUA_THANH_TOAN', 'Đặt phòng cho gia đình', 10, false, 0);

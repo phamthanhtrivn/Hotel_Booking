@@ -1,6 +1,8 @@
 package iuh.fit.hotel_booking_backend.service;
 
+import iuh.fit.hotel_booking_backend.dto.DonDatPhongSearchRequest;
 import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
+import iuh.fit.hotel_booking_backend.helper.DonDatPhongSpecification;
 import iuh.fit.hotel_booking_backend.repository.DonDatPhongRepository;
 import org.springframework.stereotype.Service;
 
@@ -28,5 +30,9 @@ public class DonDatPhongService {
 
     public void deleteById(String id) {
         repo.deleteById(id);
+    }
+
+    public List<DonDatPhong> search(DonDatPhongSearchRequest req) {
+        return repo.findAll(DonDatPhongSpecification.build(req));
     }
 }
