@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,11 +21,13 @@ public class ChiTietLoaiGiuong {
     @ManyToOne
     @MapsId("loaiPhong")
     @JoinColumn(name = "ma_loai_phong", nullable = false)
+    @JsonBackReference
     private LoaiPhong loaiPhong;
 
     @ManyToOne
     @MapsId("loaiGiuong")
     @JoinColumn(name = "ma_giuong", nullable = false)
+    @JsonBackReference
     private LoaiGiuong loaiGiuong;
 
     @Column(name = "so_giuong")

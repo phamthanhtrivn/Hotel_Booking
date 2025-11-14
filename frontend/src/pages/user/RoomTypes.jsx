@@ -1,23 +1,47 @@
-import { hotel, roomPackageDummyData, roomsDummyData, roomTypeOptionDummyData } from "@/assets/assets";
+import {
+  hotel,
+  roomPackageDummyData,
+  roomsDummyData,
+  roomTypeOptionDummyData,
+} from "@/assets/assets";
 import RoomTypeCard from "@/components/common/RoomTypeCard";
 import { Button } from "@/components/ui/button";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const RoomTypes = () => {
-  const rooms = roomsDummyData;
-  const roomTypeOptions = roomTypeOptionDummyData
-  const roomPackages = roomPackageDummyData;
+const roomPackages = roomPackageDummyData;
 
-  const [filteredRooms, setFilteredRooms] = useState(rooms);
+const RoomTypes = () => {
+  const [roomTypes, setRoomTypes] = useState([]);
+  const [roomTypeOptions, setRoomTypeOptions] = useState([]);
   const [filters, setFilters] = useState({
     checkIn: "",
     checkOut: "",
-    guests: 2,
-    roomType: "Twin Bed",
+    guests: 0,
+    roomType: "",
   });
   const navigate = useNavigate();
   const roomSectionRef = useRef(null);
+
+  const fetchRoomTypes = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/loaiphong");
+      if (!response.ok) throw new Error("Failed to fetch room types");
+      const data = await response.json();
+      setRoomTypes(data);
+      const options = [
+        ...new Set(data.map((dto) => dto.loaiPhong.tenLoaiPhong)),
+      ];
+      setRoomTypeOptions(options);
+    } catch (err) {
+      console.error(err);
+      alert("Không thể tải danh sách phòng từ server.");
+    }
+  };
+
+  useEffect(() => {
+    fetchRoomTypes();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,22 +51,52 @@ const RoomTypes = () => {
     }));
   };
 
-  const handleSearch = () => {
-    const result = rooms.filter((room) => {
-      const guestMatch = room.soKhach === Number(filters.guests);
+  const handleSearch = async () => {
+    try {
+      const body = {
+        checkIn: filters.checkIn
+          ? new Date(filters.checkIn).toISOString()
+          : null,
+        checkOut: filters.checkOut
+          ? new Date(filters.checkOut).toISOString()
+          : null,
+        soKhach: filters.guests || null,
+        tenLoaiPhong: filters.roomType || null,
+        minGia: null,
+        maxGia: null,
+        minDienTich: null,
+        maxDienTich: null,
+        maGiuong: null,
+      };
 
-      const roomTypeLower = filters.roomType.toLowerCase();
-      const typeMatch =
-        room.tenLoaiPhong.toLowerCase().includes(roomTypeLower) ||
-        room.loaiGiuong.toLowerCase().includes(roomTypeLower);
+      const response = await fetch(
+        "http://localhost:8080/api/loaiphong/search",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        }
+      );
 
-      return guestMatch && typeMatch;
-    });
+      if (!response.ok) throw new Error("Search failed");
+      const data = await response.json();
 
-    setFilteredRooms(result);
+      setRoomTypes(data);
 
-    if (roomSectionRef.current) {
-      roomSectionRef.current.scrollIntoView({ behavior: "smooth" });
+      setFilters({
+        checkIn: "",
+        checkOut: "",
+        guests: 0,
+        roomType: "",
+      });
+      if (roomSectionRef.current) {
+        roomSectionRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Không thể tìm phòng. Vui lòng thử lại.");
     }
   };
 
@@ -92,7 +146,6 @@ const RoomTypes = () => {
               type="number"
               min="1"
               name="guests"
-              defaultValue={2}
               onChange={handleChange}
               className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
             />
@@ -106,6 +159,7 @@ const RoomTypes = () => {
               onChange={handleChange}
               className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
             >
+              <option value="">Chọn loại phòng</option>
               {roomTypeOptions.map((type, index) => (
                 <option key={index} value={type}>
                   {type}
@@ -142,11 +196,22 @@ const RoomTypes = () => {
         ref={roomSectionRef}
         className="relative left-1/2 right-1/2 -mx-[50.51vw] w-screen overflow-hidden space-y-1"
       >
-        {filteredRooms && filteredRooms.length > 0 ? filteredRooms.map((room, index) => (
-          <RoomTypeCard key={index} room={room} onDetail={onDetail} />
-        )) : (<div className="flex items-center justify-center p-10">
-          <p className="text-2xl text-foreground/80">Hiện tại không có loại phòng phù hợp với bạn. Vui lòng chọn một loại phòng khác!!!</p>
-        </div>)}
+        {roomTypes && roomTypes.length > 0 ? (
+          roomTypes.map((dto, index) => (
+            <RoomTypeCard
+              key={index}
+              room={{ ...dto.loaiPhong, soPhongTrong: dto.soPhongTrong }}
+              onDetail={onDetail}
+            />
+          ))
+        ) : (
+          <div className="flex items-center justify-center p-10">
+            <p className="text-2xl text-foreground/80">
+              Hiện tại không có loại phòng phù hợp với bạn. Vui lòng chọn một
+              loại phòng khác!!!
+            </p>
+          </div>
+        )}
       </section>
       <section className="w-full flex items-center justify-between px-12 lg:px-24 py-16 md:py-24 text-left bg-white">
         <div className="max-w-3xl">

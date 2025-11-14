@@ -1,9 +1,13 @@
 package iuh.fit.hotel_booking_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -18,4 +22,8 @@ public class LoaiGiuong {
     private String tenGiuong;
     @Column(name = "mo_ta")
     private String moTa;
+
+    @OneToMany(mappedBy = "loaiGiuong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonBackReference
+    private List<ChiTietLoaiGiuong> chiTietLoaiGiuongList = new ArrayList<>();
 }
