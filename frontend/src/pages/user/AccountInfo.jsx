@@ -1,9 +1,42 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Input } from '../../components/ui/input'
 import { Button } from '../../components/ui/button'
 import { User, Phone, Mail } from 'lucide-react'
-
+import { useState } from 'react'
+import {useFetch} from "../../hooks/useFetch";
 const AccountInfo = () => {
+  const {get,put,error} = useFetch('http://localhost:8080/api');
+  const [user,setUser] = useState(null);
+  const userId  = "TK2";
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const req = await get(`/taikhoan/${userId}`);
+      if(req){
+        setUser(req.data);
+      }
+      else {
+        console.error('Failed to fetch user data:', error);
+      }
+    }
+
+    fetchUser();
+  }, []);
+
+  const handelSave = () => {
+    const updateUser = async () => {
+      const req = await put(`/taikhoan/update`, user);
+      if(req.success){
+        setUser(req.data);
+        alert('Cập nhật thông tin thành công!');
+      }
+      else{
+        alert(req.message || 'Cập nhật thông tin thất bại!');
+      }
+    }
+    updateUser();
+  }
+
   return (
     <div className="flex justify-center items-start min-h-screen bg-gray-50 pt-16 pb-20">
       {/* Form Container */}
@@ -18,7 +51,7 @@ const AccountInfo = () => {
 
         {/* Form */}
         <div className="px-10 py-10">
-          <form className="space-y-8">
+          <div className="space-y-8">
             {/* Username */}
             <div className="space-y-2">
               <label
@@ -34,6 +67,8 @@ const AccountInfo = () => {
                 type="text"
                 placeholder="Nhập tên đăng nhập của bạn"
                 required
+                value={user ? user.khachHang.hoTenKH : ''}
+                onChange={(e) => {setUser({...user, khachHang: {...user.khachHang, hoTenKH: e.target.value}})}}
                 className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -53,6 +88,8 @@ const AccountInfo = () => {
                 type="tel"
                 placeholder="Nhập số điện thoại của bạn"
                 required
+                value={user ? user.khachHang.soDienThoai : ''}
+                onChange={(e) => {setUser({...user, khachHang: {...user.khachHang, soDienThoai: e.target.value}})}}
                 className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -72,6 +109,8 @@ const AccountInfo = () => {
                 type="email"
                 placeholder="Nhập địa chỉ email của bạn"
                 required
+                value={user ? user.email : ''}
+                onChange={(e) => {setUser({...user, email: e.target.value})}}
                 className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -79,13 +118,13 @@ const AccountInfo = () => {
             {/* Submit */}
             <div className="pt-6">
               <Button
-                type="submit"
                 className="w-full bg-blue-600 hover:bg-gray-800 text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
+                onClick={handelSave}
               >
                 Lưu thông tin
               </Button>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>

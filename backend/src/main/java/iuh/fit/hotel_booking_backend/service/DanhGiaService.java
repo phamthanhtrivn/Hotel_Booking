@@ -1,6 +1,7 @@
 package iuh.fit.hotel_booking_backend.service;
 
 import iuh.fit.hotel_booking_backend.dto.DanhGiaRequest;
+import iuh.fit.hotel_booking_backend.dto.DanhGiaRespone;
 import iuh.fit.hotel_booking_backend.dto.DanhGiaTimKiemRequest;
 import iuh.fit.hotel_booking_backend.entity.DanhGia;
 import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
@@ -61,7 +62,7 @@ public class DanhGiaService {
         return repo.save(newDanhGia);
     }
 
-    public List<DanhGia> searchDanhGia(DanhGiaTimKiemRequest danhGiaTimKiemRequest){
+    public List<DanhGiaRespone> searchDanhGia(DanhGiaTimKiemRequest danhGiaTimKiemRequest){
         int minDiem = 0, maxDiem = 0;
         if(danhGiaTimKiemRequest.getDanhGia() != null){
             if(danhGiaTimKiemRequest.getDanhGia().getLoai().equals("BAD")){
@@ -77,6 +78,15 @@ public class DanhGiaService {
                 danhGiaTimKiemRequest.getThang(),
                 danhGiaTimKiemRequest.getNam()
         );
+    }
+
+
+    public List<DanhGiaRespone> getAllByDanhGia() {
+        return repo.getAllByDanhGia();
+    }
+
+    public List<Integer> findDistinctYears() {
+        return repo.findDistinctYears();
     }
 
     public void deleteById(String id) {

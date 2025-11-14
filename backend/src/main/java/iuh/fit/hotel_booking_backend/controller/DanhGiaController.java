@@ -3,6 +3,7 @@ package iuh.fit.hotel_booking_backend.controller;
 import ch.qos.logback.core.net.SyslogOutputStream;
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.dto.DanhGiaRequest;
+import iuh.fit.hotel_booking_backend.dto.DanhGiaRespone;
 import iuh.fit.hotel_booking_backend.dto.DanhGiaTimKiemRequest;
 import iuh.fit.hotel_booking_backend.entity.DanhGia;
 import iuh.fit.hotel_booking_backend.repository.DanhGiaRepository;
@@ -21,10 +22,10 @@ public class DanhGiaController {
     }
 
     @GetMapping
-    public APIResponse<List<DanhGia>> getAll(){
-        APIResponse<List<DanhGia>> response = new APIResponse<>();
+    public APIResponse<List<DanhGiaRespone>> getAll(){
+        APIResponse<List<DanhGiaRespone>> response = new APIResponse<>();
         try{
-            List<DanhGia> listDanhGia = danhGiaService.getAll();
+            List<DanhGiaRespone> listDanhGia = danhGiaService.getAllByDanhGia();
             response.setData(listDanhGia);
             response.setSuccess(true);
             response.setMessage("Get all danh gia successfully");
@@ -35,6 +36,8 @@ public class DanhGiaController {
             return response;
         }
     }
+
+
 
     @PostMapping("/create")
     public APIResponse<DanhGia> createDanhGia(@RequestBody DanhGiaRequest danhGiaRequest){
@@ -54,17 +57,19 @@ public class DanhGiaController {
         }
     }
     @GetMapping("search")
-    public  APIResponse<List<DanhGia>> searchDanhGia(
+    public  APIResponse<List<DanhGiaRespone>> searchDanhGia(
             @RequestParam(required = false) String maLoaiPhong,
             @RequestParam(required = false) String loaiMucDo,
             @RequestParam(required = false) Integer diemMucDo,
             @RequestParam(required = false, defaultValue = "0") Integer thang,
             @RequestParam(required = false, defaultValue = "0") Integer nam
     ){
-        APIResponse<List<DanhGia>> response = new APIResponse<>();
+        APIResponse<List<DanhGiaRespone>> response = new APIResponse<>();
         DanhGiaTimKiemRequest request = new DanhGiaTimKiemRequest();
-        request.setMaLoaiPhong(maLoaiPhong);
-        if(loaiMucDo != null && diemMucDo != null) {
+        if(maLoaiPhong.trim().length() != 0){
+            request.setMaLoaiPhong(maLoaiPhong);
+        }
+        if(loaiMucDo != null && loaiMucDo.trim().length() != 0 && diemMucDo != null) {
             DanhGiaTimKiemRequest.MucDo mucDo = new DanhGiaTimKiemRequest.MucDo();
             mucDo.setLoai(loaiMucDo);
             mucDo.setDiem(diemMucDo);
@@ -74,7 +79,7 @@ public class DanhGiaController {
         request.setNam(nam);
         System.out.println("Search request: " + request.toString());
         try{
-            List<DanhGia> listDanhGia = danhGiaService.searchDanhGia(request);
+            List<DanhGiaRespone> listDanhGia = danhGiaService.searchDanhGia(request);
             response.setData(listDanhGia);
             response.setSuccess(true);
             response.setMessage("Search danh gia successfully");
@@ -86,4 +91,18 @@ public class DanhGiaController {
         return response;
     }
 
+    @GetMapping("/nam")
+    public APIResponse<List<Integer>> getDistinctYears() {
+        APIResponse<List<Integer>> response = new APIResponse<>();
+        try {
+            List<Integer> years = danhGiaService.findDistinctYears();
+            response.setData(years);
+            response.setSuccess(true);
+            response.setMessage("Get distinct years successfully");
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage("Failed to get distinct years: ");
+        }
+        return response;
+    }
 }
