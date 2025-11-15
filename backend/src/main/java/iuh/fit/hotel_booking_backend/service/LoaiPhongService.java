@@ -4,6 +4,9 @@ import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.repository.LoaiPhongRepository;
 import iuh.fit.hotel_booking_backend.util.IdUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,38 +32,40 @@ public class LoaiPhongService {
         return loaiPhongRepository.findAll();
     }
 
+    public Page<LoaiPhong> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return loaiPhongRepository.findAll(pageable);
+    }
+
     public LoaiPhong getById(String id) {
         return loaiPhongRepository.findById(id).orElse(null);
     }
 
-    public APIResponse<LoaiPhong> update(String id, LoaiPhong updatedData,
+    public APIResponse<LoaiPhong> update(LoaiPhong loaiPhong,
                                          List<String> existingImages,
                                          List<MultipartFile> newPhotos) {
         APIResponse<LoaiPhong> response = new APIResponse<>();
 
         try {
-            LoaiPhong old = loaiPhongRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy loại phòng"));
-
             List<String> newImageUrls = new ArrayList<>();
             if (newPhotos != null && !newPhotos.isEmpty()) {
                 newImageUrls = cloudinaryService.uploadFiles(newPhotos, "loai_phong");
             }
 
             List<String> finalImages = new ArrayList<>();
-            if (existingImages != null) finalImages.addAll(existingImages);
+            if (existingImages != null) {
+                finalImages.addAll(existingImages);
+            }
             finalImages.addAll(newImageUrls);
 
-            old.setTenLoaiPhong(updatedData.getTenLoaiPhong());
-            old.setMoTa(updatedData.getMoTa());
-            old.setGia(updatedData.getGia());
-            old.setHinhAnh(finalImages);
 
-            loaiPhongRepository.save(old);
+            loaiPhong.setHinhAnh(finalImages);
+
+            loaiPhongRepository.save(loaiPhong);
 
             response.setSuccess(true);
             response.setMessage("Cập nhật loại phòng thành công");
-            response.setData(old);
+            response.setData(loaiPhong);
 
         } catch (Exception e) {
             response.setSuccess(false);
@@ -71,7 +76,7 @@ public class LoaiPhongService {
 
 
     public APIResponse<LoaiPhong> save(LoaiPhong loaiPhong,
-                            List<MultipartFile> images) {
+                                       List<MultipartFile> images) {
 
         APIResponse<LoaiPhong> response = new APIResponse<>();
         try {
@@ -85,7 +90,7 @@ public class LoaiPhongService {
             response.setMessage("Thêm loại phòng thành công");
             response.setData(loaiPhong);
             return response;
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setMessage("Thêm loại phòng thất bại. " + e.getMessage());
             response.setSuccess(false);
             return response;
@@ -94,12 +99,12 @@ public class LoaiPhongService {
 
     public APIResponse<Object> deleteById(String id) {
         APIResponse<Object> response = new APIResponse<>();
-        try{
+        try {
             loaiPhongRepository.deleteById(id);
             response.setSuccess(true);
             response.setMessage("Xóa loại phòng thành công");
             return response;
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setSuccess(false);
             response.setMessage("Lỗi khi xóa loại phòng: " + e.getMessage());
             return response;

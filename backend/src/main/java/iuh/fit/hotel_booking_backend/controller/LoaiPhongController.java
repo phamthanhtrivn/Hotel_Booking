@@ -1,15 +1,21 @@
 package iuh.fit.hotel_booking_backend.controller;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.service.CloudinaryService;
 import iuh.fit.hotel_booking_backend.service.LoaiPhongService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -26,6 +32,16 @@ public class LoaiPhongController {
         return loaiPhongService.getAll();
     }
 
+    @GetMapping("/paged")
+    public ResponseEntity<?> findAllPaged(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "7") int size
+    ) {
+        Page<LoaiPhong> result = loaiPhongService.findAll(page, size);
+        return ResponseEntity.ok(result);
+    }
+
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<APIResponse<LoaiPhong>> save(
             @RequestPart("loaiPhong") @Valid LoaiPhong loaiPhong,
@@ -36,14 +52,25 @@ public class LoaiPhongController {
         return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<APIResponse<LoaiPhong>> update(
-            @PathVariable String id,
             @RequestPart("loaiPhong") @Valid LoaiPhong loaiPhong,
-            @RequestPart(value = "existingImages", required = false) List<String> existingImages,
-            @RequestPart(value = "newPhotos", required = false) List<MultipartFile> newPhotos
-    ) {
-        APIResponse<LoaiPhong> result = loaiPhongService.update(id, loaiPhong, existingImages, newPhotos);
+            @RequestPart(value = "oldImages", required = false) String oldImagesJson,
+            @RequestPart(value = "photos", required = false) List<MultipartFile> newPhotos
+    ) throws Exception {
+
+        List<String> existingImages = new ArrayList<>();
+
+        if (oldImagesJson != null && !oldImagesJson.isEmpty()) {
+            ObjectMapper mapper = new ObjectMapper();
+            existingImages = mapper.readValue(
+                    oldImagesJson,
+                    new TypeReference<List<String>>() {
+                    }
+            );
+        }
+
+        APIResponse<LoaiPhong> result = loaiPhongService.update(loaiPhong, existingImages, newPhotos);
         return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
     }
 
