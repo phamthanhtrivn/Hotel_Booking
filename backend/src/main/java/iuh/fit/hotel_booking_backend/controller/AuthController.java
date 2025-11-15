@@ -5,6 +5,13 @@ import iuh.fit.hotel_booking_backend.security.jwt.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import iuh.fit.hotel_booking_backend.dto.LoginRequest;
+import iuh.fit.hotel_booking_backend.dto.SignUpRequest;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @RequestMapping("/")
