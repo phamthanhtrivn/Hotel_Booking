@@ -1,4 +1,4 @@
-package iuh.fit.hotel_booking_backend.security;
+package iuh.fit.hotel_booking_backend.security.jwt;
 
 import iuh.fit.hotel_booking_backend.entity.TaiKhoan;
 import lombok.Getter;

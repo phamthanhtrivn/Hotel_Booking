@@ -22,6 +22,9 @@ import BookingManagement from "./pages/admin/BookingManagement";
 import ReviewManagement from "./pages/admin/ReviewManagement";
 import NotFound from "./pages/NotFound";
 import Contact from "./pages/user/Contact";
+import ResetPassword from "./pages/user/ResetPassword";
+import OAuth2Success from "./pages/user/OAuth2Success";
+import OAuth2Error from "./pages/user/OAuth2Error";
 
 function App() {
   return (
@@ -30,7 +33,7 @@ function App() {
       <Route
         path="/"
         element={
-          <ProtectedRoutes>
+          <ProtectedRoutes allowedRoles={["GUEST", "MEMBER"]}>
             <UserLayout />
           </ProtectedRoutes>
         }
@@ -46,6 +49,9 @@ function App() {
         <Route path="facilities" element={<Facilities />} />
         <Route path="about" element={<AboutUs />} />
         <Route path="contact" element={<Contact />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/oauth2/success" element={<OAuth2Success />} />
+        <Route path="/oauth2/error" element={<OAuth2Error />} />
       </Route>
 
       {/* MEMBER */}

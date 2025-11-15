@@ -1,22 +1,74 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
-import { FaFacebook } from "react-icons/fa";
 import { motion } from "framer-motion";
 import bg01 from "../../assets/bg01.jpg";
 import bg02 from "../../assets/bg02.jpg";
 import bg03 from "../../assets/bg03.jpg";
 import bg04 from "../../assets/bg04.jpg";
 import ImgSlider from "@/components/common/ImgSlider";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "@/context/AuthContext";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
 
 const ForgotPassword = () => {
-  
+  const baseUrl = import.meta.env.VITE_BASE_API_URL;
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast.error("Vui lòng nhập email của bạn.");
+      return;
+    }
+    if (!email.match(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)) {
+      toast.error("Email không hợp lệ.");
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const response = await axios.post(`${baseUrl}/forgot-password`, {
+        email,
+      });
+      if (response.data.success) {
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Đã có lỗi xảy ra. Vui lòng thử lại sau.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      if (user.vaiTro === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
+    }
+  }, []);
+
+  const handleLoginGG = () => {
+    window.location.href = `${
+      import.meta.env.VITE_BASE_API_URL
+    }/oauth2/authorization/google`;
+  };
+
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-[#e2ecf7] to-[#f9fafc] overflow-hidden">
       {/* LEFT IMAGE */}
@@ -66,14 +118,27 @@ const ForgotPassword = () => {
                 placeholder="Nhập email của bạn"
                 className="focus-visible:ring-[var(--color-background)] rounded-xl"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
             {/* Button */}
             <Button
-              className="w-full bg-[var(--color-background)] cursor-pointer font-semibold hover:bg-[#2a4b70] transition-colors duration-300 rounded-xl shadow-md"
+              onClick={handleForgotPassword}
+              disabled={isLoading}
+              className={`w-full bg-[var(--color-background)] font-semibold rounded-xl shadow-md transition-colors duration-300 hover:bg-[#2a4b70] flex items-center justify-center gap-2 cursor-pointer ${
+                isLoading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              Gửi liên kết khôi phục
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin w-5 h-5" />
+                  Đang gửi...
+                </>
+              ) : (
+                "Gửi liên kết khôi phục"
+              )}
             </Button>
 
             {/* Separator */}
@@ -86,16 +151,12 @@ const ForgotPassword = () => {
             {/* Social Login */}
             <div className="flex flex-col gap-3">
               <Button
+                onClick={handleLoginGG}
                 variant="outline"
                 className="flex items-center justify-center gap-2 transition border-gray-300 cursor-pointer hover:bg-gray-100 rounded-xl"
               >
                 <FcGoogle size={22} />
                 <span>Đăng nhập bằng Google</span>
-              </Button>
-
-              <Button className="flex items-center justify-center gap-2 bg-[#1877F2] hover:bg-[#166fe5] cursor-pointer rounded-xl transition shadow-md">
-                <FaFacebook size={22} />
-                <span>Đăng nhập bằng Facebook</span>
               </Button>
             </div>
 

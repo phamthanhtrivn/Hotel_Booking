@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { Menu, User, ChevronDown } from "lucide-react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import {
@@ -8,11 +9,35 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
-import { Menu } from "lucide-react";
+import { AuthContext } from "@/context/AuthContext";
+import Swal from "sweetalert2";
 
 const Header = () => {
-  const navigation = useNavigate();
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Bạn có muốn đăng xuất không?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Đăng xuất",
+      cancelButtonText: "Hủy",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+        navigate("/");
+        Swal.fire({
+          title: "Đăng xuất thành công!",
+          icon: "success",
+        });
+      }
+    });
+  };
 
   const menuItems = [
     { to: "/", label: "TRANG CHỦ" },
@@ -26,14 +51,13 @@ const Header = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container flex items-center justify-between h-16 px-4 mx-auto">
         <Link to="/" className="flex items-center space-x-2">
-          <div className="flex flex-col leading-none">
-            <span className="text-xl font-bold font-serif tracking-tight text-[#1E2A38] hover:text-[#2a4b70]">
-              TWAN HOTEL
-            </span>
-          </div>
+          <span className="text-xl font-bold font-serif tracking-tight text-[#1E2A38] hover:text-[#2a4b70]">
+            TWAN HOTEL
+          </span>
         </Link>
 
-        <div className="items-center hidden space-x-8 lg:flex">
+        {/* Menu desktop */}
+        <div className="hidden lg:flex items-center space-x-8">
           {menuItems.map((item) => (
             <Link
               key={item.to}
@@ -46,14 +70,61 @@ const Header = () => {
           ))}
         </div>
 
-        <div className="flex items-center">
-          <Button
-            onClick={() => navigation("/login")}
-            className="hidden text-white bg-[#1E2A38] lg:inline-flex hover:bg-[#2a4b70] font-medium cursor-pointer transition-all duration-300"
-          >
-            Đăng Nhập
-          </Button>
+        {/* Right section */}
+        <div className="flex items-center relative space-x-4">
+          {/* Desktop user section */}
+          {!user ? (
+            <Button
+              onClick={() => navigate("/login")}
+              className="hidden lg:inline-flex text-white bg-[#1E2A38] hover:bg-[#2a4b70] font-medium cursor-pointer transition-all duration-300"
+            >
+              Đăng Nhập
+            </Button>
+          ) : (
+            <div className="hidden lg:flex items-center gap-3">
+              <span className="text-sm text-[#1E2A38] font-medium">
+                Xin chào,{" "}
+                <span className="font-semibold">
+                  {user.khachHang && user.khachHang.hoTenKH || "Người dùng"}
+                </span>
+              </span>
+              <div className="relative">
+                <Button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center gap-2 bg-[#1E2A38] hover:bg-[#2a4b70] text-white font-medium cursor-pointer"
+                >
+                  <User size={20} className="text-white" />
+                </Button>
 
+                {dropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
+                    <Link
+                      to="/account"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-300"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      Thông tin tài khoản
+                    </Link>
+                    <Link
+                      to="/account/booking-history"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-300"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      Lịch sử đặt phòng
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-300 cursor-pointer"
+                    >
+                      Đăng xuất
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Mobile menu */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild className="lg:hidden">
               <Button className="cursor-pointer bg-[#1E2A38] hover:bg-[#2a4b70]">
@@ -69,6 +140,15 @@ const Header = () => {
               <SheetDescription className="sr-only">
                 Đây là menu điều hướng chính của website TWAN HOTEL.
               </SheetDescription>
+
+              {user && (
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <span className="text-[#1E2A38] font-medium text-base">
+                    Xin chào, {user.khachHang && user.khachHang.hoTenKH || "Người dùng"}
+                  </span>
+                </div>
+              )}
+
               <div className="mb-8 text-center">
                 <span className="text-lg font-bold tracking-wide text-[#1E2A38] font-serif">
                   TWAN HOTEL
@@ -90,17 +170,48 @@ const Header = () => {
                 ))}
               </nav>
 
-              {/* Button Login */}
-              <div className="mt-12">
-                <Button
-                  onClick={() => {
-                    navigation("/login");
-                    setMobileOpen(false);
-                  }}
-                  className="w-full py-5 text-[#FFF] bg-[#1E2A38] hover:bg-[#2a4b70] font-medium tracking-wide transition-all duration-300 cursor-pointer"
-                >
-                  Đăng Nhập
-                </Button>
+              {/* Auth section (mobile) */}
+              <div className="mt-12 flex flex-col gap-3">
+                {!user ? (
+                  <Button
+                    onClick={() => {
+                      navigate("/login");
+                      setMobileOpen(false);
+                    }}
+                    className="w-full py-4 text-white bg-[#1E2A38] hover:bg-[#2a4b70] rounded-md font-medium tracking-wide transition-all duration-300 cursor-pointer"
+                  >
+                    Đăng Nhập
+                  </Button>
+                ) : (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <Link
+                        to="/account"
+                        onClick={() => setMobileOpen(false)}
+                        className="w-full py-3 text-white bg-[#1E2A38] hover:bg-[#2a4b70] rounded-md font-medium tracking-wide text-center transition-all duration-300"
+                      >
+                        Thông tin cá nhân
+                      </Link>
+                      <Link
+                        to="/account/booking-history"
+                        onClick={() => setMobileOpen(false)}
+                        className="w-full py-3 text-white bg-[#1E2A38] hover:bg-[#2a4b70] rounded-md font-medium tracking-wide text-center transition-all duration-300"
+                      >
+                        Lịch sử đặt phòng
+                      </Link>
+                    </div>
+
+                    <Button
+                      onClick={() => {
+                        handleLogout();
+                        setMobileOpen(false);
+                      }}
+                      className="w-full py-3 bg-[#CBA75E] hover:bg-[#b8944f] text-white rounded-md font-medium tracking-wide transition-all duration-300 mt-3 cursor-pointer"
+                    >
+                      Đăng xuất
+                    </Button>
+                  </>
+                )}
               </div>
             </SheetContent>
           </Sheet>
