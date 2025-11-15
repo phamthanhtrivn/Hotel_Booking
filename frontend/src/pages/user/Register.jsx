@@ -131,6 +131,12 @@ const Register = () => {
     }
   };
 
+  const handleLoginGG = () => {
+    window.location.href = `${
+      import.meta.env.VITE_BASE_API_URL
+    }/oauth2/authorization/google`;
+  };
+
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-[#e2ecf7] to-[#f9fafc] overflow-hidden">
       {/* LEFT IMAGE */}
@@ -305,6 +311,7 @@ const Register = () => {
             {/* Social Register */}
             <div className="flex flex-col gap-3">
               <Button
+                onClick={handleLoginGG}
                 variant="outline"
                 className="flex items-center justify-center gap-2 transition border-gray-300 cursor-pointer hover:bg-gray-100 rounded-xl"
               >

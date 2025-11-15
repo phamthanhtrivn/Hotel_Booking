@@ -33,7 +33,7 @@ function App() {
       <Route
         path="/"
         element={
-          <ProtectedRoutes>
+          <ProtectedRoutes allowedRoles={["GUEST", "MEMBER"]}>
             <UserLayout />
           </ProtectedRoutes>
         }

@@ -5,13 +5,25 @@ import { Navigate } from "react-router-dom";
 const ProtectedRoutes = ({ children, allowedRoles }) => {
   const { user } = useContext(AuthContext);
 
-  if (!allowedRoles) return <>{children}</>;
+  const role = user?.vaiTro || "GUEST";
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!allowedRoles) return children;
 
-  if (!allowedRoles.includes(user.vaiTro)) return <Navigate to="/" replace />;
+  if (allowedRoles.includes(role)) return children;
 
-  return <>{children}</>;
+  if (role === "GUEST") {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (role === "MEMBER") {
+    return <Navigate to="/" replace />;
+  }
+
+  if (role === "ADMIN") {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  return <Navigate to="/" replace />;
 };
 
 export default ProtectedRoutes;

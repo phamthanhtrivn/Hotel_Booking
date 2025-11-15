@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,13 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
 
   useEffect(() => {
     if (user) {
@@ -39,12 +46,32 @@ const Login = () => {
   }, []);
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      toast.error("Vui lòng điền đầy đủ thông tin đăng nhập.");
+    const emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$/;
+
+    const newErrors = { email: "", password: "" };
+
+    if (!email || !emailRegex.test(email)) {
+      newErrors.email = "Email không hợp lệ!";
+    }
+
+    if (!password) {
+      newErrors.password = "Mật khẩu không được để trống!";
+    }
+
+    setErrors(newErrors);
+
+    if (newErrors.email) {
+      emailRef.current.focus();
+      return;
+    }
+
+    if (newErrors.password) {
+      passwordRef.current.focus();
       return;
     }
 
     setIsLoading(true);
+
     try {
       const res = await axios.post(`${baseUrl}/login`, {
         email,
@@ -55,7 +82,9 @@ const Login = () => {
 
       if (data.success) {
         toast.success(data.message);
+
         login(data.data.taiKhoan, data.data.token);
+
         if (data.data.taiKhoan.vaiTro === "ADMIN") {
           navigate("/admin/dashboard");
         } else {
@@ -127,7 +156,11 @@ const Login = () => {
                 className="focus-visible:ring-[var(--color-background)] rounded-xl"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                ref={emailRef}
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -146,6 +179,7 @@ const Login = () => {
                   className="focus-visible:ring-[var(--color-background)] rounded-xl pr-10"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  ref={passwordRef}
                 />
                 <button
                   type="button"
@@ -155,6 +189,9 @@ const Login = () => {
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-red-500 text-sm">{errors.password}</p>
+              )}
             </div>
 
             {/* Button Login */}
