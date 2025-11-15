@@ -4,10 +4,7 @@ import {
   Users,
   Calendar,
   MessageSquare,
-  History,
   BookOpen,
-  LogOut,
-  ChevronDown,
 } from "lucide-react";
 import {
   Sidebar,
@@ -15,25 +12,17 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import HotelLogo from "@/assets/hotelLogo/HotelLogo.jpg";
-import { useState } from "react";
+import { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { AuthContext } from "@/context/AuthContext";
+import { Button } from "../ui/button";
 
 const items = [
   { name: "Dashboard", icon: ChartPie, url: "/admin/dashboard" },
@@ -45,7 +34,7 @@ const items = [
 ];
 
 const AdminSidebar = () => {
-  const [open, setOpen] = useState(false);
+  const { logout } = useContext(AuthContext)
   const location = useLocation();
 
   return (
@@ -88,38 +77,9 @@ const AdminSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-
+            
       <SidebarFooter>
-        <DropdownMenu open={open} onOpenChange={setOpen}>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center w-full gap-3 p-2 rounded-md hover:bg-accent">
-              <Avatar className="w-8 h-8">
-                <AvatarImage
-                  src="https://github.com/shadcn.png"
-                  alt="@shadcn"
-                />
-                <AvatarFallback>SC</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 text-left">
-                <div className="text-sm font-medium leading-none">tuan222</div>
-                <div className="text-xs text-muted-foreground">
-                  m@example.com
-                </div>
-              </div>
-              <ChevronDown className="w-4 h-4 opacity-50" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Account</DropdownMenuItem>
-            <DropdownMenuItem>Notifications</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut className="w-4 h-4 mr-2" /> Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <Button onClick={logout} className="w-full cursor-pointer bg-[#1E2A38] hover:bg-[#10171f] font-bold">Log out</Button>
       </SidebarFooter>
     </Sidebar>
   );
