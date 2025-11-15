@@ -66,10 +66,10 @@ const AdminSidebar = () => {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => {
+              {items.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <SidebarMenuItem>
+                  <SidebarMenuItem key={index}>
                     <Link
                       to={item.url ? item.url : "#"}
                       className="flex items-center space-x-3"
