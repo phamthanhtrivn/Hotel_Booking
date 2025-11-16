@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Loader2 } from "lucide-react"; // 👈 icon mắt
+import { Eye, EyeOff, Loader2 } from "lucide-react"; 
 import bg01 from "../assets/bg01.jpg";
 import bg02 from "../assets/bg02.jpg";
 import bg03 from "../assets/bg03.jpg";
@@ -225,6 +225,7 @@ const Login = () => {
             </div>
 
             {/* Register + Forgot password links */}
+
             <div className="flex flex-col gap-1 mt-4 text-sm text-center text-gray-500">
               <p>
                 Bạn chưa có tài khoản?{" "}
