@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.config;
 
+
 import io.github.cdimascio.dotenv.Dotenv;
 import iuh.fit.hotel_booking_backend.security.oauth2.CustomOAuth2UserService;
 import iuh.fit.hotel_booking_backend.security.jwt.CustomUserDetailsService;

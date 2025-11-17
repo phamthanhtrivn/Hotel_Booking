@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Menu, User, ChevronDown } from "lucide-react";
 import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -223,3 +224,14 @@ const Header = () => {
 };
 
 export default Header;
+=======
+import React from 'react'
+
+const Header = () => {
+  return (
+    <div className='btn btn-primary '>Header</div>
+  )
+}
+
+export default Header
+>>>>>>> Tung

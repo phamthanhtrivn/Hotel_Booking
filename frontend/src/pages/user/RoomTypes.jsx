@@ -1,29 +1,180 @@
-import { hotel, roomPackageDummyData, roomsDummyData } from "@/assets/assets";
+import {
+  hotel,
+  roomPackageDummyData,
+  roomsDummyData,
+  roomTypeOptionDummyData,
+} from "@/assets/assets";
 import RoomTypeCard from "@/components/common/RoomTypeCard";
 import { Button } from "@/components/ui/button";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const roomPackages = roomPackageDummyData;
+
 const RoomTypes = () => {
-  const rooms = roomsDummyData;
-  const roomPackages = roomPackageDummyData;
+  const [roomTypes, setRoomTypes] = useState([]);
+  const [roomTypeOptions, setRoomTypeOptions] = useState([]);
+  const [filters, setFilters] = useState({
+    checkIn: "",
+    checkOut: "",
+    guests: 0,
+    roomType: "",
+  });
   const navigate = useNavigate();
+  const roomSectionRef = useRef(null);
+
+  const fetchRoomTypes = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/loaiphong");
+      if (!response.ok) throw new Error("Failed to fetch room types");
+      const data = await response.json();
+      setRoomTypes(data);
+      const options = [
+        ...new Set(data.map((dto) => dto.loaiPhong.tenLoaiPhong)),
+      ];
+      setRoomTypeOptions(options);
+    } catch (err) {
+      console.error(err);
+      alert("Không thể tải danh sách phòng từ server.");
+    }
+  };
+
+  useEffect(() => {
+    fetchRoomTypes();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSearch = async () => {
+    try {
+      const body = {
+        checkIn: filters.checkIn
+          ? new Date(filters.checkIn).toISOString()
+          : null,
+        checkOut: filters.checkOut
+          ? new Date(filters.checkOut).toISOString()
+          : null,
+        soKhach: filters.guests || null,
+        tenLoaiPhong: filters.roomType || null,
+        minGia: null,
+        maxGia: null,
+        minDienTich: null,
+        maxDienTich: null,
+        maGiuong: null,
+      };
+
+      const response = await fetch(
+        "http://localhost:8080/api/loaiphong/search",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        }
+      );
+
+      if (!response.ok) throw new Error("Search failed");
+      const data = await response.json();
+
+      setRoomTypes(data);
+
+      setFilters({
+        checkIn: "",
+        checkOut: "",
+        guests: 0,
+        roomType: "",
+      });
+      if (roomSectionRef.current) {
+        roomSectionRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Không thể tìm phòng. Vui lòng thử lại.");
+    }
+  };
 
   const onDetail = (id) => {
-    navigate(`/room-types/${id}`)
-  }
+    navigate(`/room-types/${id}`);
+  };
   return (
     <div className="bg-background text-foreground font-sans">
-      <section className="max-w-4xl mx-auto px-6 sm:px-8 lg:mx-12 py-16 md:py-24 text-left">
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-tight text-primary">
-          Khách sạn Twan tại Hồ Tràm
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-          Làm chậm nhịp sống hiện đại. Mở cánh cửa bước vào một kỳ quan của thế
-          giới.
-        </p>
+      <section className="w-full mx-auto py-16 md:py-24 text-left">
+        <div className="px-6 sm:px-8 lg:mx-12">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-tight text-primary">
+            Khách sạn Twan tại Hồ Tràm
+          </h1>
+          <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
+            Làm chậm nhịp sống hiện đại. Mở cánh cửa bước vào một kỳ quan của
+            thế giới.
+          </p>
+        </div>
+        <div className="mt-10 bg-background shadow-lg rounded-xl p-6 flex flex-col md:flex-row gap-4 md:items-center">
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium text-muted-foreground">
+              Check-in
+            </label>
+            <input
+              type="date"
+              name="checkIn"
+              onChange={handleChange}
+              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium text-muted-foreground">
+              Check-out
+            </label>
+            <input
+              type="date"
+              name="checkOut"
+              onChange={handleChange}
+              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium text-muted-foreground">
+              Số khách
+            </label>
+            <input
+              type="number"
+              min="1"
+              name="guests"
+              onChange={handleChange}
+              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium text-muted-foreground">
+              Loại phòng / giường
+            </label>
+            <select
+              name="roomType"
+              onChange={handleChange}
+              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+            >
+              <option value="">Chọn loại phòng</option>
+              {roomTypeOptions.map((type, index) => (
+                <option key={index} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={handleSearch}
+            className="w-full md:w-auto h-[48px] p-5 flex items-center justify-center bg-chart-2 text-background text-sm rounded-2xl hover:bg-chart-2/90 transition"
+          >
+            Tìm phòng
+          </button>
+        </div>
       </section>
-
       <section className="relative left-1/2 right-1/2 -mx-[50.51vw] w-screen overflow-hidden">
         <img src={hotel} alt="" className="w-full h-screen object-cover" />
       </section>
@@ -41,10 +192,26 @@ const RoomTypes = () => {
         </p>
       </section>
 
-      <section className="relative left-1/2 right-1/2 -mx-[50.51vw] w-screen overflow-hidden space-y-1">
-        {rooms.map((room, index) => (
-          <RoomTypeCard key={index} room={room} onDetail={onDetail} />
-        ))}
+      <section
+        ref={roomSectionRef}
+        className="relative left-1/2 right-1/2 -mx-[50.51vw] w-screen overflow-hidden space-y-1"
+      >
+        {roomTypes && roomTypes.length > 0 ? (
+          roomTypes.map((dto, index) => (
+            <RoomTypeCard
+              key={index}
+              room={{ ...dto.loaiPhong, soPhongTrong: dto.soPhongTrong }}
+              onDetail={onDetail}
+            />
+          ))
+        ) : (
+          <div className="flex items-center justify-center p-10">
+            <p className="text-2xl text-foreground/80">
+              Hiện tại không có loại phòng phù hợp với bạn. Vui lòng chọn một
+              loại phòng khác!!!
+            </p>
+          </div>
+        )}
       </section>
       <section className="w-full flex items-center justify-between px-12 lg:px-24 py-16 md:py-24 text-left bg-white">
         <div className="max-w-3xl">

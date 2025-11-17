@@ -165,7 +165,9 @@ const RoomTypeDetail = () => {
                   <p className="text-4xl text-center font-bold my-2 text-foreground">
                     {room.gia} VNĐ
                   </p>
-                  <button className="bg-chart-2/60 text-background hover:bg-chart-2 w-full my-3 mt-4 transition-colors duration-300 uppercase p-4 text-xl">
+                  <button 
+                  onClick={() => navigate("/booking")}
+                  className="bg-chart-2/60 text-background hover:bg-chart-2 w-full my-3 mt-4 transition-colors duration-300 uppercase p-4 text-xl">
                     book now
                   </button>
                   <div className="mt-12 space-y-6">

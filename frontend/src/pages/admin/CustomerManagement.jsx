@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
 import { Edit2, Trash2, Search, Eye } from "lucide-react";
 import { useFetch } from "../../hooks/useFetch";
@@ -95,19 +96,17 @@ const CustomerManagement = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text)] p-8">
-      <style>{`
-        :root {
-          --color-primary: #CBA75E;
-          --color-background: #1E2A38;
-          --color-text: #FFFFFF;
-          --color-muted: #B5B5B5;
-          --color-accent: #E5C97B;
-        }
-        ::placeholder { color: var(--color-muted); }
-      `}</style>
+=======
+import React from 'react'
 
+const CustomerManagement = () => {
+>>>>>>> Tung
+  return (
+    <div>CustomerManagement</div>
+  )
+}
+
+<<<<<<< HEAD
       <h1 className="text-4xl font-bold text-center text-[var(--color-accent)] mb-8">
         Quản Lý Thông Tin Khách Hàng
       </h1>
@@ -349,3 +348,6 @@ const CustomerManagement = () => {
 };
 
 export default CustomerManagement;
+=======
+export default CustomerManagement
+>>>>>>> Tung

@@ -1,6 +1,11 @@
 package iuh.fit.hotel_booking_backend.controller;
 
+import iuh.fit.hotel_booking_backend.dto.DonDatPhongSearchRequest;
+import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
 import iuh.fit.hotel_booking_backend.service.DonDatPhongService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
@@ -16,6 +21,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/dondatphong")
@@ -139,5 +146,11 @@ public class DonDatPhongController {
 
 
         return ResponseEntity.ok("Cập nhật ghi chú thành công!");
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<List<DonDatPhong>> search(@RequestBody DonDatPhongSearchRequest req) {
+        List<DonDatPhong> result = donDatPhongService.search(req);
+        return ResponseEntity.ok(result);
     }
 }

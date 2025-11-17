@@ -7,13 +7,17 @@ import iuh.fit.hotel_booking_backend.util.IdUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
-import iuh.fit.hotel_booking_backend.repository.LoaiPhongRepository;
-import org.springframework.stereotype.Service;
+import iuh.fit.hotel_booking_backend.dto.LoaiPhongDTO;
+import iuh.fit.hotel_booking_backend.entity.TrangThaiPhong;
+import iuh.fit.hotel_booking_backend.helper.LoaiPhongSpecification;
+import org.springframework.data.jpa.domain.Specification;
 import java.util.List;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Service
 public class LoaiPhongService {
@@ -112,4 +116,58 @@ public class LoaiPhongService {
         }
 
     }
+
+    public List<LoaiPhongDTO> getAllLoaiPhongDTO() {
+        List<LoaiPhong> list = loaiPhongRepository.findAll();
+
+        return list.stream().map(loaiPhong -> {
+            LoaiPhongDTO dto = new LoaiPhongDTO();
+            dto.setLoaiPhong(loaiPhong);
+            long soPhongTrong = loaiPhong.getPhongList() != null
+                    ? loaiPhong.getPhongList().stream()
+                    .filter(p -> p.getTrangThai() == TrangThaiPhong.TRONG)
+                    .count()
+                    : 0;
+            dto.setSoPhongTrong(soPhongTrong);
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    public List<LoaiPhongDTO> searchAdvancedDTO(
+            LocalDateTime checkIn,
+            LocalDateTime checkOut,
+            String tenLoaiPhong,
+            Integer soKhach,
+            Double minGia,
+            Double maxGia,
+            Double minDienTich,
+            Double maxDienTich,
+            String maGiuong
+    ) {
+
+        Specification<LoaiPhong> spec = Specification.allOf(
+                LoaiPhongSpecification.phongTrong(checkIn, checkOut),
+                LoaiPhongSpecification.tenLoaiPhongContains(tenLoaiPhong),
+                LoaiPhongSpecification.soKhachGreaterOrEqual(soKhach),
+                LoaiPhongSpecification.giaBetween(minGia, maxGia),
+                LoaiPhongSpecification.dienTichBetween(minDienTich, maxDienTich),
+                LoaiPhongSpecification.loaiGiuong(maGiuong)
+        );
+
+        List<LoaiPhong> list = loaiPhongRepository.findAll((Sort) spec);
+
+        return list.stream()
+                .map(lp -> {
+                    long soPhongTrong = loaiPhongRepository.countPhongTrong(
+                            lp.getMaLoaiPhong(), checkIn, checkOut
+                    );
+
+                    LoaiPhongDTO dto = new LoaiPhongDTO();
+                    dto.setLoaiPhong(lp);
+                    dto.setSoPhongTrong(soPhongTrong);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
 }

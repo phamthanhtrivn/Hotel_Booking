@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -7,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -36,6 +38,14 @@ public class LoaiPhong {
     )
     @Column(name = "url")
     private List<String> hinhAnh;
-    @Column(name = "mo_ta")
+    @Column(name = "mo_ta", columnDefinition = "TEXT")
     private String moTa;
+
+    @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<ChiTietLoaiGiuong> chiTietLoaiGiuongList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Phong> phongList = new ArrayList<>();
 }

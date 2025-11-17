@@ -181,4 +181,3 @@ const BookingHistory = () => {
 };
 
 export default BookingHistory;
-
