@@ -9,12 +9,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
+import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
+import iuh.fit.hotel_booking_backend.repository.LoaiPhongRepository;
+import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.ArrayList;
 
 @Service
-
 public class LoaiPhongService {
     private final LoaiPhongRepository loaiPhongRepository;
     private final CloudinaryService cloudinaryService;
@@ -109,5 +110,6 @@ public class LoaiPhongService {
             response.setMessage("Lỗi khi xóa loại phòng: " + e.getMessage());
             return response;
         }
+
     }
 }

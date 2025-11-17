@@ -18,7 +18,6 @@ public class LoaiPhong {
     @Id
     @Column(name = "ma_loai_phong")
     private String maLoaiPhong;
-
     @NotBlank
     @Column(name = "ten_loai_phong", nullable = false, unique = true)
     private String tenLoaiPhong;

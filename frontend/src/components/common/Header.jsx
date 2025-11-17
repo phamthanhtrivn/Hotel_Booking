@@ -85,7 +85,7 @@ const Header = () => {
               <span className="text-sm text-[#1E2A38] font-medium">
                 Xin chào,{" "}
                 <span className="font-semibold">
-                  {user.khachHang && user.khachHang.hoTenKH || "Người dùng"}
+                  {(user.khachHang && user.khachHang.hoTenKH) || "Người dùng"}
                 </span>
               </span>
               <div className="relative">
@@ -144,7 +144,8 @@ const Header = () => {
               {user && (
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <span className="text-[#1E2A38] font-medium text-base">
-                    Xin chào, {user.khachHang && user.khachHang.hoTenKH || "Người dùng"}
+                    Xin chào,{" "}
+                    {(user.khachHang && user.khachHang.hoTenKH) || "Người dùng"}
                   </span>
                 </div>
               )}

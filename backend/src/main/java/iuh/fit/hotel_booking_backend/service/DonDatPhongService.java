@@ -33,4 +33,8 @@ public class DonDatPhongService {
     public List<DonDatPhong> getByMaKhachHang(String maKhachHang) {
         return repo.findByKhachHang_MaKhachHang(maKhachHang);
     }
+
+    public int countByKhachHangId(String maKhachHang) {
+        return repo.countByKhachHangId(maKhachHang);
+    }
 }

@@ -18,11 +18,11 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import HotelLogo from "@/assets/hotelLogo/HotelLogo.jpg";
 import { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "@/context/AuthContext";
 import { Button } from "../ui/button";
+import HotelLogo from "@/assets/hotelLogo/HotelLogo.jpg";
 
 const items = [
   { name: "Dashboard", icon: ChartPie, url: "/admin/dashboard" },
@@ -34,7 +34,7 @@ const items = [
 ];
 
 const AdminSidebar = () => {
-  const { logout } = useContext(AuthContext)
+  const { logout } = useContext(AuthContext);
   const location = useLocation();
 
   return (
@@ -77,9 +77,13 @@ const AdminSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-            
       <SidebarFooter>
-          <Button onClick={logout} className="w-full cursor-pointer bg-[#1E2A38] hover:bg-[#10171f] font-bold">Log out</Button>
+        <Button
+          onClick={logout}
+          className="w-full cursor-pointer bg-[#1E2A38] hover:bg-[#10171f] font-bold"
+        >
+          Log out
+        </Button>
       </SidebarFooter>
     </Sidebar>
   );
