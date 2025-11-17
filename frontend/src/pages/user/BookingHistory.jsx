@@ -25,7 +25,7 @@ const BookingHistory = () => {
     const fetchBookingHistory = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/dondatphong/lichsu/${maKhachHang}`
+          `http://localhost:8085/api/dondatphong/lichsu/${maKhachHang}`
         );
         if (!response.ok) {
           throw new Error("Không thể tải dữ liệu đặt phòng");

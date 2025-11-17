@@ -1,10 +1,7 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
 import { Edit2, Trash2, Search, Eye } from "lucide-react";
 import { useFetch } from "../../hooks/useFetch";
 import { toast } from "react-toastify";
-
-
 
 const CustomerManagement = () => {
   const baseURL = import.meta.env.VITE_BASE_API_URL + "/api/";
@@ -96,17 +93,8 @@ const CustomerManagement = () => {
     }
   };
 
-=======
-import React from 'react'
-
-const CustomerManagement = () => {
->>>>>>> Tung
   return (
-    <div>CustomerManagement</div>
-  )
-}
-
-<<<<<<< HEAD
+    <div>
       <h1 className="text-4xl font-bold text-center text-[var(--color-accent)] mb-8">
         Quản Lý Thông Tin Khách Hàng
       </h1>
@@ -348,6 +336,3 @@ const CustomerManagement = () => {
 };
 
 export default CustomerManagement;
-=======
-export default CustomerManagement
->>>>>>> Tung

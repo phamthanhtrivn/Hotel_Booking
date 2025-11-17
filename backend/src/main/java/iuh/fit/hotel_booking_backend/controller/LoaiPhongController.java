@@ -33,11 +33,6 @@ public class LoaiPhongController {
         this.loaiPhongService = loaiPhongService;
     }
 
-    @GetMapping
-    public List<LoaiPhong> finAll() {
-        return loaiPhongService.getAll();
-    }
-
     @GetMapping("/paged")
     public ResponseEntity<?> findAllPaged(
             @RequestParam(defaultValue = "0") int page,

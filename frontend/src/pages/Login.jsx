@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Loader2 } from "lucide-react"; 
+import { Eye, EyeOff, Loader2 } from "lucide-react"; // 👈 icon mắt
 import bg01 from "../assets/bg01.jpg";
 import bg02 from "../assets/bg02.jpg";
 import bg03 from "../assets/bg03.jpg";
@@ -106,9 +106,26 @@ const Login = () => {
     }/oauth2/authorization/google`;
   };
 
-
   return (
-    <div>
+    <div className="flex min-h-screen bg-gradient-to-br from-[#e2ecf7] to-[#f9fafc] overflow-hidden">
+      {/* LEFT IMAGE */}
+      <motion.div
+        className="relative hidden w-7/12 md:block"
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      >
+        <ImgSlider images={[bg01, bg02, bg03, bg04]} interval={4000} />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20"></div>
+        <div className="absolute inset-0 flex flex-col justify-center px-12 text-white">
+          <h1 className="text-4xl font-bold leading-tight drop-shadow-lg">
+            Chào mừng trở lại
+          </h1>
+          <p className="mt-4 text-lg text-gray-200">
+            Kết nối và trải nghiệm dịch vụ của chúng tôi ngay hôm nay!
+          </p>
+        </div>
+      </motion.div>
 
       {/* RIGHT LOGIN FORM */}
       <motion.div
@@ -208,7 +225,6 @@ const Login = () => {
             </div>
 
             {/* Register + Forgot password links */}
-
             <div className="flex flex-col gap-1 mt-4 text-sm text-center text-gray-500">
               <p>
                 Bạn chưa có tài khoản?{" "}
@@ -236,4 +252,3 @@ const Login = () => {
 };
 
 export default Login;
-
