@@ -1,8 +1,7 @@
 import {
   hotel,
   roomPackageDummyData,
-  roomsDummyData,
-  roomTypeOptionDummyData,
+
 } from "@/assets/assets";
 import RoomTypeCard from "@/components/common/RoomTypeCard";
 import { Button } from "@/components/ui/button";
@@ -25,7 +24,7 @@ const RoomTypes = () => {
 
   const fetchRoomTypes = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/loaiphong");
+      const response = await fetch("http://localhost:8085/api/loaiphong");
       if (!response.ok) throw new Error("Failed to fetch room types");
       const data = await response.json();
       setRoomTypes(data);

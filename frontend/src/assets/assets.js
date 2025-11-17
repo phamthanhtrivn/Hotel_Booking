@@ -90,7 +90,6 @@ export const roomPackageDummyData = [
 ];
 
 export const bookingHistorysDummyData = [
-<<<<<<< HEAD
     {
         maDatPhong: "1",
         maLoaiPhong: "1",
@@ -147,64 +146,6 @@ export const bookingHistorysDummyData = [
         tongTien: 399,
         status: "Paid",
     },
-];
-=======
-  {
-    maDatPhong: "1",
-    maLoaiPhong: "1",
-    tenLoaiPhong: "Superior Room",
-    loaiGiuong: "twin bed",
-    soKhach: 3,
-    hinhAnh: [
-      "https://max-themes.net/demos/hoteller/hoteller/beach/upload/Aqua6-1024x658.jpg",
-    ],
-    checkIn: "September 20, 2025",
-    checkOut: "September 26, 2025",
-    tongTien: 199,
-    status: "Paid",
-  },
-  {
-    maDatPhong: "2",
-    maLoaiPhong: "2",
-    tenLoaiPhong: "Deluxe Room",
-    loaiGiuong: "king bed",
-    soKhach: 4,
-    hinhAnh: [
-      "https://max-themes.net/demos/hoteller/hoteller/beach/upload/Porto-Fira-Suites-Hotel-in-Santorini-by-Interior-Design-Laboratorium-Yellowtrace-06-683x1024.jpg",
-    ],
-    checkIn: "September 20, 2025",
-    checkOut: "September 26, 2025",
-    tongTien: 249,
-    status: "Paid",
-  },
-  {
-    maDatPhong: "3",
-    maLoaiPhong: "3",
-    tenLoaiPhong: "Signature Room",
-    loaiGiuong: "king bed",
-    soKhach: 5,
-    hinhAnh: [
-      "https://max-themes.net/demos/hoteller/hoteller/beach/upload/Porto-Fira-Suites-Hotel-in-Santorini-by-Interior-Design-Laboratorium-Yellowtrace-12-1024x683.jpg",
-    ],
-    checkIn: "September 20, 2025",
-    checkOut: "September 26, 2025",
-    tongTien: 299,
-    status: "Unpaid",
-  },
-  {
-    maDatPhong: "4",
-    maLoaiPhong: "4",
-    tenLoaiPhong: "Luxury Suite Room",
-    loaiGiuong: "king bed",
-    soKhach: 6,
-    hinhAnh: [
-      "https://max-themes.net/demos/hoteller/hoteller/beach/upload/Porto-Fira-Suites-Hotel-in-Santorini-by-Interior-Design-Laboratorium-Yellowtrace-19-1024x683.jpg",
-    ],
-    checkIn: "September 20, 2025",
-    checkOut: "September 26, 2025",
-    tongTien: 399,
-    status: "Paid",
-  },
 ];
 
 export const overviewDummyData = [
@@ -392,4 +333,3 @@ export const roomTypeOptionDummyData = [
   "King Bed",
   "Twin Bed",
 ];
->>>>>>> Tung

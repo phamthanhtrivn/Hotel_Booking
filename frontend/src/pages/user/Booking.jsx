@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   InputGroup,
@@ -198,14 +197,3 @@ const Booking = () => {
 };
 
 export default Booking;
-=======
-import React from 'react'
-
-const Booking = () => {
-  return (
-    <div>Booking</div>
-  )
-}
-
-export default Booking
->>>>>>> Tung

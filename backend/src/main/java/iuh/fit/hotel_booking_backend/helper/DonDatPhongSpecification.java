@@ -1,14 +1,16 @@
 package iuh.fit.hotel_booking_backend.helper;
 
 import iuh.fit.hotel_booking_backend.dto.DonDatPhongSearchRequest;
+import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DonDatPhongSpecification {
-    public static Sort build(DonDatPhongSearchRequest req) {
+    public static Specification<DonDatPhong> build(DonDatPhongSearchRequest req) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
