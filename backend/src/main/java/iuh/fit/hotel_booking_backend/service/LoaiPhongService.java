@@ -80,6 +80,24 @@ public class LoaiPhongService {
     }
 
 
+    public APIResponse<LoaiPhong> findById(String id) {
+        APIResponse<LoaiPhong> response = new APIResponse<>();
+        try {
+            LoaiPhong loaiPhong = loaiPhongRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Loại phòng với id " + id + " không tồn tại"));
+
+            response.setSuccess(true);
+            response.setData(loaiPhong);
+
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setData(null);
+            throw new RuntimeException("Lỗi khi tìm kiếm loại phòng: " + e.getMessage(), e);
+        }
+        return response;
+    }
+
+
     public APIResponse<LoaiPhong> save(LoaiPhong loaiPhong,
                                        List<MultipartFile> images) {
 

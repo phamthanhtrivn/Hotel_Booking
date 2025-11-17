@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.controller;
 
+import com.cloudinary.api.ApiResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
@@ -12,16 +13,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import iuh.fit.hotel_booking_backend.dto.LoaiPhongDTO;
 import iuh.fit.hotel_booking_backend.dto.LoaiPhongSearchRequest;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
-
 
 
 @RestController
@@ -29,8 +32,15 @@ import java.util.Collections;
 public class LoaiPhongController {
     private final LoaiPhongService loaiPhongService;
 
-    public LoaiPhongController(LoaiPhongService loaiPhongService, CloudinaryService cloudinaryService) {
+    public LoaiPhongController(LoaiPhongService loaiPhongService) {
         this.loaiPhongService = loaiPhongService;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<APIResponse<LoaiPhong>> findById(@PathVariable String id) {
+        APIResponse<LoaiPhong> result = loaiPhongService.findById(id);
+
+        return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
     }
 
     @GetMapping("/paged")
@@ -47,6 +57,7 @@ public class LoaiPhongController {
         List<LoaiPhongDTO> result = loaiPhongService.getAllLoaiPhongDTO();
         return ResponseEntity.ok(result);
     }
+
 
     @PostMapping("/search")
     public ResponseEntity<List<LoaiPhongDTO>> searchAdvanced(
@@ -109,12 +120,13 @@ public class LoaiPhongController {
 
 
     @DeleteMapping
-    public ResponseEntity<APIResponse<Object>> delete(@RequestParam("id") String id){
-            APIResponse<Object> result = loaiPhongService.deleteById(id);
+    public ResponseEntity<APIResponse<Object>> delete(@RequestParam("id") String id) {
+        APIResponse<Object> result = loaiPhongService.deleteById(id);
 
-            return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
+        return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
 
-}
+    }
+
     @GetMapping("/search")
     public ResponseEntity<List<LoaiPhongDTO>> searchAdvancedGet(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime checkIn,
