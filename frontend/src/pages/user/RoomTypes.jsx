@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 const roomPackages = roomPackageDummyData;
 
 const RoomTypes = () => {
+  const baseUrl = import.meta.env.VITE_BASE_API_URL;
   const [roomTypes, setRoomTypes] = useState([]);
   const [roomTypeOptions, setRoomTypeOptions] = useState([]);
   const [filters, setFilters] = useState({
@@ -24,7 +25,7 @@ const RoomTypes = () => {
 
   const fetchRoomTypes = async () => {
     try {
-      const response = await fetch("http://localhost:8085/api/loaiphong");
+      const response = await fetch(`${baseUrl}/api/loaiphong`);
       if (!response.ok) throw new Error("Failed to fetch room types");
       const data = await response.json();
       setRoomTypes(data);
@@ -34,7 +35,6 @@ const RoomTypes = () => {
       setRoomTypeOptions(options);
     } catch (err) {
       console.error(err);
-      alert("Không thể tải danh sách phòng từ server.");
     }
   };
 

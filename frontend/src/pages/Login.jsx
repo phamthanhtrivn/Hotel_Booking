@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, Loader2 } from "lucide-react"; // 👈 icon mắt
-import bg01 from "../assets/bg01.jpg";
-import bg02 from "../assets/bg02.jpg";
+import { Eye, EyeOff, Loader2 } from "lucide-react"; 
+import bg01 from "../assets/home/Hero.jpg";
+import bg02 from "../assets/home/Hotel.jpg";
 import bg03 from "../assets/bg03.jpg";
 import bg04 from "../assets/bg04.jpg";
 import ImgSlider from "@/components/common/ImgSlider";
@@ -107,7 +107,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-[#e2ecf7] to-[#f9fafc] overflow-hidden">
+    <div className="flex min-h-screen bg-linear-to-br from-[#e2ecf7] to-[#f9fafc] overflow-hidden">
       {/* LEFT IMAGE */}
       <motion.div
         className="relative hidden w-7/12 md:block"

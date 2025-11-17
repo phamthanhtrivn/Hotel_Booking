@@ -9,8 +9,8 @@ import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion } from "framer-motion";
-import bg01 from "../../assets/bg01.jpg";
-import bg02 from "../../assets/bg02.jpg";
+import bg01 from "../../assets/home/Hero.jpg";
+import bg02 from "../../assets/home/Hotel.jpg";
 import bg03 from "../../assets/bg03.jpg";
 import bg04 from "../../assets/bg04.jpg";
 import ImgSlider from "@/components/common/ImgSlider";
@@ -138,7 +138,25 @@ const Register = () => {
   };
 
   return (
-    <div>
+    <div className="flex min-h-screen bg-linear-to-br from-[#e2ecf7] to-[#f9fafc] overflow-hidden">
+      {/* LEFT IMAGE */}
+      <motion.div
+        className="relative hidden w-7/12 md:block"
+        initial={{ x: -50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      >
+        <ImgSlider images={[bg01, bg02, bg03, bg04]} interval={4000} />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20"></div>
+        <div className="absolute inset-0 flex flex-col justify-center px-12 text-white">
+          <h1 className="text-4xl font-bold leading-tight drop-shadow-lg">
+            Chào mừng trở lại
+          </h1>
+          <p className="mt-4 text-lg text-gray-200">
+            Kết nối và trải nghiệm dịch vụ của chúng tôi ngay hôm nay!
+          </p>
+        </div>
+      </motion.div>
       {/* RIGHT REGISTER FORM */}
       <motion.div
         className="relative z-10 flex items-center justify-center w-full px-6 py-10 bg-white shadow-2xl md:w-5/12 lg:w-5/12 xl:w-5/12"
@@ -148,7 +166,7 @@ const Register = () => {
       >
         <Card className="w-full max-w-sm border border-gray-200 shadow-lg rounded-2xl backdrop-blur-lg">
           <CardHeader>
-            <CardTitle className="text-center text-3xl font-bold text-[var(--color-background)] tracking-wide">
+            <CardTitle className="text-center text-3xl font-bold text-(--color-background) tracking-wide">
               Đăng Ký
             </CardTitle>
           </CardHeader>
@@ -162,7 +180,7 @@ const Register = () => {
                 id="fullName"
                 type="text"
                 placeholder="Nhập họ và tên của bạn"
-                className="focus-visible:ring-[var(--color-background)] rounded-xl"
+                className="focus-visible:ring-(--color-background) rounded-xl"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 ref={nameRef}
@@ -181,7 +199,7 @@ const Register = () => {
                 id="phone"
                 type="tel"
                 placeholder="Nhập số điện thoại"
-                className="focus-visible:ring-[var(--color-background)] rounded-xl"
+                className="focus-visible:ring-(--color-background) rounded-xl"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 ref={phoneRef}
@@ -200,7 +218,7 @@ const Register = () => {
                 id="email"
                 type="email"
                 placeholder="Nhập email của bạn"
-                className="focus-visible:ring-[var(--color-background)] rounded-xl"
+                className="focus-visible:ring-(--color-background) rounded-xl"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 ref={emailRef}
@@ -220,7 +238,7 @@ const Register = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Nhập mật khẩu"
-                  className="focus-visible:ring-[var(--color-background)] rounded-xl pr-10"
+                  className="focus-visible:ring-(--color-background) rounded-xl pr-10"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   ref={passwordRef}
@@ -306,7 +324,7 @@ const Register = () => {
               Đã có tài khoản?{" "}
               <Link
                 to="/login"
-                className="font-medium text-[var(--color-background)] hover:underline"
+                className="font-medium text-blue-500 hover:underline"
               >
                 Đăng nhập
               </Link>
