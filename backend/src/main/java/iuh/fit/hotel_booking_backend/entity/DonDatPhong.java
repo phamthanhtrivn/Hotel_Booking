@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class DonDatPhong {
     private String email;
     @ManyToOne
     @JoinColumn(name = "ma_khach_hang", nullable = false)
+    @JsonManagedReference
     private KhachHang khachHang;
     @ManyToOne
     @JoinColumn(name = "ma_phong")

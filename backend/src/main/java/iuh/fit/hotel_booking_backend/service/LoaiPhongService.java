@@ -154,7 +154,7 @@ public class LoaiPhongService {
                 LoaiPhongSpecification.loaiGiuong(maGiuong)
         );
 
-        List<LoaiPhong> list = loaiPhongRepository.findAll((Sort) spec);
+        List<LoaiPhong> list = loaiPhongRepository.findAll(spec);
 
         return list.stream()
                 .map(lp -> {

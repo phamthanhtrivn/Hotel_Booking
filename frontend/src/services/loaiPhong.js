@@ -18,5 +18,8 @@ export const loaiPhongService = {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return result.data;
+  },
+  search(req) {
+    return api.post(`/api/loaiphong/search`, req).then(res => res.data)
   }
 };

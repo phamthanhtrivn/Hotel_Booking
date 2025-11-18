@@ -1,6 +1,5 @@
 import { roomsDummyData } from "@/assets/assets";
 import ImageSlider from "@/components/common/ImageSlide";
-import ImageSlide from "@/components/common/ImageSlide";
 import {
   BedDoubleIcon,
   BedIcon,
@@ -49,14 +48,142 @@ const ListItem = ({ item }) => {
     </li>
   );
 };
+
+const OtherRoomsSlider = ({ otherRooms }) => {
+  const navigate = useNavigate();
+  const visibleCount = 3;
+  const [startIndex, setStartIndex] = useState(0);
+
+  const prev = () => setStartIndex((prev) => Math.max(prev - visibleCount, 0));
+  const next = () =>
+    setStartIndex((prev) =>
+      Math.min(prev + visibleCount, otherRooms.length - visibleCount)
+    );
+  const visibleRooms = otherRooms.slice(startIndex, startIndex + visibleCount);
+
+  return (
+    <section className="w-full py-10 bg-background relative">
+      <h2 className="text-4xl font-bold text-center mb-5">Other Rooms</h2>
+      <p className="text-center text-lg text-gray-500 mb-5">
+        Could also be interest for you
+      </p>
+
+      <div className="max-w-7xl mx-auto flex items-center relative">
+        <button
+          onClick={prev}
+          disabled={startIndex === 0}
+          className="absolute left-0 z-10 bg-gray-800 text-white p-3 rounded disabled:opacity-50"
+        >
+          &#8592;
+        </button>
+
+        <div className="flex overflow-hidden w-full">
+          {visibleRooms.map((r, index) => (
+            <div
+              key={index}
+              className="flex-shrink-0 w-1/3 px-2 flex flex-col space-y-6"
+            >
+              <div
+                onClick={() => navigate(`/room-types/${r.maLoaiPhong}`)}
+                className="relative w-full group overflow-hidden cursor-pointer"
+              >
+                <img
+                  src={r.hinhAnh[0]}
+                  alt=""
+                  className="w-full h-[30vh] object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute top-0 left-0 w-full h-full bg-foreground opacity-0 hover:opacity-40 transition-opacity duration-500 z-10"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="absolute w-[2px] h-0 bg-white transition-all duration-500 group-hover:h-12"></span>
+                  <span className="absolute h-[2px] w-0 bg-white transition-all duration-500 group-hover:w-12"></span>
+                </div>
+              </div>
+              <div className="flex w-full items-center justify-center">
+                <p className="text-2xl font-light tracking-widest">
+                  {r.tenLoaiPhong}
+                </p>
+              </div>
+              <div className="w-full flex flex-col">
+                <div className="border border-t border-foreground/30"></div>
+                <p className="text-sm font-light">
+                  Great choice for a relaxing vacation for families with
+                  children or a group of friends. Exercitation photo booth
+                  stumptown tote bag Banksy, elit small...
+                </p>
+              </div>
+              <div className="grid grid-cols-2 mb-10">
+                <div className="flex flex-col items-center justify-center">
+                  <p className="text-sm font-light uppercase">Giá</p>
+                  <p className="text-xl font-bold">{r.gia} VNĐ</p>
+                </div>
+                <div className="flex flex-col border-l border-foreground/30 items-center justify-center">
+                  <a
+                    href={`/room-types/${r.maLoaiPhong}`}
+                    className="text-xl font-bold cursor-pointer underline underline-offset-4 hover:text-gray-600 transition"
+                  >
+                    View Detail
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <button
+          onClick={next}
+          disabled={startIndex + visibleCount >= otherRooms.length}
+          className="absolute right-0 z-10 bg-gray-800 text-white p-3 rounded disabled:opacity-50"
+        >
+          &#8594;
+        </button>
+      </div>
+    </section>
+  );
+};
 const RoomTypeDetail = () => {
   const { id } = useParams();
   const [room, setRoom] = useState(null);
   const [otherRooms, setOtherRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState("");
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchRoom = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong/${id}`
+        );
+        if (!res.ok) throw new Error("Failed to fetch room data");
+        const data = await res.json();
+
+        setRoom(data);
+
+        const resAll = await fetch(
+          `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong`
+        );
+        if (!resAll.ok) throw new Error("Failed to fetch all rooms");
+        const dataAll = await resAll.json();
+
+        const others = dataAll
+          .filter((r) => r.loaiPhong.maLoaiPhong !== id)
+          .map((r) => r.loaiPhong);
+
+        setOtherRooms(others);
+      } catch (err) {
+        console.error(err);
+        toast.error("Không thể tải dữ liệu phòng!");
+        navigate("/room-types");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRoom();
+  }, [id, navigate]);
 
   const handleScroll = (id) => {
     const element = document.getElementById(id);
@@ -70,14 +197,8 @@ const RoomTypeDetail = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [id]);
 
-  useEffect(() => {
-    const foundRoom = roomsDummyData.find((r) => r.maLoaiPhong === id);
-    const filOtherRooms = roomsDummyData.filter((r) => r.maLoaiPhong !== id);
-    setOtherRooms(filOtherRooms);
-    setRoom(foundRoom);
-  }, [id]);
-
-  if (!room) return <p>Loading...</p>;
+  if (loading) return <p className="text-center text-2xl mt-20">Loading...</p>;
+  if (!room) return null;
 
   return (
     <div className="bg-background/90">
@@ -88,6 +209,7 @@ const RoomTypeDetail = () => {
           className="absolute top-0 left-0 w-full h-full object-cover z-0"
         />
         <div className="absolute top-0 left-0 w-full h-full bg-foreground opacity-30 z-10"></div>
+
         <div className="relative z-20 flex flex-col h-full text-muted">
           <div className="flex-grow flex flex-col text-center justify-center">
             <h2 className="text-8xl font-thin tracking-wide">
@@ -97,6 +219,7 @@ const RoomTypeDetail = () => {
               {room.moTa}
             </p>
           </div>
+
           <nav className="pb-40 flex items-center justify-center gap-10">
             {["detail", "amenities", "gallery"].map((tab) => (
               <button
@@ -165,9 +288,10 @@ const RoomTypeDetail = () => {
                   <p className="text-4xl text-center font-bold my-2 text-foreground">
                     {room.gia} VNĐ
                   </p>
-                  <button 
-                  onClick={() => navigate("/booking")}
-                  className="bg-chart-2/60 text-background hover:bg-chart-2 w-full my-3 mt-4 transition-colors duration-300 uppercase p-4 text-xl">
+                  <button
+                    onClick={() => navigate("/booking")}
+                    className="bg-chart-2/60 text-background hover:bg-chart-2 w-full my-3 mt-4 transition-colors duration-300 uppercase p-4 text-xl"
+                  >
                     book now
                   </button>
                   <div className="mt-12 space-y-6">
@@ -234,64 +358,7 @@ const RoomTypeDetail = () => {
           height="70vh"
         />
       </section>
-      <section className="w-full flex flex-col items-center justify-center gap-5 p-20">
-        <h2 className="text-6xl font-bold text-foreground">Other Rooms</h2>
-        <p className="text-2xl font-light text-foreground/80">
-          Could also be interest for you
-        </p>
-      </section>
-      <section className="w-full">
-        <div className="bg-background max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5">
-          {otherRooms.map((r, index) => (
-            <div key={index} className="flex flex-col space-y-6">
-              <div
-                onClick={() => navigate(`/room-types/${r.maLoaiPhong}`)}
-                className="relative w-full group overflow-hidden"
-              >
-                <img
-                  src={r.hinhAnh[0]}
-                  alt=""
-                  className="w-full h-[30vh] object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                <div className="absolute top-0 left-0 w-full h-full bg-foreground opacity-0 hover:opacity-40 transition-opacity duration-500 z-10"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="absolute w-[2px] h-0 bg-white transition-all duration-500 group-hover:h-12"></span>
-
-                  <span className="absolute h-[2px] w-0 bg-white transition-all duration-500 group-hover:w-12"></span>
-                </div>
-              </div>
-              <div className="flex w-full items-center justify-center">
-                <p className="text-2xl font-light tracking-widest">
-                  {r.tenLoaiPhong}
-                </p>
-              </div>
-
-              <div className="w-full flex flex-col">
-                <div className="border border-t border-foreground/30"></div>
-                <p className="text-sm font-light">
-                  Great choice for a relaxing vacation for families with
-                  children or a group of friends. Exercitation photo booth
-                  stumptown tote bag Banksy, elit small...
-                </p>
-              </div>
-              <div className="grid grid-cols-2 mb-10">
-                <div className="flex flex-col items-center justify-center">
-                  <p className="text-sm font-light uppercase">Giá</p>
-                  <p className="text-xl font-bold">{r.gia} VNĐ</p>
-                </div>
-                <div className="flex flex-col border-l border-foreground/30 items-center justify-center">
-                  <a
-                    href={`/room-types/${r.maLoaiPhong}`}
-                    className="text-xl font-bold cursor-pointer underline underline-offset-4 hover:text-gray-600 transition"
-                  >
-                    View Detail
-                  </a>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <OtherRoomsSlider otherRooms={otherRooms} />
     </div>
   );
 };
