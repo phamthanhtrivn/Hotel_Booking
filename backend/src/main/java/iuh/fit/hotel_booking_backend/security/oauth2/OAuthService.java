@@ -51,7 +51,7 @@ public class OAuthService {
         taiKhoan.setEmail(email);
         taiKhoan.setMatKhau(passwordEncoder.encode("oauth2user"));
         taiKhoan.setVaiTro(LoaiTaiKhoan.MEMBER);
-        taiKhoan.setActive(false);
+        taiKhoan.setTinhTrang(true);
         taiKhoan.setKhachHang(khachHang);
 
         taiKhoanRepository.save(taiKhoan);

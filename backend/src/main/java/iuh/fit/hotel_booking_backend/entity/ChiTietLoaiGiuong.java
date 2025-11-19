@@ -33,12 +33,5 @@ public class ChiTietLoaiGiuong {
     @Column(name = "so_giuong")
     private int soGiuong;
 
-    @Embeddable
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class ChiTietLoaiGiuongId implements Serializable {
-        private String loaiPhong;
-        private String loaiGiuong;
-    }
+
 }

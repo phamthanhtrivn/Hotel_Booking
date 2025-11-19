@@ -33,7 +33,7 @@ export default function Contact() {
         {/* Form */}
         <div className="bg-white shadow-2xl rounded-2xl p-8 md:p-10 w-full h-full transform hover:scale-[1.02] transition-transform duration-300 flex flex-col">
           <div className="flex items-center justify-center mb-6">
-            <div className="bg-gradient-to-br from-[#E5C97B] to-[#d4b869] p-4 rounded-full">
+            <div className="bg-gradient-to-br from-[#1E2A38] to-[#1E2A38] p-4 rounded-full">
               <Mail className="w-8 h-8 text-white" />
             </div>
           </div>
@@ -51,31 +51,31 @@ export default function Contact() {
               <input
                 type="text"
                 placeholder="Họ và tên"
-                className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-2 focus:ring-[#E5C97B] focus:border-[#E5C97B] outline-none transition-all duration-200 hover:border-gray-300"
+                className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-2 focus:ring-[#1E2A38] focus:border-[#1E2A38] outline-none transition-all duration-200 hover:border-gray-300"
               />
               <input
                 type="email"
                 placeholder="Email"
-                className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-2 focus:ring-[#E5C97B] focus:border-[#E5C97B] outline-none transition-all duration-200 hover:border-gray-300"
+                className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-2 focus:ring-[#1E2A38] focus:border-[#1E2A38] outline-none transition-all duration-200 hover:border-gray-300"
               />
             </div>
 
             <input
               type="text"
               placeholder="Tiêu đề"
-              className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-2 focus:ring-[#E5C97B] focus:border-[#E5C97B] outline-none transition-all duration-200 hover:border-gray-300"
+              className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-2 focus:ring-[#1E2A38] focus:border-[#1E2A38] outline-none transition-all duration-200 hover:border-gray-300"
             />
 
             <textarea
               rows={5}
               placeholder="Nội dung tin nhắn"
-              className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-2 focus:ring-[#E5C97B] focus:border-[#E5C97B] outline-none transition-all duration-200 hover:border-gray-300 resize-none"
+              className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-2 focus:ring-[#1E2A38] focus:border-[#1E2A38] outline-none transition-all duration-200 hover:border-gray-300 resize-none"
             ></textarea>
 
             <div className="text-center mt-auto">
               <button
                 type="submit"
-                className="bg-gradient-to-r from-[#E5C97B] to-[#d4b869] hover:from-[#d4b869] hover:to-[#c4a859] text-white font-semibold py-4 px-10 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2 mx-auto group"
+                className="bg-gradient-to-r from-[#1E2A38] to-[#1E2A38] hover:from-[#1E2A38] hover:to-[#1E2A38] text-white font-semibold py-4 px-10 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2 mx-auto group"
               >
                 <span>Gửi tin nhắn</span>
                 <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -94,8 +94,8 @@ export default function Contact() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
           {/* Address Card */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-t-4 border-[#E5C97B] group">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#E5C97B] to-[#d4b869] rounded-full mb-5 group-hover:scale-110 transition-transform duration-300">
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-t-4 border-[#1E2A38] group">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#1E2A38] to-[#1E2A38] rounded-full mb-5 group-hover:scale-110 transition-transform duration-300">
               <MapPin className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-3">Địa chỉ</h3>
@@ -105,22 +105,22 @@ export default function Contact() {
           </div>
 
           {/* Phone Card */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-t-4 border-[#E5C97B] group">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#E5C97B] to-[#d4b869] rounded-full mb-5 group-hover:scale-110 transition-transform duration-300">
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-t-4 border-[#1E2A38] group">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#1E2A38] to-[#1E2A38] rounded-full mb-5 group-hover:scale-110 transition-transform duration-300">
               <Phone className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-3">Liên hệ</h3>
-            <p className="text-gray-600 mb-2 hover:text-[#E5C97B] transition-colors cursor-pointer">
+            <p className="text-gray-600 mb-2 hover:text-[#1E2A38] transition-colors cursor-pointer">
               (+84) 28 7300 1234
             </p>
-            <p className="text-gray-600 hover:text-[#E5C97B] transition-colors cursor-pointer">
+            <p className="text-gray-600 hover:text-[#1E2A38] transition-colors cursor-pointer">
               support@winkhotels.com
             </p>
           </div>
 
           {/* Hours Card */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-t-4 border-[#E5C97B] group sm:col-span-2 lg:col-span-1">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#E5C97B] to-[#d4b869] rounded-full mb-5 group-hover:scale-110 transition-transform duration-300">
+          <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-t-4 border-[#1E2A38] group sm:col-span-2 lg:col-span-1">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#1E2A38] to-[#1E2A38] rounded-full mb-5 group-hover:scale-110 transition-transform duration-300">
               <Clock className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-3">Giờ làm việc</h3>
