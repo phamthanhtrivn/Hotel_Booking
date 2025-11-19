@@ -48,4 +48,6 @@ public class LoaiPhong {
     @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Phong> phongList = new ArrayList<>();
+    @Column(name = "tinh_trang")
+    private boolean tinhTrang;
 }

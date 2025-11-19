@@ -25,4 +25,6 @@ public class Phong {
     private TrangThaiPhong trangThai;
     @Column(name = "vi_tri")
     private String viTri;
+    @Column(name = "tinh_trang")
+    private boolean tinhTrang;
 }
