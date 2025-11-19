@@ -1,10 +1,12 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import BookingItem from "@/components/common/BookingItem";
 import BookingDetailModal from "@/components/common/BookingDetailModal";
 import { motion, AnimatePresence } from "framer-motion";
+import { AuthContext } from "@/context/AuthContext";
 
 const BookingHistory = () => {
+  const { user } = useContext(AuthContext)
   const [bookingHistory, setBookingHistory] = useState([]);
   const [filteredHistory, setFilteredHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +14,7 @@ const BookingHistory = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [filterStatus, setFilterStatus] = useState("TAT_CA");
 
-  const maKhachHang = "KH1"; // Giả sử mã khách hàng
+  const maKhachHang = user.khachHang.maKhachHang; // Giả sử mã khách hàng
 
   const statusOptions = [
     { value: "TAT_CA", label: "Tất cả" },
@@ -25,7 +27,7 @@ const BookingHistory = () => {
     const fetchBookingHistory = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8085/api/dondatphong/lichsu/${maKhachHang}`
+          `${import.meta.env.VITE_BASE_API_URL}/api/dondatphong/lichsu/${maKhachHang}`
         );
         if (!response.ok) {
           throw new Error("Không thể tải dữ liệu đặt phòng");
