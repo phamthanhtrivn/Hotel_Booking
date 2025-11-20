@@ -1,54 +1,112 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Search, Eye } from "lucide-react";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
+
+let debounceTimer;
 
 const BookingManagement = () => {
-  const [bookings] = useState([
-    {
-      id: "BK001",
-      name: "Nguyễn Tâm Thành",
-      phone: "0909123456",
-      email: "a@gmail.com",
-      total: "2,500,000₫",
-      checkin: "2025-10-10 14:00",
-      checkout: "2025-10-12 12:00",
-      status: "Đã xác nhận",
-      note: "Khách yêu cầu phòng view biển",
-    },
-    {
-      id: "BK002",
-      name: "Nguyễn Tâm Thành",
-      phone: "0909345678",
-      email: "b@gmail.com",
-      total: "1,800,000₫",
-      checkin: "2025-10-15 13:30",
-      checkout: "2025-10-17 12:00",
-      status: "Chờ xác nhận",
-      note: "Thanh toán khi nhận phòng",
-    },
-    {
-      id: "BK003",
-      name: "Nguyễn Tâm Thành",
-      phone: "0909567890",
-      email: "c@gmail.com",
-      total: "3,200,000₫",
-      checkin: "2025-10-20 15:00",
-      checkout: "2025-10-22 11:00",
-      status: "Đã thanh toán",
-      note: "",
-    },
-  ]);
-
-  const [search, setSearch] = useState("");
+  const [bookings, setBookings] = useState([]);
   const [viewing, setViewing] = useState(null);
+  const [keyword, setKeyword] = useState("");
 
-  const filtered = bookings.filter(
-    (b) =>
-      b.id.toLowerCase().includes(search.toLowerCase()) ||
-      b.name.toLowerCase().includes(search.toLowerCase()) ||
-      b.phone.includes(search) ||
-      b.email.toLowerCase().includes(search.toLowerCase()) ||
-      b.status.toLowerCase().includes(search.toLowerCase())
-  );
+  const [filters, setFilters] = useState({
+    hoTenKhachHang: "",
+    soDienThoai: "",
+    email: "",
+    maKhachHang: "",
+    maPhong: "",
+    trangThai: "",
+    checkInFrom: "",
+    checkInTo: "",
+    checkOutFrom: "",
+    checkOutTo: "",
+    minTongTien: "",
+    maxTongTien: "",
+  });
+
+  const fetchAllBookings = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_API_URL}/api/dondatphong`
+      );
+      setBookings(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllBookings();
+  }, []);
+
+  const searchAdvanced = async () => {
+    try {
+      const payload = {
+        ...filters,
+        minTongTien: filters.minTongTien ? Number(filters.minTongTien) : null,
+        maxTongTien: filters.maxTongTien ? Number(filters.maxTongTien) : null,
+        trangThai: filters.trangThai || null,
+        checkInFrom: filters.checkInFrom || null,
+        checkInTo: filters.checkInTo || null,
+        checkOutFrom: filters.checkOutFrom || null,
+        checkOutTo: filters.checkOutTo || null,
+      };
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_API_URL}/api/dondatphong/search`,
+        payload
+      );
+      setBookings(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      if (Object.values(filters).some((v) => v !== "")) {
+        searchAdvanced();
+      } else {
+        fetchAllBookings();
+      }
+    }, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [filters]);
+
+  const handleDateChange = (field, value) => {
+    setFilters((prev) => ({ ...prev, [field]: value }));
+    const { checkInFrom, checkInTo, checkOutFrom, checkOutTo } = {
+      ...filters,
+      [field]: value,
+    };
+    if (
+      checkInFrom &&
+      checkInTo &&
+      new Date(checkInTo) < new Date(checkInFrom)
+    ) {
+      toast.error("Ngày kết thúc check-in phải sau ngày bắt đầu!");
+    }
+    if (
+      checkOutFrom &&
+      checkOutTo &&
+      new Date(checkOutTo) < new Date(checkOutFrom)
+    ) {
+      toast.error("Ngày kết thúc check-out phải sau ngày bắt đầu!");
+    }
+  };
+
+  // --- filter search keyword ---
+  const filtered = bookings.filter((b) => {
+    const k = keyword.toLowerCase();
+    return (
+      (b.maDatPhong && b.maDatPhong.toLowerCase().includes(k)) ||
+      (b.hoTenKhachHang && b.hoTenKhachHang.toLowerCase().includes(k)) ||
+      (b.soDienThoai && b.soDienThoai.includes(k)) ||
+      (b.email && b.email.toLowerCase().includes(k)) ||
+      (b.trangThai && b.trangThai.toLowerCase().includes(k))
+    );
+  });
 
   return (
     <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text)] p-8">
@@ -61,7 +119,25 @@ const BookingManagement = () => {
           --color-accent: #E5C97B;
         }
         ::placeholder { color: var(--color-muted); }
+        .input-filter {
+          background: #1E2A38;
+          padding: 10px 12px;
+          border-radius: 10px;
+          color: white;
+          outline: none;
+        }
+        .filter-group {
+          display: flex;
+          flex-direction: column;
+        }
+        .filter-label {
+          margin-bottom: 4px;
+          font-weight: 500;
+          color: var(--color-accent);
+        }
       `}</style>
+
+      <Toaster position="top-right" reverseOrder={false} />
 
       <h1 className="text-4xl font-bold text-center text-[var(--color-accent)] mb-8">
         Quản Lý Đơn Đặt Phòng
@@ -74,12 +150,104 @@ const BookingManagement = () => {
           type="text"
           placeholder="Tìm kiếm đơn đặt phòng..."
           className="bg-transparent flex-1 outline-none text-[var(--color-text)]"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
         />
       </div>
 
-      {/* Bảng */}
+      {/* Filters */}
+      <div className="bg-[#2b3a4b] p-5 rounded-xl mb-6 shadow-lg grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="filter-group">
+          <label className="filter-label">Tên khách hàng</label>
+          <input
+            type="text"
+            value={filters.hoTenKhachHang}
+            onChange={(e) =>
+              setFilters({ ...filters, hoTenKhachHang: e.target.value })
+            }
+            className="input-filter"
+          />
+        </div>
+        <div className="filter-group">
+          <label className="filter-label">Số điện thoại</label>
+          <input
+            type="text"
+            value={filters.soDienThoai}
+            onChange={(e) =>
+              setFilters({ ...filters, soDienThoai: e.target.value })
+            }
+            className="input-filter"
+          />
+        </div>
+        <div className="filter-group">
+          <label className="filter-label">Email</label>
+          <input
+            type="email"
+            value={filters.email}
+            onChange={(e) => setFilters({ ...filters, email: e.target.value })}
+            className="input-filter"
+          />
+        </div>
+        <div className="filter-group">
+          <label className="filter-label">Trạng thái</label>
+          <select
+            value={filters.trangThai}
+            onChange={(e) =>
+              setFilters({ ...filters, trangThai: e.target.value })
+            }
+            className="input-filter"
+          >
+            <option value="">-- Chọn trạng thái --</option>
+            <option value="CHUA_THANH_TOAN">Chưa thanh toán</option>
+            <option value="DA_THANH_TOAN">Đã thanh toán</option>
+            <option value="DA_HUY">Đã hủy</option>
+          </select>
+        </div>
+
+        {/* Check-in/out và Min/Max tiền */}
+        <div className="filter-group">
+          <label className="filter-label">Check-in từ</label>
+          <input
+            type="datetime-local"
+            value={filters.checkInFrom}
+            onChange={(e) => handleDateChange("checkInFrom", e.target.value)}
+            className="input-filter"
+          />
+        </div>
+        <div className="filter-group">
+          <label className="filter-label">Check-in đến</label>
+          <input
+            type="datetime-local"
+            value={filters.checkInTo}
+            onChange={(e) => handleDateChange("checkInTo", e.target.value)}
+            className="input-filter"
+          />
+        </div>
+        <div className="filter-group">
+          <label className="filter-label">Min tiền</label>
+          <input
+            type="number"
+            value={filters.minTongTien}
+            onChange={(e) =>
+              setFilters({ ...filters, minTongTien: e.target.value })
+            }
+            className="input-filter"
+          />
+        </div>
+        <div className="filter-group">
+          <label className="filter-label">Max tiền</label>
+          <input
+            type="number"
+            value={filters.maxTongTien}
+            onChange={(e) =>
+              setFilters({ ...filters, maxTongTien: e.target.value })
+            }
+            className="input-filter"
+          />
+        </div>
+      </div>
+
+      {/* Table */}
       <div className="rounded-xl shadow-lg bg-[#2b3a4b] overflow-hidden">
         <div className="max-h-[550px] overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--color-primary)] scrollbar-track-[#2b3a4b]">
           <table className="w-full text-left">
@@ -99,16 +267,16 @@ const BookingManagement = () => {
               {filtered.length > 0 ? (
                 filtered.map((b, i) => (
                   <tr
-                    key={b.id}
+                    key={b.maDatPhong}
                     className="border-b border-gray-700 hover:bg-[#32465a] transition"
                   >
                     <td className="py-3 px-4">{i + 1}</td>
-                    <td className="py-3 px-4">{b.id}</td>
-                    <td className="py-3 px-4">{b.name}</td>
-                    <td className="py-3 px-4">{b.phone}</td>
+                    <td className="py-3 px-4">{b.maDatPhong}</td>
+                    <td className="py-3 px-4">{b.hoTenKhachHang}</td>
+                    <td className="py-3 px-4">{b.soDienThoai}</td>
                     <td className="py-3 px-4">{b.email}</td>
-                    <td className="py-3 px-4">{b.total}</td>
-                    <td className="py-3 px-4">{b.status}</td>
+                    <td className="py-3 px-4">{b.tongTienTT}</td>
+                    <td className="py-3 px-4">{b.trangThai}</td>
                     <td className="py-3 px-4 text-center">
                       <button
                         onClick={() => setViewing(b)}
@@ -135,7 +303,7 @@ const BookingManagement = () => {
         </div>
       </div>
 
-      {/* xem chi tiết */}
+      {/* Chi tiết modal */}
       {viewing && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-[#2b3a4b] p-8 rounded-2xl w-[600px] shadow-2xl text-[var(--color-text)]">
@@ -147,19 +315,19 @@ const BookingManagement = () => {
                 <span className="font-semibold text-[var(--color-accent)]">
                   Mã đặt phòng:
                 </span>{" "}
-                {viewing.id}
+                {viewing.maDatPhong}
               </p>
               <p>
                 <span className="font-semibold text-[var(--color-accent)]">
                   Họ tên khách hàng:
                 </span>{" "}
-                {viewing.name}
+                {viewing.hoTenKhachHang}
               </p>
               <p>
                 <span className="font-semibold text-[var(--color-accent)]">
                   Số điện thoại:
                 </span>{" "}
-                {viewing.phone}
+                {viewing.soDienThoai}
               </p>
               <p>
                 <span className="font-semibold text-[var(--color-accent)]">
@@ -171,31 +339,31 @@ const BookingManagement = () => {
                 <span className="font-semibold text-[var(--color-accent)]">
                   Tổng tiền:
                 </span>{" "}
-                {viewing.total}
+                {viewing.tongTienTT}
               </p>
               <p>
                 <span className="font-semibold text-[var(--color-accent)]">
                   Check-in:
                 </span>{" "}
-                {viewing.checkin}
+                {viewing.checkIn}
               </p>
               <p>
                 <span className="font-semibold text-[var(--color-accent)]">
                   Check-out:
                 </span>{" "}
-                {viewing.checkout}
+                {viewing.checkOut}
               </p>
               <p>
                 <span className="font-semibold text-[var(--color-accent)]">
                   Trạng thái:
                 </span>{" "}
-                {viewing.status}
+                {viewing.trangThai}
               </p>
               <p>
                 <span className="font-semibold text-[var(--color-accent)]">
                   Ghi chú:
                 </span>{" "}
-                {viewing.note || "Không có"}
+                {viewing.ghiChu || "Không có"}
               </p>
             </div>
             <div className="flex justify-end mt-8">

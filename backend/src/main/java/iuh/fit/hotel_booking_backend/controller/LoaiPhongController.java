@@ -48,6 +48,15 @@ public class LoaiPhongController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<LoaiPhong> getById(@PathVariable String id) {
+        LoaiPhong loaiPhong = loaiPhongService.getById(id);
+        if(loaiPhong == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(loaiPhong);
+    }
+
     @PostMapping("/search")
     public ResponseEntity<List<LoaiPhongDTO>> searchAdvanced(
             @RequestBody LoaiPhongSearchRequest req

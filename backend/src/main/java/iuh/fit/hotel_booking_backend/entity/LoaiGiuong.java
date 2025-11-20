@@ -26,4 +26,7 @@ public class LoaiGiuong {
     @OneToMany(mappedBy = "loaiGiuong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private List<ChiTietLoaiGiuong> chiTietLoaiGiuongList = new ArrayList<>();
+
+    @Column(name = "tinh_trang")
+    private boolean tinhTrang;
 }

@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class KhachHang {
     @Column(name = "diem_tich_luy")
     private int diemTichLuy;
     @OneToOne(mappedBy = "khachHang")
-    @JsonIgnore
+    @JsonBackReference
     private TaiKhoan taiKhoan;
 
 }

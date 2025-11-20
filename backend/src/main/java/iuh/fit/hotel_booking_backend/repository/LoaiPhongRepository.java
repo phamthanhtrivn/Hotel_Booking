@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 
 
-public interface LoaiPhongRepository extends JpaRepository<LoaiPhong, String> {
+public interface LoaiPhongRepository extends JpaRepository<LoaiPhong, String>, JpaSpecificationExecutor<LoaiPhong> {
     boolean existsLoaiPhongByMaLoaiPhong(String code);
 
     @Query("""

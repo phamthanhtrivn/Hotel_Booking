@@ -34,4 +34,7 @@ public class DanhGia {
     @OneToOne(mappedBy = "danhGia")
     @JsonIgnore
     private DonDatPhong donDatPhong;
+
+    @Column(name = "tinh_trang")
+    private boolean tinhTrang;
 }
