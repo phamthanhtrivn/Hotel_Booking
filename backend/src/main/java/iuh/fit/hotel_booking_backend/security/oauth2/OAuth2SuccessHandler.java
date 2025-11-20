@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final @Lazy OAuthService oAuthService;
+    private final OAuthService oAuthService;
     private final String frontendUrl = Dotenv.load().get("FRONTEND_URL");
 
     @Override

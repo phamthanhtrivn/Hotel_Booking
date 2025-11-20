@@ -85,7 +85,7 @@ public class AuthService {
         taiKhoan.setEmail(request.getEmail());
         taiKhoan.setMatKhau(passwordEncoder.encode(request.getMatKhau()));
         taiKhoan.setVaiTro(LoaiTaiKhoan.MEMBER);
-        taiKhoan.setActive(false);
+        taiKhoan.setTinhTrang(true);
         taiKhoan.setKhachHang(khachHang);
 
         khachHangRepository.save(khachHang);

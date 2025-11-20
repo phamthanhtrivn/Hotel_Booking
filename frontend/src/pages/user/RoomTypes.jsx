@@ -6,61 +6,100 @@ import {
 import RoomTypeCard from "@/components/common/RoomTypeCard";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useRef, useState } from "react";
+import { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const roomPackages = roomPackageDummyData;
 
+const today = new Date();
+const tomorrow = new Date(today);
+tomorrow.setDate(today.getDate() + 1);
+
 const RoomTypes = () => {
-  const baseUrl = import.meta.env.VITE_BASE_API_URL;
   const [roomTypes, setRoomTypes] = useState([]);
   const [roomTypeOptions, setRoomTypeOptions] = useState([]);
   const [filters, setFilters] = useState({
-    checkIn: "",
-    checkOut: "",
-    guests: 0,
-    roomType: "",
+    checkIn: today.toISOString().split("T")[0],
+    checkOut: tomorrow.toISOString().split("T")[0],
+    guests: 2,
+    roomType: "Standard Single",
   });
   const navigate = useNavigate();
   const roomSectionRef = useRef(null);
 
-  const fetchRoomTypes = async () => {
-    try {
-      const response = await fetch(`${baseUrl}/api/loaiphong`);
-      if (!response.ok) throw new Error("Failed to fetch room types");
-      const data = await response.json();
-      setRoomTypes(data);
-      const options = [
-        ...new Set(data.map((dto) => dto.loaiPhong.tenLoaiPhong)),
-      ];
-      setRoomTypeOptions(options);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   useEffect(() => {
-    fetchRoomTypes();
+    const init = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong`
+        );
+        if (!response.ok) throw new Error("Failed to fetch room types");
+        const data = await response.json();
+
+        const options = [
+          ...new Set(data.map((dto) => dto.loaiPhong.tenLoaiPhong)),
+        ];
+        setRoomTypeOptions(options);
+
+        const defaultRoomType = options.includes("Standard Double")
+          ? "Standard Double"
+          : options[1] || "";
+
+        const defaultFilters = {
+          checkIn: today.toISOString().split("T")[0],
+          checkOut: tomorrow.toISOString().split("T")[0],
+          guests: 2,
+          roomType: defaultRoomType,
+        };
+
+        setFilters(defaultFilters);
+
+        await handleSearch(defaultFilters);
+      } catch (err) {
+        console.error(err);
+        toast.error("Không thể tải danh sách phòng từ server.");
+      }
+    };
+
+    init();
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    const newFilters = { ...filters, [name]: value };
+
+    if (name === "checkIn" || name === "checkOut") {
+      const checkInDate = new Date(newFilters.checkIn);
+      const checkOutDate = new Date(newFilters.checkOut);
+      const todayDate = new Date(today.toISOString().split("T")[0]);
+
+      if (checkInDate < todayDate) {
+        toast.error("Ngày check-in không được trước hôm nay.");
+        return;
+      }
+
+      if (checkOutDate <= checkInDate) {
+        toast.error("Ngày check-out phải lớn hơn ngày check-in.");
+        return;
+      }
+    }
+
+    setFilters(newFilters);
   };
 
-  const handleSearch = async () => {
+  const handleSearch = async (currentFilters) => {
     try {
       const body = {
-        checkIn: filters.checkIn
-          ? new Date(filters.checkIn).toISOString()
+        checkIn: currentFilters.checkIn
+          ? new Date(currentFilters.checkIn).toISOString()
           : null,
-        checkOut: filters.checkOut
-          ? new Date(filters.checkOut).toISOString()
+        checkOut: currentFilters.checkOut
+          ? new Date(currentFilters.checkOut).toISOString()
           : null,
-        soKhach: filters.guests || null,
-        tenLoaiPhong: filters.roomType || null,
+        soKhach: currentFilters.guests || null,
+        tenLoaiPhong: currentFilters.roomType || null,
         minGia: null,
         maxGia: null,
         minDienTich: null,
@@ -69,33 +108,24 @@ const RoomTypes = () => {
       };
 
       const response = await fetch(
-        "http://localhost:8080/api/loaiphong/search",
+        `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong/search`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         }
       );
 
       if (!response.ok) throw new Error("Search failed");
       const data = await response.json();
-
       setRoomTypes(data);
 
-      setFilters({
-        checkIn: "",
-        checkOut: "",
-        guests: 0,
-        roomType: "",
-      });
       if (roomSectionRef.current) {
         roomSectionRef.current.scrollIntoView({ behavior: "smooth" });
       }
     } catch (err) {
       console.error(err);
-      alert("Không thể tìm phòng. Vui lòng thử lại.");
+      toast.error("Không thể tìm phòng. Vui lòng thử lại.");
     }
   };
 
@@ -104,6 +134,7 @@ const RoomTypes = () => {
   };
   return (
     <div className="bg-background text-foreground font-sans">
+      <Toaster position="top-right" reverseOrder={false} />
       <section className="w-full mx-auto py-16 md:py-24 text-left">
         <div className="px-6 sm:px-8 lg:mx-12">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-tight text-primary">
@@ -122,6 +153,7 @@ const RoomTypes = () => {
             <input
               type="date"
               name="checkIn"
+              value={filters.checkIn}
               onChange={handleChange}
               className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
             />
@@ -133,6 +165,7 @@ const RoomTypes = () => {
             <input
               type="date"
               name="checkOut"
+              value={filters.checkOut}
               onChange={handleChange}
               className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
             />
@@ -144,6 +177,7 @@ const RoomTypes = () => {
             <input
               type="number"
               min="1"
+              value={filters.guests}
               name="guests"
               onChange={handleChange}
               className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
@@ -155,6 +189,7 @@ const RoomTypes = () => {
             </label>
             <select
               name="roomType"
+              value={filters.roomType}
               onChange={handleChange}
               className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
             >
@@ -167,7 +202,7 @@ const RoomTypes = () => {
             </select>
           </div>
           <button
-            onClick={handleSearch}
+            onClick={() => handleSearch(filters)}
             className="w-full md:w-auto h-[48px] p-5 flex items-center justify-center bg-chart-2 text-background text-sm rounded-2xl hover:bg-chart-2/90 transition"
           >
             Tìm phòng

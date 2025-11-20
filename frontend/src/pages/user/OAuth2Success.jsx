@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 const OAuth2Success = () => {
   const params = new URLSearchParams(window.location.search);
@@ -15,6 +16,7 @@ const OAuth2Success = () => {
     if (token) {
       setToken(token);
       navigate("/");
+      toast.success("Đăng nhập thành công!");
     }
   }, [token]);
 

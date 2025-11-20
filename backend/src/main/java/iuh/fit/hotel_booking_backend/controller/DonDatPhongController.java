@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.controller;
 
+import iuh.fit.hotel_booking_backend.dto.DatPhongRequest;
 import iuh.fit.hotel_booking_backend.dto.DonDatPhongSearchRequest;
 import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
 import iuh.fit.hotel_booking_backend.service.DonDatPhongService;
@@ -26,7 +27,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/dondatphong")
-@CrossOrigin(origins = "http://localhost:5173")
 public class DonDatPhongController {
 
     private final DonDatPhongService donDatPhongService;
@@ -153,4 +153,27 @@ public class DonDatPhongController {
         List<DonDatPhong> result = donDatPhongService.search(req);
         return ResponseEntity.ok(result);
     }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createBooking(@RequestBody DatPhongRequest request) {
+        try {
+            DonDatPhong don = donDatPhongService.createBooking(
+                    request.maKhachHang,
+                    request.hoTenKhachHang,
+                    request.soDienThoai,
+                    request.email,
+                    request.maPhong,
+                    request.checkIn,
+                    request.checkOut,
+                    request.tongTien,
+                    request.vat,
+                    request.isPaid,
+                    request.ghiChu
+            );
+            return ResponseEntity.ok(don);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }
