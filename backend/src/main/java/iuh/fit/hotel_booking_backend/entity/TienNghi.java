@@ -14,7 +14,7 @@ public class TienNghi {
     @Id
     @Column(name = "ma_tien_nghi")
     private String maTienNghi;
-    @Column(name = "ten_tien_nghi", nullable = false)
+    @Column(name = "ten_tien_nghi", nullable = false, unique = true)
     private String tenTienNghi;
     @Column(name = "tinh_trang")
     private boolean tinhTrang;

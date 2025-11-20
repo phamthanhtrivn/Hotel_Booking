@@ -8,4 +8,5 @@ import iuh.fit.hotel_booking_backend.entity.ChiTietLoaiGiuongId;
 
 @Repository
 public interface ChiTietLoaiGiuongRepository extends JpaRepository<ChiTietLoaiGiuong, ChiTietLoaiGiuongId> {
+    boolean existsByLoaiGiuong_MaGiuong(String loaiGiuongMaGiuong);
 }

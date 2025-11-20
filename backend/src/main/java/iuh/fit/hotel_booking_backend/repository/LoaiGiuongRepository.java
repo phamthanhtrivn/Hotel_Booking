@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LoaiGiuongRepository extends JpaRepository<LoaiGiuong, String> {
+    boolean existsLoaiGiuongByTenGiuong(String tenGiuong);
+    boolean existsLoaiGiuongByMaGiuong(String maGiuong);
 }
