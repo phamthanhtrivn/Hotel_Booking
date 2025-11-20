@@ -19,7 +19,11 @@ export const loaiPhongService = {
     });
     return result.data;
   },
-  search(req) {
+  findById: async (id) => {
+    const result = await api.get(`/api/loaiphong/${id}`);
+    return result.data;
+  },
+  search: async (req) => {
     return api.post(`/api/loaiphong/search`, req).then(res => res.data)
   }
 };

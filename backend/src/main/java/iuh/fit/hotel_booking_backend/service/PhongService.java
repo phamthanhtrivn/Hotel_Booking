@@ -14,6 +14,11 @@ public class PhongService {
         this.repo = repo;
     }
 
+    public Phong getAvailableRoomByRoomType(String idLoaiPhong) {
+        return repo.findFirstAvailableRoomNative(idLoaiPhong)
+                .orElse(null);
+    }
+
     public List<Phong> getAll() {
         return repo.findAll();
     }

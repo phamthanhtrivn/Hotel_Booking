@@ -1,6 +1,6 @@
-import { roomsDummyData } from "@/assets/assets";
 import ImageSlider from "@/components/common/ImageSlide";
 import { loaiGiuongService } from "@/services/loaiGiuong";
+import { loaiPhongService } from "@/services/loaiPhong";
 import {
   BedDoubleIcon,
   BedIcon,
@@ -144,7 +144,7 @@ const OtherRoomsSlider = ({ otherRooms }) => {
 };
 const RoomTypeDetail = () => {
   const { id } = useParams();
-  const [room, setRoom] = useState(null);
+  const [room, setRoom] = useState({});
   const [otherRooms, setOtherRooms] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -152,26 +152,19 @@ const RoomTypeDetail = () => {
 
   const navigate = useNavigate();
 
-  const [loaiGiuong, setLoaiGiong] = useState([]);
+  // const [loaiGiuong, setLoaiGiong] = useState([]);
 
   const fetchLoaiGiuong = async () => {
-    const result = await loaiGiuongService.findByLoaiPhong();
-    console.log(result)
+    const result = await loaiGiuongService.findByLoaiPhong(room.maLoaiPhong);
+    console.log(result);
   };
-
 
   useEffect(() => {
     const fetchRoom = async () => {
       setLoading(true);
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong/${id}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch room data");
-        const data = await res.json();
-
-        setRoom(data);
-
+        const res = await loaiPhongService.findById(id);
+        setRoom(res.data);
         const resAll = await fetch(
           `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong`
         );
@@ -191,8 +184,9 @@ const RoomTypeDetail = () => {
         setLoading(false);
       }
     };
-    fetchLoaiGiuong();
+
     fetchRoom();
+    fetchLoaiGiuong();
   }, [id, navigate]);
 
   const handleScroll = (id) => {
@@ -205,7 +199,21 @@ const RoomTypeDetail = () => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [id]);
+  }, [id]); 
+
+  const handleBookNow = () => {
+    navigate('/booking', {
+      state: {
+        maLoaiPhong: room.maLoaiPhong,
+        tenLoaiPhong: room.tenLoaiPhong,
+        checkIn: '2025-12-15T13:00:00',
+        checkOut: '2025-12-17T12:30:00',
+        soKhach: room.soKhach || 2,
+        gia: room.gia,
+        hinhAnh: room.hinhAnh[0]
+      }
+    });
+  };
 
   if (loading) return <p className="text-center text-2xl mt-20">Loading...</p>;
   if (!room) return null;
@@ -299,7 +307,7 @@ const RoomTypeDetail = () => {
                     {room.gia} VNĐ
                   </p>
                   <button
-                    onClick={() => navigate("/booking")}
+                    onClick={handleBookNow}
                     className="bg-chart-2/60 text-background hover:bg-chart-2 w-full my-3 mt-4 transition-colors duration-300 uppercase p-4 text-xl"
                   >
                     book now
@@ -361,6 +369,7 @@ const RoomTypeDetail = () => {
           </div>
         </div>
       </section>
+
       <section id="gallery" className="relative w-full overflow-hidden mt-2">
         <ImageSlider
           images={room?.hinhAnh || []}

@@ -24,7 +24,6 @@ public class LoaiGiuong {
     private String moTa;
 
     @OneToMany(mappedBy = "loaiGiuong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonBackReference
     private List<ChiTietLoaiGiuong> chiTietLoaiGiuongList = new ArrayList<>();
 
     @Column(name = "tinh_trang")

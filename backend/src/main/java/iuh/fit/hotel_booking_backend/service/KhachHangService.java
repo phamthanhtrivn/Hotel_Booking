@@ -1,7 +1,9 @@
 package iuh.fit.hotel_booking_backend.service;
 
+import iuh.fit.hotel_booking_backend.dto.DatPhongRequest;
 import iuh.fit.hotel_booking_backend.entity.KhachHang;
 import iuh.fit.hotel_booking_backend.repository.KhachHangRepository;
+import iuh.fit.hotel_booking_backend.util.IdUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,9 +11,11 @@ import java.util.List;
 @Service
 public class KhachHangService {
     private KhachHangRepository repo;
+    private IdUtil idUtil;
 
-    public KhachHangService(KhachHangRepository repo) {
+    public KhachHangService(KhachHangRepository repo, IdUtil idUtil) {
         this.repo = repo;
+        this.idUtil = idUtil;
     }
 
     public List<KhachHang> getAll() {
@@ -23,15 +27,32 @@ public class KhachHangService {
     }
 
     public KhachHang save(KhachHang khachHang) {
-        if (repo.existsById(khachHang.getMaKhachHang())){
+        if (repo.existsById(khachHang.getMaKhachHang())) {
             return null;
         }
         return repo.save(khachHang);
     }
 
+    public KhachHang getOrCreateCustomer(DatPhongRequest req) {
+        KhachHang khachHang = null;
+
+        if (req.maKhachHang != null && !req.maKhachHang.trim().isEmpty()) {
+            khachHang = repo.findById(req.maKhachHang).orElse(null);
+        }
+
+        if (khachHang == null) {
+            khachHang = new KhachHang();
+            khachHang.setMaKhachHang(idUtil.generateUniqueCodeForCustomer());
+            khachHang.setHoTenKH(req.hoTenKhachHang);
+            khachHang.setSoDienThoai(req.soDienThoai);
+            repo.save(khachHang);
+        }
+        return khachHang;
+    }
+
     public void deleteById(String id) {
-        if (!repo.existsById(id)){
-            return ;
+        if (!repo.existsById(id)) {
+            return;
         }
         repo.deleteById(id);
     }

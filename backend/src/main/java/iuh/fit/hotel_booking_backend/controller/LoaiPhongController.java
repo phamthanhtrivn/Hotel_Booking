@@ -29,8 +29,15 @@ import java.util.Collections;
 public class LoaiPhongController {
     private final LoaiPhongService loaiPhongService;
 
-    public LoaiPhongController(LoaiPhongService loaiPhongService, CloudinaryService cloudinaryService) {
+    public LoaiPhongController(LoaiPhongService loaiPhongService) {
         this.loaiPhongService = loaiPhongService;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<APIResponse<LoaiPhong>> findById(@PathVariable String id) {
+        APIResponse<LoaiPhong> result = loaiPhongService.findById(id);
+
+        return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
     }
 
     @GetMapping("/paged")
@@ -46,15 +53,6 @@ public class LoaiPhongController {
     public ResponseEntity<List<LoaiPhongDTO>> getAll() {
         List<LoaiPhongDTO> result = loaiPhongService.getAllLoaiPhongDTO();
         return ResponseEntity.ok(result);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<LoaiPhong> getById(@PathVariable String id) {
-        LoaiPhong loaiPhong = loaiPhongService.getById(id);
-        if(loaiPhong == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(loaiPhong);
     }
 
     @PostMapping("/search")

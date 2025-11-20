@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.util;
 
+import iuh.fit.hotel_booking_backend.repository.KhachHangRepository;
 import iuh.fit.hotel_booking_backend.repository.LoaiPhongRepository;
 import iuh.fit.hotel_booking_backend.repository.TaiKhoanRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.Random;
 public class IdUtil {
     private final TaiKhoanRepository taiKhoanRepository;
     private final LoaiPhongRepository loaiPhongRepository;
+    private final KhachHangRepository khachHangRepository;
 
     public String generateUniqueCode(String prefix) {
         String code;
@@ -26,6 +28,14 @@ public class IdUtil {
         do {
             code = "LP" + randomCode(10);
         } while (loaiPhongRepository.existsLoaiPhongByMaLoaiPhong(code));
+        return code;
+    }
+
+    public String generateUniqueCodeForCustomer() {
+        String code;
+        do {
+            code = "KH" + randomCode(10);
+        } while (khachHangRepository.existsById(code));
         return code;
     }
 

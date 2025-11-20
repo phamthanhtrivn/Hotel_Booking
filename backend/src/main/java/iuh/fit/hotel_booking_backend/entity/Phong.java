@@ -1,7 +1,7 @@
 package iuh.fit.hotel_booking_backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +18,7 @@ public class Phong {
     private String maPhong;
     @ManyToOne
     @JoinColumn(name = "ma_loai_phong", nullable = false)
-    @JsonBackReference
+    @JsonIgnore
     private LoaiPhong loaiPhong;
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai")

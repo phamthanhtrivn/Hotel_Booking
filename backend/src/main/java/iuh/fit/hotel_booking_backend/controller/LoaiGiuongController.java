@@ -29,5 +29,4 @@ public class LoaiGiuongController {
     public ResponseEntity<APIResponse<List<LoaiGiuong>>> getAll(@PathVariable String id) {
         return ResponseEntity.ok(loaiGiuongService.findByMaLoaiPhong(id));
     }
-
 }
