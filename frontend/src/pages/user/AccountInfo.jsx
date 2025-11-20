@@ -1,22 +1,23 @@
 import React, { useEffect } from 'react'
 import { Input } from '../../components/ui/input'
 import { Button } from '../../components/ui/button'
-import { User, Phone, Mail } from 'lucide-react'
+import { User, Phone, Mail, Award } from 'lucide-react'
 import { useState } from 'react'
-import {useFetch} from "../../hooks/useFetch";
+import { useFetch } from "../../hooks/useFetch";
+import {toast} from "react-toastify";
 const AccountInfo = () => {
-  const {get,put,error} = useFetch('http://localhost:8080/api');
-  const [user,setUser] = useState(null);
-  const userId  = "TK2";
+  const { get, put, error } = useFetch(`${import.meta.env.VITE_BASE_API_URL}/api`);
+  const [user, setUser] = useState(null);
+  const userId = "TK2";
 
   useEffect(() => {
     const fetchUser = async () => {
       const req = await get(`/taikhoan/${userId}`);
-      if(req){
+      if (req) {
         setUser(req.data);
       }
       else {
-        console.error('Failed to fetch user data:', error);
+        toast.error('Failed to fetch user data: ' + error);
       }
     }
 
@@ -26,12 +27,12 @@ const AccountInfo = () => {
   const handelSave = () => {
     const updateUser = async () => {
       const req = await put(`/taikhoan/update`, user);
-      if(req.success){
+      if (req.success) {
         setUser(req.data);
-        alert('Cập nhật thông tin thành công!');
+        toast.success('Cập nhật thông tin thành công!');
       }
-      else{
-        alert(req.message || 'Cập nhật thông tin thất bại!');
+      else {
+        toast.error(req.message || 'Cập nhật thông tin thất bại!');
       }
     }
     updateUser();
@@ -68,7 +69,7 @@ const AccountInfo = () => {
                 placeholder="Nhập tên đăng nhập của bạn"
                 required
                 value={user ? user.khachHang.hoTenKH : ''}
-                onChange={(e) => {setUser({...user, khachHang: {...user.khachHang, hoTenKH: e.target.value}})}}
+                onChange={(e) => { setUser({ ...user, khachHang: { ...user.khachHang, hoTenKH: e.target.value } }) }}
                 className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -89,7 +90,7 @@ const AccountInfo = () => {
                 placeholder="Nhập số điện thoại của bạn"
                 required
                 value={user ? user.khachHang.soDienThoai : ''}
-                onChange={(e) => {setUser({...user, khachHang: {...user.khachHang, soDienThoai: e.target.value}})}}
+                onChange={(e) => { setUser({ ...user, khachHang: { ...user.khachHang, soDienThoai: e.target.value } }) }}
                 className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -104,15 +105,32 @@ const AccountInfo = () => {
                 Email
               </label>
               <Input
+                disabled
                 id="email"
                 name="email"
                 type="email"
                 placeholder="Nhập địa chỉ email của bạn"
                 required
                 value={user ? user.email : ''}
-                onChange={(e) => {setUser({...user, email: e.target.value})}}
+                onChange={(e) => { setUser({ ...user, email: e.target.value }) }}
                 className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
+            </div>
+
+
+            <div className="space-y-2">
+              <label
+                htmlFor="loyaltyPoints"
+                className=" text-base font-semibold text-gray-700 flex items-center gap-2"
+              >
+                <Award size={18} />
+                Điểm Tích Lũy :
+
+                <span className='text-gray-700 font-semibold'>
+                  {user ? user.khachHang.diemTichLuy : 0} điểm
+                </span>
+              </label>
+
             </div>
 
             {/* Submit */}

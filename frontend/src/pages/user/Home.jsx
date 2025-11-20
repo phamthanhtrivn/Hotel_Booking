@@ -3,17 +3,18 @@ import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { Button } from "@/components/ui/button";
 
-import heroImg from "../../assets/bg01.jpg";
-import hotelImg from "../../assets/bg02.jpg";
-import standardImg from "../../assets/bg01.jpg";
-import deluxeImg from "../../assets/bg01.jpg";
-import suiteImg from "../../assets/bg01.jpg";
-import familyImg from "../../assets/bg01.jpg";
-import poolImg from "../../assets/bg11.jpg";
-import spaImg from "../../assets/bg01.jpg";
-import restaurantImg from "../../assets/bg13.jpg";
-import gymImg from "../../assets/bg01.jpg";
-import barImg from "../../assets/bg10.jpg";
+import heroImg from "../../assets/home/Hero.jpg";
+import hotelImg from "../../assets/home/Hotel.jpg";
+import standardImg from "../../assets/home/StandardRoom.jpg";
+import deluxeImg from "../../assets/home/DeluxeRoom.avif";
+import suiteImg from "../../assets/home/SuiteRoom.avif";
+import familyImg from "../../assets/home/FamilyRoom.jpg";
+import poolImg from "../../assets/home/Pool.jpg";
+import spaImg from "../../assets/home/Spa.jpg";
+import restaurantImg from "../../assets/home/Restaurant.jpg";
+import gymImg from "../../assets/home/Gym.jpg";
+import barImg from "../../assets/home/Bar.jpg";
+import { useNavigate } from "react-router-dom";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 50 },
@@ -40,7 +41,8 @@ const Section = ({ children }) => {
 };
 
 export default function Home() {
-  console.log("Rendering Home Page");
+  const navigation = useNavigate();
+
   return (
     <div className="text-gray-800 bg-white">
       {/* HERO SECTION */}
@@ -64,7 +66,10 @@ export default function Home() {
             Thiên đường nghỉ dưỡng 5 sao tại Hồ Tràm - thoải mái, xa hoa và bất
             tận.
           </p>
-          <Button className="px-12 py-6 text-xl font-semibold bg-[#1E2A38] shadow-xl hover:bg-[#2a4b70] rounded-md cursor-pointer">
+          <Button
+            onClick={() => navigation("/room-types")}
+            className="px-12 py-6 text-xl font-semibold bg-[#1E2A38] shadow-xl hover:bg-[#2a4b70] rounded-md cursor-pointer"
+          >
             Đặt phòng ngay
           </Button>
         </motion.div>
@@ -294,6 +299,7 @@ export default function Home() {
             tích lũy đủ 10 đêm tại khách sạn.
           </p>
           <Button
+            onClick={() => navigation("/room-types")}
             variant="secondary"
             className="px-12 py-6 text-lg font-semibold text-[#1E2A38] bg-white hover:bg-gray-300 rounded-xl cursor-pointer"
           >

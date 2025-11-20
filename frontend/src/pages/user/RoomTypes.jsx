@@ -1,29 +1,210 @@
-import { hotel, roomPackageDummyData, roomsDummyData } from "@/assets/assets";
+import { hotel, roomPackageDummyData } from "@/assets/assets";
 import RoomTypeCard from "@/components/common/RoomTypeCard";
 import { Button } from "@/components/ui/button";
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
+
+const roomPackages = roomPackageDummyData;
+
+const today = new Date();
+const tomorrow = new Date(today);
+tomorrow.setDate(today.getDate() + 1);
 
 const RoomTypes = () => {
-  const rooms = roomsDummyData;
-  const roomPackages = roomPackageDummyData;
+  const baseUrl = import.meta.env.VITE_BASE_API_URL;
+  const [roomTypes, setRoomTypes] = useState([]);
+  const [roomTypeOptions, setRoomTypeOptions] = useState([]);
+  const [filters, setFilters] = useState({
+    checkIn: today.toISOString().split("T")[0],
+    checkOut: tomorrow.toISOString().split("T")[0],
+    guests: 2,
+    roomType: "Standard Single",
+  });
   const navigate = useNavigate();
+  const roomSectionRef = useRef(null);
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong`
+        );
+        if (!response.ok) throw new Error("Failed to fetch room types");
+        const data = await response.json();
+
+        const options = [
+          ...new Set(data.map((dto) => dto.loaiPhong.tenLoaiPhong)),
+        ];
+        setRoomTypeOptions(options);
+
+        const defaultRoomType = options.includes("Standard Double")
+          ? "Standard Double"
+          : options[1] || "";
+
+        const defaultFilters = {
+          checkIn: today.toISOString().split("T")[0],
+          checkOut: tomorrow.toISOString().split("T")[0],
+          guests: 2,
+          roomType: defaultRoomType,
+        };
+
+        setFilters(defaultFilters);
+
+        await handleSearch(defaultFilters);
+      } catch (err) {
+        console.error(err);
+        toast.error("Không thể tải danh sách phòng từ server.");
+      }
+    };
+
+    init();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    const newFilters = { ...filters, [name]: value };
+
+    if (name === "checkIn" || name === "checkOut") {
+      const checkInDate = new Date(newFilters.checkIn);
+      const checkOutDate = new Date(newFilters.checkOut);
+      const todayDate = new Date(today.toISOString().split("T")[0]);
+
+      if (checkInDate < todayDate) {
+        toast.error("Ngày check-in không được trước hôm nay.");
+        return;
+      }
+
+      if (checkOutDate <= checkInDate) {
+        toast.error("Ngày check-out phải lớn hơn ngày check-in.");
+        return;
+      }
+    }
+
+    setFilters(newFilters);
+  };
+
+  const handleSearch = async (currentFilters) => {
+    try {
+      const body = {
+        checkIn: currentFilters.checkIn
+          ? new Date(currentFilters.checkIn).toISOString()
+          : null,
+        checkOut: currentFilters.checkOut
+          ? new Date(currentFilters.checkOut).toISOString()
+          : null,
+        soKhach: currentFilters.guests || null,
+        tenLoaiPhong: currentFilters.roomType || null,
+        minGia: null,
+        maxGia: null,
+        minDienTich: null,
+        maxDienTich: null,
+        maGiuong: null,
+      };
+
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong/search`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        }
+      );
+
+      if (!response.ok) throw new Error("Search failed");
+      const data = await response.json();
+      setRoomTypes(data);
+
+      if (roomSectionRef.current) {
+        roomSectionRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Không thể tìm phòng. Vui lòng thử lại.");
+    }
+  };
 
   const onDetail = (id) => {
-    navigate(`/room-types/${id}`)
-  }
+    navigate(`/room-types/${id}`);
+  };
   return (
     <div className="bg-background text-foreground font-sans">
-      <section className="max-w-4xl mx-auto px-6 sm:px-8 lg:mx-12 py-16 md:py-24 text-left">
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-tight text-primary">
-          Khách sạn Twan tại Hồ Tràm
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-          Làm chậm nhịp sống hiện đại. Mở cánh cửa bước vào một kỳ quan của thế
-          giới.
-        </p>
+      <Toaster position="top-right" reverseOrder={false} />
+      <section className="w-full mx-auto py-16 md:py-24 text-left">
+        <div className="px-6 sm:px-8 lg:mx-12">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-tight text-primary">
+            Khách sạn Twan tại Hồ Tràm
+          </h1>
+          <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
+            Làm chậm nhịp sống hiện đại. Mở cánh cửa bước vào một kỳ quan của
+            thế giới.
+          </p>
+        </div>
+        <div className="mt-10 bg-background shadow-lg rounded-xl p-6 flex flex-col md:flex-row gap-4 md:items-center">
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium text-muted-foreground">
+              Check-in
+            </label>
+            <input
+              type="date"
+              name="checkIn"
+              value={filters.checkIn}
+              onChange={handleChange}
+              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium text-muted-foreground">
+              Check-out
+            </label>
+            <input
+              type="date"
+              name="checkOut"
+              value={filters.checkOut}
+              onChange={handleChange}
+              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium text-muted-foreground">
+              Số khách
+            </label>
+            <input
+              type="number"
+              min="1"
+              value={filters.guests}
+              name="guests"
+              onChange={handleChange}
+              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <label className="text-sm font-medium text-muted-foreground">
+              Loại phòng / giường
+            </label>
+            <select
+              name="roomType"
+              value={filters.roomType}
+              onChange={handleChange}
+              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
+            >
+              <option value="">Chọn loại phòng</option>
+              {roomTypeOptions.map((type, index) => (
+                <option key={index} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={() => handleSearch(filters)}
+            className="w-full md:w-auto h-[48px] p-5 flex items-center justify-center bg-chart-2 text-background text-sm rounded-2xl hover:bg-chart-2/90 transition"
+          >
+            Tìm phòng
+          </button>
+        </div>
       </section>
-
       <section className="relative left-1/2 right-1/2 -mx-[50.51vw] w-screen overflow-hidden">
         <img src={hotel} alt="" className="w-full h-screen object-cover" />
       </section>
@@ -41,10 +222,26 @@ const RoomTypes = () => {
         </p>
       </section>
 
-      <section className="relative left-1/2 right-1/2 -mx-[50.51vw] w-screen overflow-hidden space-y-1">
-        {rooms.map((room, index) => (
-          <RoomTypeCard key={index} room={room} onDetail={onDetail} />
-        ))}
+      <section
+        ref={roomSectionRef}
+        className="relative left-1/2 right-1/2 -mx-[50.51vw] w-screen overflow-hidden space-y-1"
+      >
+        {roomTypes && roomTypes.length > 0 ? (
+          roomTypes.map((dto, index) => (
+            <RoomTypeCard
+              key={index}
+              room={{ ...dto.loaiPhong, soPhongTrong: dto.soPhongTrong }}
+              onDetail={onDetail}
+            />
+          ))
+        ) : (
+          <div className="flex items-center justify-center p-10">
+            <p className="text-2xl text-foreground/80">
+              Hiện tại không có loại phòng phù hợp với bạn. Vui lòng chọn một
+              loại phòng khác!!!
+            </p>
+          </div>
+        )}
       </section>
       <section className="w-full flex items-center justify-between px-12 lg:px-24 py-16 md:py-24 text-left bg-white">
         <div className="max-w-3xl">

@@ -24,4 +24,5 @@ public class KhachHang {
     @OneToOne(mappedBy = "khachHang")
     @JsonIgnore
     private TaiKhoan taiKhoan;
+
 }

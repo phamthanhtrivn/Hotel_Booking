@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,11 +20,12 @@ public class TaiKhoan {
     private LoaiTaiKhoan vaiTro;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ma_khach_hang", unique = true)
+    @JsonManagedReference
     private KhachHang khachHang;
     @Column(unique = true)
     private String email;
     @Column(name = "mat_khau")
     private String matKhau;
-    @Column(name = "is_active")
-    private boolean isActive;
+    @Column(name = "tinh_trang")
+    private boolean tinhTrang;
 }

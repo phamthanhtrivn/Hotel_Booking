@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React from "react";
 import ImageSlider from "./ImageSlide";
 
 const RoomTypeCard = ({ room, onDetail }) => {
@@ -14,41 +13,57 @@ const RoomTypeCard = ({ room, onDetail }) => {
             </h2>
             <p className="text-background/60 text-xl uppercase">GIÁ</p>
             <p className="text-background text-3xl font-light mt-1">
-              {room.gia} VNĐ
+              {room.gia.toLocaleString()} VNĐ
             </p>
+            {room.soPhongTrong !== undefined && (
+              <p className="mt-2 text-background/80">
+                Số phòng trống:{" "}
+                <span className="font-semibold">{room.soPhongTrong}</span>
+              </p>
+            )}
           </div>
 
           <div className="space-y-2 text-base text-muted-foreground">
-            <div className="flex">
-              <span className="w-28 font-semibold text-background/60">
-                Giường:
-              </span>
-              <span className="text-background">{room.loaiGiuong}</span>
-            </div>
-            <div className="flex">
-              <span className="w-28 font-semibold text-background/60">
-                Số người:
-              </span>
-              <span className="text-background">{room.soKhach}</span>
-            </div>
-            <div className="flex">
-              <span className="w-28 font-semibold text-background/60">
-                Diện tích:
-              </span>
-              <span className="text-background">{room.dienTich} m²</span>
-            </div>
-            <div className="flex">
-              <span className="w-28 font-semibold text-background/60">
-                Mô tả:
-              </span>
-              <span className="text-background">{room.moTa}</span>
-            </div>
+            {room.loaiGiuong && (
+              <div className="flex">
+                <span className="w-28 font-semibold text-background/60">
+                  Giường:
+                </span>
+                <span className="text-background">{room.loaiGiuong}</span>
+              </div>
+            )}
+            {room.soKhach && (
+              <div className="flex">
+                <span className="w-28 font-semibold text-background/60">
+                  Số người:
+                </span>
+                <span className="text-background">{room.soKhach}</span>
+              </div>
+            )}
+            {room.dienTich && (
+              <div className="flex">
+                <span className="w-28 font-semibold text-background/60">
+                  Diện tích:
+                </span>
+                <span className="text-background">{room.dienTich} m²</span>
+              </div>
+            )}
+            {room.moTa && (
+              <div className="flex">
+                <span className="w-28 font-semibold text-background/60">
+                  Mô tả:
+                </span>
+                <span className="text-background">
+                  {room.moTa.length > 100
+                    ? room.moTa.slice(0, 100) + "..."
+                    : room.moTa}
+                </span>
+              </div>
+            )}
           </div>
 
           <button
-            onClick={() => {
-              onDetail(room.maLoaiPhong);
-            }}
+            onClick={() => onDetail(room.maLoaiPhong)}
             className="mt-6 border border-background text-background py-2.5 px-8 text-sm uppercase tracking-wide hover:bg-chart-2 hover:border-none hover:scale-90 transition-all duration-300 self-start cursor-pointer"
           >
             View detail

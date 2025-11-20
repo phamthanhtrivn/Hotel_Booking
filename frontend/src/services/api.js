@@ -1,0 +1,9 @@
+import { BASE_API_URL } from "@/contants/config";
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: BASE_API_URL,
+  timeout: 10000,
+});
+
+export default api;

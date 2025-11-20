@@ -1,26 +1,113 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
-import { FaFacebook } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { Eye, EyeOff } from "lucide-react"; // 👈 icon mắt
-import bg01 from "../assets/bg01.jpg";
-import bg02 from "../assets/bg02.jpg";
+import { Eye, EyeOff, Loader2 } from "lucide-react"; 
+import bg01 from "../assets/home/Hero.jpg";
+import bg02 from "../assets/home/Hotel.jpg";
 import bg03 from "../assets/bg03.jpg";
 import bg04 from "../assets/bg04.jpg";
 import ImgSlider from "@/components/common/ImgSlider";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { AuthContext } from "@/context/AuthContext";
+import axios from "axios";
 
 const Login = () => {
+  const baseUrl = import.meta.env.VITE_BASE_API_URL;
+  const { user, login } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
+
+  useEffect(() => {
+    if (user) {
+      if (user.vaiTro === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
+    }
+  }, []);
+
+  const handleLogin = async () => {
+    const emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$/;
+
+    const newErrors = { email: "", password: "" };
+
+    if (!email || !emailRegex.test(email)) {
+      newErrors.email = "Email không hợp lệ!";
+    }
+
+    if (!password) {
+      newErrors.password = "Mật khẩu không được để trống!";
+    }
+
+    setErrors(newErrors);
+
+    if (newErrors.email) {
+      emailRef.current.focus();
+      return;
+    }
+
+    if (newErrors.password) {
+      passwordRef.current.focus();
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const res = await axios.post(`${baseUrl}/login`, {
+        email,
+        matKhau: password,
+      });
+
+      const data = res.data;
+
+      if (data.success) {
+        toast.success(data.message);
+
+        login(data.data.taiKhoan, data.data.token);
+
+        if (data.data.taiKhoan.vaiTro === "ADMIN") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/");
+        }
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error("Đăng nhập thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLoginGG = () => {
+    window.location.href = `${
+      import.meta.env.VITE_BASE_API_URL
+    }/oauth2/authorization/google`;
+  };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-[#e2ecf7] to-[#f9fafc] overflow-hidden">
+    <div className="flex min-h-screen bg-linear-to-br from-[#e2ecf7] to-[#f9fafc] overflow-hidden">
       {/* LEFT IMAGE */}
       <motion.div
         className="relative hidden w-7/12 md:block"
@@ -67,7 +154,13 @@ const Login = () => {
                 type="email"
                 placeholder="Nhập email của bạn"
                 className="focus-visible:ring-[var(--color-background)] rounded-xl"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                ref={emailRef}
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
             </div>
 
             {/* Password */}
@@ -84,6 +177,9 @@ const Login = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Nhập mật khẩu"
                   className="focus-visible:ring-[var(--color-background)] rounded-xl pr-10"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  ref={passwordRef}
                 />
                 <button
                   type="button"
@@ -93,11 +189,20 @@ const Login = () => {
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-red-500 text-sm">{errors.password}</p>
+              )}
             </div>
 
             {/* Button Login */}
-            <Button className="w-full bg-[var(--color-background)] cursor-pointer font-semibold hover:bg-[#2a4b70] transition-colors duration-300 rounded-xl shadow-md">
-              Đăng Nhập
+            <Button
+              onClick={handleLogin}
+              disabled={isLoading}
+              className={`w-full bg-[var(--color-background)] font-semibold rounded-xl shadow-md flex items-center justify-center gap-2
+    ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#2a4b70]"}`}
+            >
+              {isLoading && <Loader2 className="animate-spin h-5 w-5" />}
+              {isLoading ? "Đang tải..." : "Đăng Nhập"}
             </Button>
 
             {/* Separator */}
@@ -110,16 +215,12 @@ const Login = () => {
             {/* Social Login */}
             <div className="flex flex-col gap-3">
               <Button
+                onClick={handleLoginGG}
                 variant="outline"
                 className="flex items-center justify-center gap-2 transition border-gray-300 cursor-pointer hover:bg-gray-100 rounded-xl"
               >
                 <FcGoogle size={22} />
                 <span>Đăng nhập bằng Google</span>
-              </Button>
-
-              <Button className="flex items-center justify-center gap-2 bg-[#1877F2] hover:bg-[#166fe5] cursor-pointer rounded-xl transition shadow-md">
-                <FaFacebook size={22} />
-                <span>Đăng nhập bằng Facebook</span>
               </Button>
             </div>
 

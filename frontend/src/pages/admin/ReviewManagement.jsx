@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Search, Eye } from "lucide-react";
 import { useFetch } from "../../hooks/useFetch";
+
 const ReviewManagement = () => {
-  const { get } = useFetch('http://localhost:8080/api/');
+  const { get } = useFetch(`${import.meta.env.VITE_BASE_API_URL}/api/`);
   const [reviews, setReviews] = useState([]);
   const [viewing, setViewing] = useState(null);
   const [filters, setFilters] = useState({
@@ -19,7 +20,7 @@ const ReviewManagement = () => {
     const fetchReviews = async () => {
       const req = await get('danhgia');
       const reqYears = await get('danhgia/nam');
-      const reqRoomTypes = await get('loaiphong');
+      const reqRoomTypes = await get('loaiphong/loaiPhong');
       if (reqYears.success) {
         setYears(reqYears.data);
       }

@@ -1,26 +1,144 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
-import { FaFacebook, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { motion } from "framer-motion";
-import bg01 from "../../assets/bg01.jpg";
-import bg02 from "../../assets/bg02.jpg";
+import bg01 from "../../assets/home/Hero.jpg";
+import bg02 from "../../assets/home/Hotel.jpg";
 import bg03 from "../../assets/bg03.jpg";
 import bg04 from "../../assets/bg04.jpg";
 import ImgSlider from "@/components/common/ImgSlider";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
+import { AuthContext } from "@/context/AuthContext";
 
 const Register = () => {
+  const baseUrl = import.meta.env.VITE_BASE_API_URL;
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const nameRef = useRef();
+  const emailRef = useRef();
+  const phoneRef = useRef();
+  const passwordRef = useRef();
+  const confirmPasswordRef = useRef();
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (user) {
+      if (user.vaiTro === "ADMIN") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
+    }
+  }, []);
+
+  const handleRegister = async () => {
+    const nameRegex = /^[\p{L}]+(?: [\p{L}]+)+$/u;
+    const emailRegex = /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$/;
+    const phoneRegex = /^(0[3|5|7|8|9])[0-9]{8}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+    const newErrors = {
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+    };
+
+    if (!name || !nameRegex.test(name)) {
+      newErrors.name =
+        "Họ tên không hợp lệ! (Phải có ít nhất 2 từ và không chứa số)";
+    }
+    if (!email || !emailRegex.test(email)) {
+      newErrors.email = "Email không hợp lệ!";
+    }
+    if (!phone || !phoneRegex.test(phone)) {
+      newErrors.phone = "Số điện thoại không hợp lệ!";
+    }
+    if (!password || !passwordRegex.test(password)) {
+      newErrors.password =
+        "Mật khẩu phải chứa ít nhất 1 chữ cái, 1 số và từ 6 ký tự trở lên!";
+    }
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Xác nhận mật khẩu không trùng khớp!";
+    }
+
+    setErrors(newErrors);
+
+    if (newErrors.name) {
+      nameRef.current.focus();
+      return;
+    }
+    if (newErrors.phone) {
+      phoneRef.current.focus();
+      return;
+    }
+    if (newErrors.email) {
+      emailRef.current.focus();
+      return;
+    }
+    if (newErrors.password) {
+      passwordRef.current.focus();
+      return;
+    }
+    if (newErrors.confirmPassword) {
+      confirmPasswordRef.current.focus();
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await axios.post(`${baseUrl}/register`, {
+        hoTenKH: name,
+        soDienThoai: phone,
+        email,
+        matKhau: password,
+      });
+      if (response.data.success) {
+        toast.success("Đăng ký thành công! Vui lòng đăng nhập.");
+        navigate("/login");
+      }
+      else {
+        toast.error(response.data.message);
+      }
+    } catch (err) {
+      toast.error(err.message || "Đăng ký thất bại!");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLoginGG = () => {
+    window.location.href = `${
+      import.meta.env.VITE_BASE_API_URL
+    }/oauth2/authorization/google`;
+  };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-[#e2ecf7] to-[#f9fafc] overflow-hidden">
+    <div className="flex min-h-screen bg-linear-to-br from-[#e2ecf7] to-[#f9fafc] overflow-hidden">
       {/* LEFT IMAGE */}
       <motion.div
         className="relative hidden w-7/12 md:block"
@@ -32,14 +150,13 @@ const Register = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/20"></div>
         <div className="absolute inset-0 flex flex-col justify-center px-12 text-white">
           <h1 className="text-4xl font-bold leading-tight drop-shadow-lg">
-            Tham gia cùng chúng tôi
+            Chào mừng trở lại
           </h1>
           <p className="mt-4 text-lg text-gray-200">
-            Tạo tài khoản để kết nối và trải nghiệm dịch vụ tốt nhất.
+            Kết nối và trải nghiệm dịch vụ của chúng tôi ngay hôm nay!
           </p>
         </div>
       </motion.div>
-
       {/* RIGHT REGISTER FORM */}
       <motion.div
         className="relative z-10 flex items-center justify-center w-full px-6 py-10 bg-white shadow-2xl md:w-5/12 lg:w-5/12 xl:w-5/12"
@@ -49,7 +166,7 @@ const Register = () => {
       >
         <Card className="w-full max-w-sm border border-gray-200 shadow-lg rounded-2xl backdrop-blur-lg">
           <CardHeader>
-            <CardTitle className="text-center text-3xl font-bold text-[var(--color-background)] tracking-wide">
+            <CardTitle className="text-center text-3xl font-bold text-(--color-background) tracking-wide">
               Đăng Ký
             </CardTitle>
           </CardHeader>
@@ -63,8 +180,14 @@ const Register = () => {
                 id="fullName"
                 type="text"
                 placeholder="Nhập họ và tên của bạn"
-                className="focus-visible:ring-[var(--color-background)] rounded-xl"
+                className="focus-visible:ring-(--color-background) rounded-xl"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                ref={nameRef}
               />
+              {errors.name && (
+                <p className="text-red-500 text-sm">{errors.name}</p>
+              )}
             </div>
 
             {/* Số điện thoại */}
@@ -76,8 +199,14 @@ const Register = () => {
                 id="phone"
                 type="tel"
                 placeholder="Nhập số điện thoại"
-                className="focus-visible:ring-[var(--color-background)] rounded-xl"
+                className="focus-visible:ring-(--color-background) rounded-xl"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                ref={phoneRef}
               />
+              {errors.phone && (
+                <p className="text-red-500 text-sm">{errors.phone}</p>
+              )}
             </div>
 
             {/* Email */}
@@ -89,8 +218,14 @@ const Register = () => {
                 id="email"
                 type="email"
                 placeholder="Nhập email của bạn"
-                className="focus-visible:ring-[var(--color-background)] rounded-xl"
+                className="focus-visible:ring-(--color-background) rounded-xl"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                ref={emailRef}
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
+              )}
             </div>
 
             {/* Mật khẩu */}
@@ -103,7 +238,10 @@ const Register = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Nhập mật khẩu"
-                  className="focus-visible:ring-[var(--color-background)] rounded-xl pr-10"
+                  className="focus-visible:ring-(--color-background) rounded-xl pr-10"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  ref={passwordRef}
                 />
                 <button
                   type="button"
@@ -113,6 +251,9 @@ const Register = () => {
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-red-500 text-sm">{errors.password}</p>
+              )}
             </div>
 
             {/* Xác nhận mật khẩu */}
@@ -126,6 +267,9 @@ const Register = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Nhập lại mật khẩu"
                   className="focus-visible:ring-[var(--color-background)] rounded-xl pr-10"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  ref={confirmPasswordRef}
                 />
                 <button
                   type="button"
@@ -135,11 +279,25 @@ const Register = () => {
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
+              )}
             </div>
 
             {/* Button Register */}
-            <Button className="w-full bg-[var(--color-background)] cursor-pointer font-semibold hover:bg-[#2a4b70] transition-colors duration-300 rounded-xl shadow-md">
-              Đăng Ký
+            <Button
+              onClick={handleRegister}
+              disabled={isLoading}
+              className="w-full bg-[var(--color-background)] cursor-pointer font-semibold hover:bg-[#2a4b70] transition-colors duration-300 rounded-xl shadow-md flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="animate-spin h-5 w-5 text-white" />
+                  Đang đăng ký...
+                </>
+              ) : (
+                "Đăng Ký"
+              )}
             </Button>
 
             {/* Separator */}
@@ -152,16 +310,12 @@ const Register = () => {
             {/* Social Register */}
             <div className="flex flex-col gap-3">
               <Button
+                onClick={handleLoginGG}
                 variant="outline"
                 className="flex items-center justify-center gap-2 transition border-gray-300 cursor-pointer hover:bg-gray-100 rounded-xl"
               >
                 <FcGoogle size={22} />
                 <span>Đăng ký bằng Google</span>
-              </Button>
-
-              <Button className="flex items-center justify-center gap-2 bg-[#1877F2] hover:bg-[#166fe5] cursor-pointer rounded-xl transition shadow-md">
-                <FaFacebook size={22} />
-                <span>Đăng ký bằng Facebook</span>
               </Button>
             </div>
 
@@ -170,7 +324,7 @@ const Register = () => {
               Đã có tài khoản?{" "}
               <Link
                 to="/login"
-                className="font-medium text-[var(--color-background)] hover:underline"
+                className="font-medium text-blue-500 hover:underline"
               >
                 Đăng nhập
               </Link>

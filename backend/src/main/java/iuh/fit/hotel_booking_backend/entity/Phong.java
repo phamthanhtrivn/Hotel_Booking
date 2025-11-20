@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.entity;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,4 +23,6 @@ public class Phong {
     private TrangThaiPhong trangThai;
     @Column(name = "vi_tri")
     private String viTri;
+    @Column(name = "tinh_trang")
+    private boolean tinhTrang;
 }

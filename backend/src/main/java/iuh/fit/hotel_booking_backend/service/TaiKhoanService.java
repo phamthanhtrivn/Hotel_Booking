@@ -10,9 +10,12 @@ import java.util.List;
 @Service
 public class TaiKhoanService {
     private TaiKhoanRepository repo;
+    private final DonDatPhongService donDatPhongService;
 
-    public TaiKhoanService(TaiKhoanRepository repo) {
+
+    public TaiKhoanService(TaiKhoanRepository repo, DonDatPhongService donDatPhongService) {
         this.repo = repo;
+        this.donDatPhongService = donDatPhongService;
     }
 
     public List<TaiKhoan> getAll() {
@@ -23,8 +26,6 @@ public class TaiKhoanService {
         return repo.findById(id).orElse(null);
     }
 
-
-
     public TaiKhoan save(TaiKhoan t) {
         return repo.save(t);
     }
@@ -34,12 +35,9 @@ public class TaiKhoanService {
         TaiKhoan existingTaiKhoan = repo.findById(t.getMaTaiKhoan()).orElse(null);
         if(existingTaiKhoan == null) throw new RuntimeException("TaiKhoan not found");
         else{
-            if(t.getEmail() != null) existingTaiKhoan.setEmail(t.getEmail());
             if(t.getVaiTro() != null) existingTaiKhoan.setVaiTro(t.getVaiTro());
             if(t.getKhachHang() != null) existingTaiKhoan.setKhachHang(t.getKhachHang());
-            if(t.isActive() != existingTaiKhoan.isActive()) existingTaiKhoan.setActive(t.isActive());
             if(t.getKhachHang() != null){
-
                 if(t.getKhachHang().getHoTenKH().trim() != "") existingTaiKhoan.getKhachHang().setHoTenKH(t.getKhachHang().getHoTenKH());
                 if(t.getKhachHang().getSoDienThoai().trim() != "" ) existingTaiKhoan.getKhachHang().setSoDienThoai(t.getKhachHang().getSoDienThoai());
             }
@@ -48,9 +46,34 @@ public class TaiKhoanService {
     }
 
 
+    public boolean deleteById(String id) {
+        TaiKhoan tk = repo.findById(id).orElse(null);
+        if (tk == null) return false;
+        if (tk.getKhachHang() != null) {
+            String maKH = tk.getKhachHang().getMaKhachHang();
+            int soDon = donDatPhongService.countByKhachHangId(maKH);
+            if (soDon > 0) {
+                throw new IllegalStateException("Khách hàng đang có đơn đặt phòng, không thể xóa tài khoản!");
+            }
+        }
 
-
-    public void deleteById(String id) {
         repo.deleteById(id);
+        return true;
+    }
+
+    public List<TaiKhoan> getAllMembers() {
+        return repo.findAllMembers();
+    }
+
+
+    public TaiKhoan getTaiKhoanByEmail(String email) {
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email không được để trống!");
+        }
+        TaiKhoan tk = repo.findTaiKhoanByEmail(email);
+        if (tk == null) {
+            throw new IllegalStateException("Không tìm thấy tài khoản với email: " + email);
+        }
+        return tk;
     }
 }
