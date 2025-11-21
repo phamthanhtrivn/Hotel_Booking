@@ -124,6 +124,7 @@ const Booking = () => {
     setErrors({});
     try {
       const bookingRequest = {
+        maKhachHang: user != null ? user.khachHang.maKhachHang : "",
         hoTenKhachHang: customerName,
         soDienThoai: phone,
         maLoaiPhong: maLoaiPhong,
@@ -137,6 +138,7 @@ const Booking = () => {
       };
       const result = await donDatPhongService.datPhong(bookingRequest);
       toast.success("Đặt phòng thành công. Mã đơn đặt phòng: " + result.data.maDatPhong);
+      //chuyển tới trang thanh toán /param
     } catch (error) {
       console.error("Lỗi khi đặt phòng:", error);
       toast.error("Có lỗi xảy ra khi đặt phòng. Vui lòng thử lại.");
