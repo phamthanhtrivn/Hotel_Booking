@@ -105,12 +105,13 @@ const AmenityManagement = () => {
       );
       if (res.data.success) {
         toast.success("Xóa tiện nghi thành công");
+        setAmenities((prev) =>
+          prev.filter((a) => a.maTienNghi !== currentAmenity.maTienNghi)
+        );
       } else {
         toast.info(res.data.message);
       }
-      setAmenities((prev) =>
-        prev.filter((a) => a.maTienNghi !== currentAmenity.maTienNghi)
-      );
+
       setOpenDelete(false);
     } catch (error) {
       console.error("Lỗi khi xóa tiện nghi:", error);
