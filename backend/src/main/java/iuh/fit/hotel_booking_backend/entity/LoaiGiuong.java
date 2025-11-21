@@ -22,10 +22,8 @@ public class LoaiGiuong {
     private String tenGiuong;
     @Column(name = "mo_ta")
     private String moTa;
-
     @OneToMany(mappedBy = "loaiGiuong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ChiTietLoaiGiuong> chiTietLoaiGiuongList = new ArrayList<>();
-
     @Column(name = "tinh_trang")
     private boolean tinhTrang;
 }

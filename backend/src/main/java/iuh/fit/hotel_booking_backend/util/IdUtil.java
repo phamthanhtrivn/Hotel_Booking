@@ -1,8 +1,10 @@
 package iuh.fit.hotel_booking_backend.util;
 
 import iuh.fit.hotel_booking_backend.repository.KhachHangRepository;
+import iuh.fit.hotel_booking_backend.repository.LoaiGiuongRepository;
 import iuh.fit.hotel_booking_backend.repository.LoaiPhongRepository;
 import iuh.fit.hotel_booking_backend.repository.TaiKhoanRepository;
+import iuh.fit.hotel_booking_backend.repository.TienNghiRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,8 @@ public class IdUtil {
     private final TaiKhoanRepository taiKhoanRepository;
     private final LoaiPhongRepository loaiPhongRepository;
     private final KhachHangRepository khachHangRepository;
+    private final TienNghiRepository tienNghiRepository;
+    private final LoaiGiuongRepository loaiGiuongRepository;
 
     public String generateUniqueCode(String prefix) {
         String code;
@@ -36,6 +40,21 @@ public class IdUtil {
         do {
             code = "KH" + randomCode(10);
         } while (khachHangRepository.existsById(code));
+        return code;
+    }
+    public String generateUniqueCodeForTienNghi() {
+        String code;
+        do {
+            code = "TN" + randomCode(10);
+        } while (tienNghiRepository.existsTienNGhiByMaTienNghi(code));
+        return code;
+    }
+
+    public String generateUniqueCodeForLoaiGiuong() {
+        String code;
+        do {
+            code = "LG" + randomCode(10);
+        } while (loaiGiuongRepository.existsLoaiGiuongByMaGiuong(code));
         return code;
     }
 

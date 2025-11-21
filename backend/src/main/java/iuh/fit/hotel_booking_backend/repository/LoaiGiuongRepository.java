@@ -14,4 +14,6 @@ public interface LoaiGiuongRepository extends JpaRepository<LoaiGiuong, String> 
             "JOIN lg.chiTietLoaiGiuongList ctg " +
             "WHERE ctg.loaiPhong.maLoaiPhong = :maLoaiPhong")
     List<LoaiGiuong> findByMaLoaiPhong(@Param("maLoaiPhong") String maLoaiPhong);
+    boolean existsLoaiGiuongByTenGiuong(String tenGiuong);
+    boolean existsLoaiGiuongByMaGiuong(String maGiuong);
 }

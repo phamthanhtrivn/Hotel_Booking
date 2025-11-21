@@ -25,6 +25,8 @@ import Contact from "./pages/user/Contact";
 import ResetPassword from "./pages/user/ResetPassword";
 import OAuth2Success from "./pages/user/OAuth2Success";
 import OAuth2Error from "./pages/user/OAuth2Error";
+import AmenityManagement from "./pages/admin/AmenityManagement";
+import BedTypeManagement from "./pages/admin/BedTypeManagement";
 
 function App() {
   return (
@@ -82,6 +84,8 @@ function App() {
         <Route path="customers" element={<CustomerManagement />} />
         <Route path="bookings" element={<BookingManagement />} />
         <Route path="reviews" element={<ReviewManagement />} />
+        <Route path="amenities" element={<AmenityManagement />} />
+        <Route path="bed-types" element={<BedTypeManagement />} />
       </Route>
 
       {/* 404 */}
