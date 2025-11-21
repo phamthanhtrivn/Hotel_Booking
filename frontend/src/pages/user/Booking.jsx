@@ -124,6 +124,7 @@ const Booking = () => {
     setErrors({});
     try {
       const bookingRequest = {
+        maKhachHang: user != null ? user.khachHang.maKhachHang : null,
         hoTenKhachHang: customerName,
         soDienThoai: phone,
         maLoaiPhong: maLoaiPhong,
