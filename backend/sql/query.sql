@@ -4,6 +4,9 @@ select * from chi_tiet_loai_giuong;
 
 select * from tai_khoan;
 
+
+select * from khach_hang;
+
 select * from phong;
 select * from don_dat_phong;
 
