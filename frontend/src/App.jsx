@@ -27,6 +27,8 @@ import OAuth2Success from "./pages/user/OAuth2Success";
 import OAuth2Error from "./pages/user/OAuth2Error";
 import AmenityManagement from "./pages/admin/AmenityManagement";
 import BedTypeManagement from "./pages/admin/BedTypeManagement";
+import PaymentSuccess from "./pages/user/PaymentSuccess";
+import PaymentFailed from "./pages/user/PaymentFailed";
 
 function App() {
   return (
@@ -48,6 +50,8 @@ function App() {
         <Route path="room-types/:id" element={<RoomTypeDetail />} />
         <Route path="booking" element={<Booking />} />
         <Route path="payment" element={<Payment />} />
+        <Route path="payment/success" element={<PaymentSuccess />} />
+        <Route path="payment/failed" element={<PaymentFailed  />} />
         <Route path="facilities" element={<Facilities />} />
         <Route path="about" element={<AboutUs />} />
         <Route path="contact" element={<Contact />} />

@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -44,6 +45,7 @@ public class LoaiPhong {
     private List<ChiTietLoaiGiuong> chiTietLoaiGiuongList = new ArrayList<>();
 
     @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Phong> phongList = new ArrayList<>();
     @Column(name = "tinh_trang")
     private boolean tinhTrang;

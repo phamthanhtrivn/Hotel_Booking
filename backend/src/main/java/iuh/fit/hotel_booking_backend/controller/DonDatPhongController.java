@@ -173,4 +173,8 @@ public class DonDatPhongController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findById(@PathVariable("id") String id) {
+        return ResponseEntity.ok(donDatPhongService.findById(id));
+    }
 }

@@ -18,7 +18,6 @@ public class Phong {
     private String maPhong;
     @ManyToOne
     @JoinColumn(name = "ma_loai_phong", nullable = false)
-    @JsonIgnore
     private LoaiPhong loaiPhong;
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai")

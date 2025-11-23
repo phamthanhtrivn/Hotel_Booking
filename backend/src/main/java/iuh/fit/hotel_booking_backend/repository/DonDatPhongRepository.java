@@ -23,4 +23,6 @@ public interface DonDatPhongRepository extends JpaRepository<DonDatPhong, String
             TrangThaiDon trangThai,
             LocalDateTime ngayTao
     );
+
+    boolean existsDonDatPhongByMaDatPhong(String maDatPhong);
 }

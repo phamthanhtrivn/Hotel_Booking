@@ -12,7 +12,7 @@ import MomoLogo from "@/assets/paymentMethodLogo/MoMo_Logo.png";
 import HotelLogo from "@/assets/hotelLogo/HotelLogo.jpg";
 import { Button } from "@/components/ui/button";
 import React, { useContext, useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { calculateNights, formatVietnameseDate } from "@/helpers/dateHelpers";
 import { formatVND } from "@/helpers/currencyFormatter";
 import { AuthContext } from "@/context/AuthContext";
@@ -22,6 +22,7 @@ import { toast } from "react-toastify";
 const Booking = () => {
   const { user } = useContext(AuthContext);
   const location = useLocation();
+  const navigate = useNavigate();
   const bookingData = location.state || {};
   const {
     maLoaiPhong,
@@ -55,7 +56,6 @@ const Booking = () => {
     setStayNights(calculateNights(checkIn, checkOut));
     setStayPrice(gia * calculateNights(checkIn, checkOut));
     setTotalPrice(stayPrice * (1 + vat / 100));
-    console.log(user);
   }, [checkIn, checkOut, gia, stayPrice, user]);
 
   const onCustomerNameChange = (e) => {
@@ -131,7 +131,7 @@ const Booking = () => {
       };
       const result = await donDatPhongService.datPhong(bookingRequest);
       toast.success("Đặt phòng thành công. Mã đơn đặt phòng: " + result.data.maDatPhong);
-      //chuyển tới trang thanh toán /param
+      navigate("/payment", { state: { maDatPhong: result.data.maDatPhong } });
     } catch (error) {
       console.error("Lỗi khi đặt phòng:", error);
       toast.error("Có lỗi xảy ra khi đặt phòng. Vui lòng thử lại.");
