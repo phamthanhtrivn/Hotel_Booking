@@ -1,9 +1,6 @@
-import {
-  hotel,
-  roomPackageDummyData,
-
-} from "@/assets/assets";
+import { hotel, roomPackageDummyData } from "@/assets/assets";
 import RoomTypeCard from "@/components/common/RoomTypeCard";
+import SearchBar from "@/components/common/SearchBar";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useRef, useState } from "react";
 import { Toaster } from "react-hot-toast";
@@ -23,7 +20,7 @@ const RoomTypes = () => {
     checkIn: today.toISOString().split("T")[0],
     checkOut: tomorrow.toISOString().split("T")[0],
     guests: 2,
-    roomType: "Standard Single",
+    // roomType: "Standard Single",
   });
   const navigate = useNavigate();
   const roomSectionRef = useRef(null);
@@ -135,95 +132,40 @@ const RoomTypes = () => {
   return (
     <div className="bg-background text-foreground font-sans">
       <Toaster position="top-right" reverseOrder={false} />
-      <section className="w-full mx-auto py-16 md:py-24 text-left">
-        <div className="px-6 sm:px-8 lg:mx-12">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-tight text-primary">
-            Khách sạn Twan tại Hồ Tràm
-          </h1>
-          <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-            Làm chậm nhịp sống hiện đại. Mở cánh cửa bước vào một kỳ quan của
-            thế giới.
-          </p>
-        </div>
-        <div className="mt-10 bg-background shadow-lg rounded-xl p-6 flex flex-col md:flex-row gap-4 md:items-center">
-          <div className="flex flex-col w-full">
-            <label className="text-sm font-medium text-muted-foreground">
-              Check-in
-            </label>
-            <input
-              type="date"
-              name="checkIn"
-              value={filters.checkIn}
-              onChange={handleChange}
-              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
-            />
-          </div>
-          <div className="flex flex-col w-full">
-            <label className="text-sm font-medium text-muted-foreground">
-              Check-out
-            </label>
-            <input
-              type="date"
-              name="checkOut"
-              value={filters.checkOut}
-              onChange={handleChange}
-              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
-            />
-          </div>
-          <div className="flex flex-col w-full">
-            <label className="text-sm font-medium text-muted-foreground">
-              Số khách
-            </label>
-            <input
-              type="number"
-              min="1"
-              value={filters.guests}
-              name="guests"
-              onChange={handleChange}
-              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
-            />
-          </div>
-          <div className="flex flex-col w-full">
-            <label className="text-sm font-medium text-muted-foreground">
-              Loại phòng / giường
-            </label>
-            <select
-              name="roomType"
-              value={filters.roomType}
-              onChange={handleChange}
-              className="mt-1 border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-chart-2"
-            >
-              <option value="">Chọn loại phòng</option>
-              {roomTypeOptions.map((type, index) => (
-                <option key={index} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button
-            onClick={() => handleSearch(filters)}
-            className="w-full md:w-auto h-[48px] p-5 flex items-center justify-center bg-chart-2 text-background text-sm rounded-2xl hover:bg-chart-2/90 transition"
-          >
-            Tìm phòng
-          </button>
-        </div>
-      </section>
-      <section className="relative left-1/2 right-1/2 -mx-[50.51vw] w-screen overflow-hidden">
-        <img src={hotel} alt="" className="w-full h-screen object-cover" />
-      </section>
+      <section
+        className="w-full mx-auto py-30 md:py-50 relative bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${hotel})` }}
+      >
+        {/* Overlay đen mờ để text dễ đọc */}
+        <div className="absolute inset-0 bg-black/50"></div>
 
-      <section className="max-w-4xl mx-auto px-6 sm:px-8 lg:mx-12 py-16 md:py-24 text-left">
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light tracking-tight text-primary">
-          Hoà hợp với thiên nhiên
+        {/* Nội dung text - luôn nằm chính giữa */}
+        <div className="relative z-10 px-6 sm:px-8 lg:mx-12">
+          <div className="max-w-4xl">
+            <h1 className="text-4xl font-bold tracking-tight leading-tight text-white">
+              Khách sạn Twan tại Hồ Tràm
+            </h1>
+            <p className="text-gray-300 mt-6 text-xl md:text-2xl leading-relaxed">
+              Làm chậm nhịp sống hiện đại. Mở cánh cửa bước vào một kỳ quan của
+              thế giới.
+            </p>
+          </div>
+        </div>
+
+        {/* SearchBar absolute - có thể tự do điều chỉnh vị trí */}
+        <div className="absolute z-20 left-1/2 transform -translate-x-1/2 -bottom-15 w-full max-w-7xl lg:max-w-8xl px-6 sm:px-8">
+          <SearchBar
+            filters={filters}
+            handleChange={handleChange}
+            handleSearch={handleSearch}
+            roomTypeOptions={roomTypeOptions}
+          />
+        </div>
+      </section>
+      <section className="max-w-4xl mx-auto sm:px-8 lg:mx-12 py-14 sm:py-15 md:py-20 text-left">
+        <h2 className="text-3xl lg:text-4xl font-light tracking-tight text-primary">
+          Chọn phòng của bạn
         </h2>
-        <p className="mt-4 text-base text-muted-foreground leading-relaxed">
-          Bức ảnh phòng chụp phong cách “photo booth” mang hơi hướng nghệ thuật
-          đường phố của Banksy, phong cách tinh tế, thủ công và độc đáo. Bia thủ
-          công hảo hạng kết hợp với seitan (món chay từ gluten), ảnh phòng chụp
-          và khoai kale chiên 8-bit tạo nên một trải nghiệm “chillwave” phóng
-          khoáng, mang đậm tinh thần tự do và sáng tạo.
-        </p>
       </section>
 
       <section

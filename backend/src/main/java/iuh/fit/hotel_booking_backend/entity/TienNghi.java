@@ -16,6 +16,8 @@ public class TienNghi {
     private String maTienNghi;
     @Column(name = "ten_tien_nghi", nullable = false, unique = true)
     private String tenTienNghi;
+    private String icon;
+    private String loaiTienNghi;
     @Column(name = "tinh_trang")
     private boolean tinhTrang;
 }

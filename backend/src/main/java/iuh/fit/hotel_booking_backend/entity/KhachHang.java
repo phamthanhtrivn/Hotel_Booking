@@ -23,7 +23,7 @@ public class KhachHang {
     @Column(name = "diem_tich_luy")
     private int diemTichLuy;
     @OneToOne(mappedBy = "khachHang")
-    @JsonBackReference
+    @JsonIgnore
     private TaiKhoan taiKhoan;
 
 }

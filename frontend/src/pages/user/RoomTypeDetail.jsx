@@ -1,55 +1,23 @@
 import ImageSlider from "@/components/common/ImageSlide";
-import { loaiGiuongService } from "@/services/loaiGiuong";
-import { loaiPhongService } from "@/services/loaiPhong";
+import { formatVND } from "@/helpers/currencyFormatter";
+import { loaiGiuongService } from "@/services/loaiGiuongService";
+import { loaiPhongService } from "@/services/loaiPhongService";
+import { tienNghiService } from "@/services/tienNghiService";
 import {
-  BedDoubleIcon,
-  BedIcon,
-  ChevronLeft,
-  ChevronRight,
-  ConciergeBellIcon,
-  DoorOpenIcon,
-  Grid2X2X,
   LandPlotIcon,
-  UserRound,
-  UserRoundIcon,
-  UsersIcon,
 } from "lucide-react";
+import { IoIosResize, IoMdPeople, IoMdReturnLeft } from "react-icons/io";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-
-const amenities = [
-  "40-inch Samsung® LED TV",
-  "Electronic safe with charging facility",
-  "iHome™ Bluetooth MP3 Player",
-  "Iron and ironing board",
-  "Mini bar",
-  "Non-smoking",
-  "USB charging station",
-  <>
-    Wired and wireless broadband
-    <br />
-    Internet access
-  </>,
-  "Work desk",
-];
-
-const services = [
-  "Free-to-use smartphone (Free)",
-  "Safe-deposit box (Free)",
-  "Luggage storage (Free)",
-  "Childcare ($60 / Once / Per Accommodation)",
-  "Massage ($15 / Once / Per Guest)",
-];
-
-const ListItem = ({ item }) => {
-  return (
-    <li className="flex items-start text-gray-300 text-base font-light">
-      <span className="text-gray-400 mr-5 mt-1 text-sm">&gt;</span>
-      <span className="flex-1 leading-snug">{item}</span>
-    </li>
-  );
-};
+import { MdOutlineSingleBed } from "react-icons/md";
+import { Button } from "@/components/ui/button";
+import { BiSolidWalletAlt } from "react-icons/bi";
+import { getStyledIcon, mainAmenityCodes } from "@/helpers/iconMapper";
+import { danhGiaService } from "@/services/danhGiaService";
+import { processReviews } from "@/helpers/reviewHelpers";
+import TienNghiByCategory from "@/components/common/TienNghiByCategory";
+import ReviewsList from "@/components/common/ReviewsList";
 
 const OtherRoomsSlider = ({ otherRooms }) => {
   const navigate = useNavigate();
@@ -145,26 +113,48 @@ const OtherRoomsSlider = ({ otherRooms }) => {
 const RoomTypeDetail = () => {
   const { id } = useParams();
   const [room, setRoom] = useState({});
+  const [bedTypes, setBedTypes] = useState([]);
   const [otherRooms, setOtherRooms] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [amenities, setAmenities] = useState([]);
   const [activeTab, setActiveTab] = useState("");
+  const [reviewState, setReviewState] = useState({
+    reviews: [],
+    topReviews: [],
+    rating: "",
+    numOfReviews: 0,
+    avgService: 0,
+    avgClean: 0,
+    avgFacilities: 0,
+    avg: 0,
+  });
 
   const navigate = useNavigate();
 
-  // const [loaiGiuong, setLoaiGiong] = useState([]);
-
   const fetchLoaiGiuong = async () => {
-    const result = await loaiGiuongService.findByLoaiPhong(room.maLoaiPhong);
-    console.log(result);
+    const result = await loaiGiuongService.findByLoaiPhong(id);
+    setBedTypes(result.data);
+  };
+
+  const fetchReviews = async () => {
+    const result = await danhGiaService.findByLoaiPhong(id);
+    const processed = processReviews(result.data);
+    setReviewState(processed);
+  };
+
+  const fetchAmenities = async () => {
+    const result = await tienNghiService.findTienNghiByLoaiPhong(id);
+    setAmenities(result.data);
   };
 
   useEffect(() => {
-    const fetchRoom = async () => {
+    const fetchRoomData = async () => {
       setLoading(true);
       try {
-        const res = await loaiPhongService.findById(id);
-        setRoom(res.data);
+        // Chạy tuần tự các API call
+        const roomRes = await loaiPhongService.findById(id);
+        setRoom(roomRes.data);
+
         const resAll = await fetch(
           `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong`
         );
@@ -174,8 +164,11 @@ const RoomTypeDetail = () => {
         const others = dataAll
           .filter((r) => r.loaiPhong.maLoaiPhong !== id)
           .map((r) => r.loaiPhong);
-
         setOtherRooms(others);
+
+        await fetchLoaiGiuong();
+        await fetchAmenities();
+        await fetchReviews();
       } catch (err) {
         console.error(err);
         toast.error("Không thể tải dữ liệu phòng!");
@@ -185,8 +178,7 @@ const RoomTypeDetail = () => {
       }
     };
 
-    fetchRoom();
-    fetchLoaiGiuong();
+    fetchRoomData();
   }, [id, navigate]);
 
   const handleScroll = (id) => {
@@ -199,19 +191,19 @@ const RoomTypeDetail = () => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [id]); 
+  }, [id]);
 
   const handleBookNow = () => {
-    navigate('/booking', {
+    navigate("/booking", {
       state: {
         maLoaiPhong: room.maLoaiPhong,
         tenLoaiPhong: room.tenLoaiPhong,
-        checkIn: '2025-12-15T13:00:00',
-        checkOut: '2025-12-17T12:30:00',
+        checkIn: "2025-12-15T13:00:00",
+        checkOut: "2025-12-17T12:30:00",
         soKhach: room.soKhach || 2,
         gia: room.gia,
-        hinhAnh: room.hinhAnh[0]
-      }
+        hinhAnh: room.hinhAnh[0],
+      },
     });
   };
 
@@ -220,115 +212,143 @@ const RoomTypeDetail = () => {
 
   return (
     <div className="bg-background/90">
-      <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
+      <section className="relative h-[70vh] w-full flex items-center justify-center overflow-hidden">
         <img
           src={room.hinhAnh[0]}
           alt=""
-          className="absolute top-0 left-0 w-full h-full object-cover z-0"
+          className="absolute top-0 left-0 w-full h-full object-cover brightness-[75%]"
         />
         <div className="absolute top-0 left-0 w-full h-full bg-foreground opacity-30 z-10"></div>
 
         <div className="relative z-20 flex flex-col h-full text-muted">
-          <div className="flex-grow flex flex-col text-center justify-center">
-            <h2 className="text-8xl font-thin tracking-wide">
+          <div className="flex-grow w-[70vw] flex flex-col text-center justify-center gap-4">
+            <h2 className="text-6xl font-thin tracking-wide">
               {room.tenLoaiPhong}
             </h2>
-            <p className="mt-4 text-xl font-light tracking-[0.3em]">
-              {room.moTa}
-            </p>
+            <p className="text-lg font-[500px]">{room.moTa}</p>
           </div>
 
           <nav className="pb-40 flex items-center justify-center gap-10">
-            {["detail", "amenities", "gallery"].map((tab) => (
+            {["detail", "amenities", "gallery", "reviews"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => handleScroll(tab)}
                 className={`uppercase tracking-widest font-medium text-sm transition-all ${
                   activeTab === tab
-                    ? "text-foreground/70 pb-1"
-                    : "text-background hover:text-foreground/70"
+                    ? "text-[var(--color-accent)] pb-1 font-bold"
+                    : "text-background hover:text-[var(--color-accent)]"
                 }`}
               >
                 {tab === "detail"
-                  ? "DETAIL"
+                  ? "chi tiết"
                   : tab === "amenities"
-                  ? "AMENITIES & SERVICES"
-                  : "GALLERY"}
+                  ? "tiện nghi"
+                  : tab == "gallery"
+                  ? "Hình ảnh"
+                  : "Đánh giá"}
               </button>
             ))}
           </nav>
         </div>
       </section>
-      <section id="detail" className="relative z-30 -mt-[18vh]">
-        <div className="bg-background max-w-7xl mx-auto px-8 py-24 shadow-2xl">
+      <section id="detail" className="relative z-30 -mt-[140px]">
+        <div className="bg-background max-w-[1350px] mx-auto px-8 py-10 shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-3 mb-8">
-            <div className="lg:col-span-2">
-              <h2 className="text-4xl font-light text-foreground leading-relaxed">
-                Great choice for a relaxing vacation for families with children
-                or a group of friends.
-              </h2>
-              <div className="space-y-6 text-foreground/80 font-light leading-relaxed">
-                <p>
-                  Exercitation photo booth stumptown tote bag Banksy, elit small
-                  batch freegan sed. Craft beer elit seitan exercitation, photo
-                  booth et 8-bit kale chips proident chillwave deep v laborum.
-                  Aliquip veniam delectus, Marfa eiusmod Pinterest in do umami
-                  readymade swag. Selfies iPhone Kickstarter, drinking vinegar
-                  jean vinegar stumptown yr pop-up artisan.
+            <div className="lg:col-span-1 px-5">
+              <h2 className="tracking-widest uppercase mb-5">Đánh giá</h2>
+              <div className="flex gap-3 items-center">
+                <p className="font-bold text-2xl text-[var(--color-primary)]">
+                  {reviewState.avg}
                 </p>
-                <p>
-                  See-through delicate embroidered organza blue lining luxury
-                  acetate-mix stretch pleat detailing. Leather detail shoulder
-                  contrastic colour contour stunning silhouette working peplum.
-                  Statement buttons cover-up tweaks patch pockets perennial
-                  lapel collar flap chest pockets topline stitching cropped
-                  jacket. Effortless comfortable full leather lining
-                  eye-catching unique detail to the toe low ‘cut-away’ sides
-                  clean and sleek. Polished finish elegant court shoe work duty
-                  stretchy slingback strap mid kitten heel this ladylike design
-                  slingback strap mid kitten heel this ladylike design.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Integer vel molestie nisl. Duis ac mi leo. Mauris at convallis
-                  erat. Aliquam interdum semper luctus. Aenean ex tellus,
-                  gravida ut rutrum dignissim, malesuada vitae nulla. Sed
-                  viverra, nisl dapibus lobortis porttitor.
-                </p>
+                <p className="text-[var(--color-primary)] -ml-2">/10</p>
+                <div>
+                  <p className="font-[450]">{reviewState.rating}</p>
+                  <p className="text-[var(--color-primary)] font-[600]">
+                    {reviewState.numOfReviews} đánh giá
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="flex flex-col gap-2">
+                  <p className="font-[600]">Khách hàng nói gì?</p>
+                  {reviewState.topReviews.map((r) => (
+                    <div className="border rounded p-2" key={r.maDanhGia}>
+                      <div className="flex justify-between">
+                        <p className="font-[600] text-[14px]">
+                          {r.hoTenKhachHang}
+                        </p>
+                        <p className="bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)] text-[12px] text-[var(--color-primary)] font-[600] p-1 rounded">
+                          {r.diemTrungBinh} / 10
+                        </p>
+                      </div>
+                      <p className="text-[14px] font-[500]">{r.binhLuan}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-            <div className="relative">
-              <div className="top-24 sticky">
-                <div className="pl-8 border-l border-foreground/30">
-                  <p className="text-xl tracking-widest text-foreground uppercase">
-                    giá
-                  </p>
-                  <p className="text-4xl text-center font-bold my-2 text-foreground">
-                    {room.gia} VNĐ
-                  </p>
-                  <button
-                    onClick={handleBookNow}
-                    className="bg-chart-2/60 text-background hover:bg-chart-2 w-full my-3 mt-4 transition-colors duration-300 uppercase p-4 text-xl"
-                  >
-                    book now
-                  </button>
-                  <div className="mt-12 space-y-6">
-                    <div className="flex items-center space-x-6">
-                      <BedDoubleIcon className="w-16 h-16" />
-                      <span className="text-xl">{room.loaiGiuong}</span>
+            <div className="lg:col-span-1 md:border-l lg:border-l sm:border-0 border-foreground/30 px-5">
+              <h2 className="tracking-widest uppercase mb-5">Tiện nghi</h2>
+              <div className="flex flex-col gap-5">
+                {amenities
+                  .filter((a) => mainAmenityCodes.includes(a.maTienNghi))
+                  .map((a) => (
+                    <div
+                      key={a.maTienNghi}
+                      className="flex items-center space-x-2 gap-2"
+                    >
+                      {getStyledIcon(a.icon, {
+                        size: "w-6 h-6",
+                        color: "black",
+                      })}
+                      <span className="text-sm">{a.tenTienNghi}</span>
                     </div>
-                    <div className="flex items-center space-x-6">
-                      <UsersIcon className="w-16 h-16" />
-                      <span className="text-xl">{room.soKhach} Người</span>
-                    </div>
-                    <div className="flex items-center space-x-6">
-                      <Grid2X2X className="w-16 h-16" />
-                      <span className="text-xl">{room.dienTich} m²</span>
-                    </div>
-                    <div className="flex items-center space-x-6">
-                      <LandPlotIcon className="w-16 h-16" />
-                      <span className="text-xl">View biển</span>
-                    </div>
+                  ))}
+                <a className="hover:underline hover:underline-1" onClick={()=>handleScroll("amenities")}>Xem thêm</a>
+              </div>
+            </div>
+            <div className="px-5 md:border-l lg:border-l sm:border-0 border-foreground/30 flex flex-col">
+              <p className="tracking-widest uppercase mb-4">giá / 1 đêm</p>
+              <div className="flex flex-col gap-5">
+                <p className="text-3xl text-center font-bold text-[var(--color-primary)]">
+                  {formatVND(room.gia)}
+                </p>
+                <Button
+                  onClick={handleBookNow}
+                  className="bg-[var(--color-primary)] hover:bg-[color-mix(in_srgb,var(--color-primary)_70%,transparent)] text-background w-full py-5 transition-colors duration-300 uppercase text-[18px] font-[600px]"
+                >
+                  Đặt phòng
+                </Button>
+                <div className="grid grid-cols-2 gap-7">
+                  <div className="flex items-center space-x-6">
+                    <MdOutlineSingleBed size={35} />
+                    <span className="text-[16px]">
+                      {bedTypes.map((b) => b.tenGiuong).join(", ")}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-6">
+                    <IoMdPeople size={35} className="stroke-1" />
+                    <span className="text-[16px]">
+                      Tối đa {room.soKhach} Khách
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-6">
+                    <IoIosResize size={35} />
+                    <span className="text-[16px]">{room.dienTich} m²</span>
+                  </div>
+                  <div className="flex items-center space-x-6">
+                    <LandPlotIcon size={35} />
+                    <span className="text-[16px]">View biển</span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-6 border-t pt-3 border-foreground/30">
+                  <div className="flex items-center space-x-6">
+                    <IoMdReturnLeft size={30} />
+                    <span className="text-[16px]">Chính sách hủy bỏ</span>
+                  </div>
+                  <div className="flex items-center space-x-6">
+                    <BiSolidWalletAlt size={30} />
+                    <span className="text-[16px]">Thanh toán trực tuyến</span>
                   </div>
                 </div>
               </div>
@@ -338,44 +358,20 @@ const RoomTypeDetail = () => {
       </section>
       <section
         id="amenities"
-        className="relative bg-foreground w-full overflow-hidden p-15"
+        className="relative bg-[var(--color-background)] w-full overflow-hidden px-25 py-8"
       >
-        <div className="grid grid-cols-1 md:grid-cols-4 text-background gap-5">
-          <div>
-            <div className="flex items-center mb-8">
-              <DoorOpenIcon className="w-12 h-12" />
-              <span>Amenities</span>
-            </div>
-          </div>
-          <div>
-            <ul className="space-y-5">
-              {amenities.map((item, index) => (
-                <ListItem key={index} item={item} />
-              ))}
-            </ul>
-          </div>
-          <div>
-            <div className="flex items-center mb-8">
-              <ConciergeBellIcon className="w-12 h-12" />
-              <span>Services</span>
-            </div>
-          </div>
-          <div>
-            <ul className="space-y-5">
-              {services.map((item, index) => (
-                <ListItem key={index} item={item} />
-              ))}
-            </ul>
-          </div>
-        </div>
+        <TienNghiByCategory tienNghiList={amenities} />
       </section>
 
       <section id="gallery" className="relative w-full overflow-hidden mt-2">
         <ImageSlider
           images={room?.hinhAnh || []}
-          visibleCount={3}
           height="70vh"
         />
+      </section> 
+      <section id="reviews" className="mx-20 px-5 py-8 shadow-2xl">
+        <h2 className='text-xl uppercase'>Đánh giá tổng thể</h2>
+        <ReviewsList reviewsState={reviewState}/>
       </section>
       <OtherRoomsSlider otherRooms={otherRooms} />
     </div>

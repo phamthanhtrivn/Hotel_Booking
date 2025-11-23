@@ -106,4 +106,10 @@ public class TienNghiService {
 
         return response;
     }
+
+    public List<TienNghi> getByLoaiPhong(String id){
+        List<TienNghi> tienNghis = repo.findByLoaiPhong(id);
+
+        return tienNghis;
+    }
 }

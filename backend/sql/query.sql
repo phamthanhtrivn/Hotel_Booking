@@ -4,8 +4,12 @@ select * from chi_tiet_loai_giuong;
 
 select * from tai_khoan;
 
+select * from chi_tiet_tien_nghi where ma_loai_phong='LP2';
+
+select * from tien_nghi;
 
 select * from khach_hang;
+update tien_nghi set icon='tv', loai_tien_nghi='Hình ảnh/âm thanh' where ma_tien_nghi='TN2';
 
 select * from phong;
 select * from don_dat_phong;

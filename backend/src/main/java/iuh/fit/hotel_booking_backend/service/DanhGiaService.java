@@ -18,6 +18,10 @@ public class DanhGiaService {
         return repo.findAll();
     }
 
+    public List<DanhGia> findByLoaiPhong(String id){
+        return repo.findByLoaiPhong(id);
+    }
+
     public DanhGia getById(String id) {
         return repo.findById(id).orElse(null);
     }

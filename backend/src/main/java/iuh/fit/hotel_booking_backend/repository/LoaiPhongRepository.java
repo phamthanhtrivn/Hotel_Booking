@@ -14,19 +14,19 @@ public interface LoaiPhongRepository extends JpaRepository<LoaiPhong, String>, J
     boolean existsLoaiPhongByMaLoaiPhong(String code);
 
     @Query("""
-        SELECT COUNT(p.maPhong)
-        FROM Phong p
-        WHERE p.loaiPhong.maLoaiPhong = :maLoaiPhong
-          AND p.maPhong NOT IN (
-              SELECT d.phong.maPhong
-              FROM DonDatPhong d
-              WHERE d.trangThai IN (
-                  iuh.fit.hotel_booking_backend.entity.TrangThaiDon.CHUA_THANH_TOAN,
-                  iuh.fit.hotel_booking_backend.entity.TrangThaiDon.DA_THANH_TOAN)
-                AND d.checkIn < :checkOut
-                AND d.checkOut > :checkIn
-          )
-    """)
+                SELECT COUNT(p.maPhong)
+                FROM Phong p
+                WHERE p.loaiPhong.maLoaiPhong = :maLoaiPhong
+                  AND p.maPhong NOT IN (
+                      SELECT d.phong.maPhong
+                      FROM DonDatPhong d
+                      WHERE d.trangThai IN (
+                          iuh.fit.hotel_booking_backend.entity.TrangThaiDon.CHUA_THANH_TOAN,
+                          iuh.fit.hotel_booking_backend.entity.TrangThaiDon.DA_THANH_TOAN)
+                        AND d.checkIn < :checkOut
+                        AND d.checkOut > :checkIn
+                  )
+            """)
     long countPhongTrong(
             @Param("maLoaiPhong") String maLoaiPhong,
             @Param("checkIn") LocalDateTime checkIn,

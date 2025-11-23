@@ -1,26 +1,21 @@
 import React from "react";
 import ImageSlider from "./ImageSlide";
+import { formatVND } from "@/helpers/currencyFormatter";
 
 const RoomTypeCard = ({ room, onDetail }) => {
   return (
     <section className="w-full bg-foreground text-background font-sans overflow-x-hidden">
       <div className="flex flex-col lg:flex-row w-full max-w-none mx-auto h-[500px] shadow-xl overflow-hidden">
         {/* Cột trái - thông tin phòng */}
-        <div className="w-full lg:w-1/3 bg-foreground text-background p-8 sm:p-12 lg:p-16 flex flex-col justify-center space-y-6">
+        <div className="w-full lg:w-1/3 bg-[var(--color-background)] text-background p-8 sm:p-12 lg:p-16 flex flex-col justify-center space-y-6">
           <div>
-            <h2 className="text-3xl sm:text-4xl font-light tracking-tight mb-2">
+            <h2 className="text-3xl sm:text-4xl tracking-tight mb-2">
               {room.tenLoaiPhong}
             </h2>
             <p className="text-background/60 text-xl uppercase">GIÁ</p>
             <p className="text-background text-3xl font-light mt-1">
-              {room.gia.toLocaleString()} VNĐ
+              {formatVND(room.gia)} 
             </p>
-            {room.soPhongTrong !== undefined && (
-              <p className="mt-2 text-background/80">
-                Số phòng trống:{" "}
-                <span className="font-semibold">{room.soPhongTrong}</span>
-              </p>
-            )}
           </div>
 
           <div className="space-y-2 text-base text-muted-foreground">

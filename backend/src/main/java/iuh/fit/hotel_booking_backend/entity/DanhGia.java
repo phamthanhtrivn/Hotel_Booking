@@ -27,6 +27,7 @@ public class DanhGia {
     private String binhLuan;
     @ManyToOne
     @JoinColumn(name = "ma_loai_phong", nullable = false)
+    @JsonIgnore
     private LoaiPhong loaiPhong;
     @Column(name = "thoi_gian_danh_gia")
     private LocalDateTime thoiGianDanhGia;
@@ -37,4 +38,14 @@ public class DanhGia {
 
     @Column(name = "tinh_trang")
     private boolean tinhTrang;
+
+    @Transient
+    private String hoTenKhachHang;
+
+    @PostLoad
+    private void calculateHoTenKhachHang() {
+        if (this.donDatPhong != null && this.donDatPhong.getKhachHang() != null) {
+            this.hoTenKhachHang = this.donDatPhong.getKhachHang().getHoTenKH();
+        }
+    }
 }

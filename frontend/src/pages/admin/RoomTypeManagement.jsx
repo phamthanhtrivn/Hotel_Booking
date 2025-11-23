@@ -1,6 +1,6 @@
 import PanigationComponent from "@/components/admin/PanigationComponent";
 import RoomTypeList from "@/components/admin/room-type/RoomTypeList";
-import { loaiPhongService } from "@/services/loaiPhong";
+import { loaiPhongService } from "@/services/loaiPhongService";
 import { Plus, Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import TypeRoomAddModal from "@/components/admin/room-type/TypeRoomAddModal";
