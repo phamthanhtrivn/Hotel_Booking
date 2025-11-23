@@ -3,9 +3,7 @@ import { formatVND } from "@/helpers/currencyFormatter";
 import { loaiGiuongService } from "@/services/loaiGiuongService";
 import { loaiPhongService } from "@/services/loaiPhongService";
 import { tienNghiService } from "@/services/tienNghiService";
-import {
-  LandPlotIcon,
-} from "lucide-react";
+import { LandPlotIcon } from "lucide-react";
 import { IoIosResize, IoMdPeople, IoMdReturnLeft } from "react-icons/io";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -304,7 +302,12 @@ const RoomTypeDetail = () => {
                       <span className="text-sm">{a.tenTienNghi}</span>
                     </div>
                   ))}
-                <a className="hover:underline hover:underline-1" onClick={()=>handleScroll("amenities")}>Xem thêm</a>
+                <a
+                  className="hover:underline hover:underline-1"
+                  onClick={() => handleScroll("amenities")}
+                >
+                  Xem thêm
+                </a>
               </div>
             </div>
             <div className="px-5 md:border-l lg:border-l sm:border-0 border-foreground/30 flex flex-col">
@@ -364,14 +367,11 @@ const RoomTypeDetail = () => {
       </section>
 
       <section id="gallery" className="relative w-full overflow-hidden mt-2">
-        <ImageSlider
-          images={room?.hinhAnh || []}
-          height="70vh"
-        />
-      </section> 
+        <ImageSlider images={room?.hinhAnh || []} height="70vh" />
+      </section>
       <section id="reviews" className="mx-20 px-5 py-8 shadow-2xl">
-        <h2 className='text-xl uppercase'>Đánh giá tổng thể</h2>
-        <ReviewsList reviewsState={reviewState}/>
+        <h2 className="text-xl uppercase">Đánh giá tổng thể</h2>
+        <ReviewsList reviewsState={reviewState} />
       </section>
       <OtherRoomsSlider otherRooms={otherRooms} />
     </div>
