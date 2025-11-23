@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.service;
 
+import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.dto.DatPhongRequest;
 import iuh.fit.hotel_booking_backend.dto.DonDatPhongSearchRequest;
 import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
@@ -10,6 +11,7 @@ import iuh.fit.hotel_booking_backend.helper.DonDatPhongSpecification;
 import iuh.fit.hotel_booking_backend.repository.DonDatPhongRepository;
 import iuh.fit.hotel_booking_backend.repository.KhachHangRepository;
 import iuh.fit.hotel_booking_backend.repository.PhongRepository;
+import iuh.fit.hotel_booking_backend.util.IdUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,6 +29,7 @@ public class DonDatPhongService {
     private KhachHangService khachHangService;
     private PhongService phongService;
     private EmailService emailService;
+    private IdUtil idUtil;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
 
@@ -34,11 +37,12 @@ public class DonDatPhongService {
             DonDatPhongRepository repo,
             KhachHangService khachHangService,
             PhongService phongService,
-            EmailService emailService) {
+            EmailService emailService, IdUtil idUtil) {
         this.repo = repo;
         this.khachHangService = khachHangService;
         this.phongService = phongService;
         this.emailService = emailService;
+        this.idUtil = idUtil;
     }
 
     public List<DonDatPhong> getAll() {
@@ -71,7 +75,7 @@ public class DonDatPhongService {
 
     public DonDatPhong createBooking(DatPhongRequest req) throws Exception {
         DonDatPhong don = new DonDatPhong();
-        don.setMaDatPhong(UUID.randomUUID().toString());
+        don.setMaDatPhong(idUtil.generateUniqueCodeForDonDatPhong());
 
         KhachHang khachHang = khachHangService.getOrCreateCustomer(req);
         don.setHoTenKhachHang(req.hoTenKhachHang);
@@ -98,6 +102,33 @@ public class DonDatPhongService {
         repo.save(don);
         emailService.sendBookingConfirmationWithPaymentInfo(don.getEmail(), don.getMaDatPhong(), req.tongTienThanhToan);
         return don;
+    }
+
+    public APIResponse<DonDatPhong> findById(String id) {
+        APIResponse<DonDatPhong> response = new APIResponse<>();
+        response.setSuccess(false);
+        DonDatPhong donDatPhong = repo.findById(id).orElse(null);
+        response.setData(donDatPhong);
+        if (donDatPhong == null) {
+            response.setMessage("Đơn đặt phòng không tồn tại");
+            return response;
+        }
+        else {
+            response.setSuccess(true);
+            response.setMessage("Lấy đơn đặt phòng thành công");
+            return response;
+        }
+    }
+
+    public void updateStatusPaymentSuccess(String maDatPhong) {
+        Optional<DonDatPhong> donOpt = repo.findById(maDatPhong);
+        if (donOpt.isPresent()) {
+            DonDatPhong don = donOpt.get();
+            if (don.getTrangThai().name().equals("CHUA_THANH_TOAN")) {
+                don.setTrangThai(TrangThaiDon.valueOf("DA_THANH_TOAN"));
+                repo.save(don);
+            }
+        }
     }
 
 }

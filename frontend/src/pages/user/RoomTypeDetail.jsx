@@ -156,7 +156,7 @@ const RoomTypeDetail = () => {
 
   const fetchLoaiGiuong = async () => {
     const result = await loaiGiuongService.findByLoaiPhong(room.maLoaiPhong);
-    console.log(result);
+    // console.log(result);
   };
 
   useEffect(() => {
