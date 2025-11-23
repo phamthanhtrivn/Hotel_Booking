@@ -15,6 +15,9 @@ import restaurantImg from "../../assets/home/Restaurant.jpg";
 import gymImg from "../../assets/home/Gym.jpg";
 import barImg from "../../assets/home/Bar.jpg";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 50 },
@@ -42,6 +45,36 @@ const Section = ({ children }) => {
 
 export default function Home() {
   const navigation = useNavigate();
+  const [ratings, setRatings] = useState([]);
+  const baseUrl = import.meta.env.VITE_BASE_API_URL;
+
+  useEffect(() => {
+    const fetchRatings = async () => {
+      try {
+        const response = await axios.get(
+          `${baseUrl}/api/danhgia/top-three-rating`
+        );
+        const data = response.data;
+        if (data.success && data.data) {
+          // Map dữ liệu API sang định dạng component cần
+          const mappedRatings = data.data.map((rv) => ({
+            stars: (rv.diemSachSe + rv.diemDichVu + rv.diemCoSoVatChat) / 3,
+            review: rv.binhLuan,
+            time: new Date(rv.thoiGianDanhGia).toLocaleDateString("vi-VN"),
+            name: rv.hoTenKhachHang,
+          }));
+          setRatings(mappedRatings);
+        } else {
+          toast.info(data.message || "Không có đánh giá nào");
+        }
+      } catch (error) {
+        console.error("Error fetching ratings:", error);
+        toast.error("Lấy đánh giá thất bại");
+      }
+    };
+
+    fetchRatings();
+  }, []);
 
   return (
     <div className="text-gray-800 bg-white">
@@ -233,29 +266,7 @@ export default function Home() {
         </h2>
 
         <div className="grid gap-8 md:grid-cols-3">
-          {[
-            {
-              name: "Minh Anh",
-              review: "Kỳ nghỉ tuyệt vời, phòng cực kỳ sạch đẹp.",
-              stars: 4.8,
-              comments: 52,
-              time: "2 tuần trước",
-            },
-            {
-              name: "Tuấn Kiệt",
-              review: "Spa relax lắm, staff nhiệt tình siêu dễ thương.",
-              stars: 5.0,
-              comments: 37,
-              time: "1 tháng trước",
-            },
-            {
-              name: "Lan Hương",
-              review: "Hồ bơi view biển chill hết cỡ.",
-              stars: 4.9,
-              comments: 41,
-              time: "3 tuần trước",
-            },
-          ].map((rv, i) => (
+          {ratings.map((rv, i) => (
             <motion.div
               key={i}
               whileHover={{ scale: 1.04 }}

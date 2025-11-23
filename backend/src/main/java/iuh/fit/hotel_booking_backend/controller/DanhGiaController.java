@@ -35,4 +35,10 @@ public class DanhGiaController {
         }
         return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
+
+
+    @GetMapping("/top-three-rating")
+    public ResponseEntity<?> getTopThreeRatings() {
+        return ResponseEntity.ok(danhGiaService.getTopThreeRatings());
+    }
 }
