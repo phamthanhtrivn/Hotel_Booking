@@ -7,6 +7,7 @@ import {
   Bath,
   Bed,
   BookOpen,
+  LogOut,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,40 +39,46 @@ const items = [
 ];
 
 const AdminSidebar = () => {
-  const { logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const location = useLocation();
 
   return (
-    <Sidebar>
-      <SidebarHeader>
-        <div className="flex items-center gap-2">
-          <img src={HotelLogo} className="h-15" />
+    <Sidebar className="border-r border-slate-200">
+      <SidebarHeader className="px-4 py-6 border-b border-slate-200">
+        <div className="flex items-center gap-3">
+          <img 
+            src={HotelLogo} 
+            alt="Hotel Logo" 
+            className="h-12 w-12 rounded-lg object-cover shadow-sm" 
+          />
           <div>
-            <div className="text-lg font-semibold">Twan Hotel</div>
-            <div className="text-xs text-muted-foreground">Management</div>
+            <div className="text-xl font-bold text-slate-800">Twan Hotel</div>
+            <div className="text-sm text-slate-500 font-medium">{user.email}</div>
           </div>
         </div>
       </SidebarHeader>
-      <div className="pr-3">
-        <SidebarSeparator />
-      </div>
-      <SidebarContent>
+
+      <SidebarContent className="px-3 py-6">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item, index) => {
                 const Icon = item.icon;
+                const isActive = location.pathname.startsWith(item.url);
+                
                 return (
-                  <SidebarMenuItem key={index}>
-                    <Link
-                      to={item.url ? item.url : "#"}
-                      className="flex items-center space-x-3"
-                    >
+                  <SidebarMenuItem key={index} className="mb-1">
+                    <Link to={item.url} className="block">
                       <SidebarMenuButton
-                        isActive={location.pathname.startsWith(item.url)}
+                        isActive={isActive}
+                        className={`transition-all duration-200 cursor-pointer ${
+                          isActive 
+                            ? 'bg-blue-500 text-white border-r-3 border-[#1E2A38] font-bold text-base' 
+                            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                        }`}
                       >
-                        <Icon className="h-4" />
-                        <span>{item.name}</span>
+                        <Icon className={`${isActive ? 'text-[#1E2A38] ' : 'text-slate-500'}`} />
+                        <span className="font-medium">{item.name}</span>
                       </SidebarMenuButton>
                     </Link>
                   </SidebarMenuItem>
@@ -81,12 +88,14 @@ const AdminSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+
+      <SidebarFooter className="p-4 border-t border-slate-200">
         <Button
           onClick={logout}
-          className="w-full cursor-pointer bg-[#1E2A38] hover:bg-[#10171f] font-bold"
+          className="w-full cursor-pointer bg-slate-800 hover:bg-slate-900 font-semibold text-white py-2.5 transition-all duration-200 flex items-center justify-center gap-2"
         >
-          Log out
+          <LogOut className="h-4 w-4" />
+          <span>Log out</span>
         </Button>
       </SidebarFooter>
     </Sidebar>

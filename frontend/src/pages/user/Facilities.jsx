@@ -61,7 +61,7 @@ const FacilitySection = ({
   imageAlt,
   index,
 }) => {
-  const isReverse = index % 2 !== 0; // tự động so le
+  const isReverse = index % 2 !== 0;
 
   return (
     <div className="py-12 md:py-20 px-4 md:px-8">
@@ -122,63 +122,63 @@ const FacilitySection = ({
 const Facilities = () => {
   const facilities = [
     {
-      title: "PHÒNG NGHỈ WINK",
+      title: "PHÒNG NGHỈ TWAN HOTEL",
       subtitle: "KHÔNG GIAN NGHỈ DƯỠNG HIỆN ĐẠI",
       description:
-        "Wink mang đến không gian lưu trú kết hợp làm việc linh hoạt, hiện đại. Không còn những phòng làm việc khép kín, thay vào đó là khu vực coworking mở, nơi bạn có thể trao đổi, kết nối và sáng tạo. Bàn làm việc chung, phòng họp có màn hình trình chiếu và nhiều tiện ích khác — giúp bạn biến ý tưởng thành hành động dù đang ở xa văn phòng.",
+        "Twan Hotel mang đến không gian lưu trú hiện đại, thoải mái và linh hoạt. Không còn những phòng kín khép kín, thay vào đó là khu vực mở với tiện nghi đầy đủ, nơi bạn có thể làm việc hoặc nghỉ ngơi thoải mái. Bàn làm việc chung, phòng họp, và nhiều tiện ích khác giúp kỳ nghỉ hoặc công tác của bạn luôn hiệu quả.",
       imageSrc:
         "https://dyf.vn/wp-content/uploads/2021/11/thiet-ke-noi-that-phong-khach-san-hien-dai.jpg",
-      imageAlt: "Phòng khách sạn Wink",
+      imageAlt: "Phòng khách sạn Twan Hotel",
       reverse: false,
     },
     {
-      title: "WINK BAR",
-      subtitle: "THỨC UỐNG THỦ CÔNG & COCKTAIL ĐẶC SẮC",
+      title: "TWAN HOTEL BAR",
+      subtitle: "THỨC UỐNG & COCKTAIL ĐẶC SẮC",
       description:
-        "Thưởng thức những ly cocktail mang hương vị địa phương, hoặc bia thủ công mát lạnh trong không gian âm nhạc sôi động cùng DJ. Bắt đầu buổi tối của bạn tại Wink Bar, nơi nhịp sống thành phố hòa cùng không khí hiện đại và thân thiện. Hoặc quay lại sau khi kết thúc cuộc vui – nhâm nhi ly rượu và trò chuyện cùng bạn bè.",
+        "Thưởng thức những ly cocktail hoặc bia thủ công trong không gian sang trọng, nhạc nền sôi động. TWAN Hotel Bar là nơi lý tưởng để gặp gỡ bạn bè, thư giãn và tận hưởng buổi tối đầy phong cách.",
       imageSrc:
         "https://wink-hotels.com/wp-content/uploads/2024/10/4.-WINK-BAR.jpg",
-      imageAlt: "Wink Bar",
+      imageAlt: "Twan Hotel Bar",
       reverse: true,
     },
     {
-      title: "KHÔNG GIAN WINK",
+      title: "KHÔNG GIAN TWAN HOTEL",
       subtitle: "NƠI KẾT NỐI VÀ GIAO LƯU",
       description:
-        "Wink không chỉ là khách sạn, mà còn là điểm hẹn cộng đồng – nơi giao thoa giữa sáng tạo, tiện nghi và năng lượng trẻ trung. Với chính sách lưu trú 24 giờ linh hoạt cho mọi đặt phòng, bạn hoàn toàn chủ động tận hưởng kỳ nghỉ hoặc chuyến công tác. Hãy ghé Wink Space – chọn một góc thư giãn, làm việc hoặc gặp gỡ, tất cả tùy thuộc vào bạn.",
+        "Twan Hotel không chỉ là khách sạn, mà còn là điểm hẹn cộng đồng – nơi giao thoa giữa sáng tạo, tiện nghi và năng lượng trẻ trung. Với chính sách lưu trú linh hoạt, bạn hoàn toàn chủ động tận hưởng kỳ nghỉ hoặc chuyến công tác.",
       imageSrc:
         "https://wink-hotels.com/wp-content/uploads/2024/10/z6030656534340_70d3504d0cea4db773750632427a16e4-1.jpg",
-      imageAlt: "Wink Space",
+      imageAlt: "Không gian Twan Hotel",
       reverse: false,
     },
     {
-      title: "WINK GYM",
+      title: "TWAN HOTEL GYM",
       subtitle: "SỨC KHỎE & CÂN BẰNG",
       description:
-        "Phòng tập mở cửa 24/7 với đầy đủ thiết bị: máy chạy, tạ tự do, thảm yoga. Nếu bạn muốn thay đổi không gian, hãy thử chạy bộ ngoài công viên hoặc luyện tập HIIT tại khu vực gần khách sạn. Hít sâu – thở chậm – và cảm nhận năng lượng mới mỗi ngày tại Wink.",
+        "Phòng tập mở cửa 24/7 với đầy đủ thiết bị: máy chạy, tạ, thảm yoga. Ngoài ra, bạn có thể luyện tập ngoài trời hoặc tham gia các lớp HIIT tại khu vực gần khách sạn. Hít sâu, thở chậm và nạp năng lượng mới mỗi ngày tại TWAN Hotel.",
       imageSrc:
         "https://wink-hotels.com/wp-content/uploads/2024/10/6.-WINK-GYM.jpg",
-      imageAlt: "Wink Gym",
+      imageAlt: "Twan Hotel Gym",
       reverse: true,
     },
     {
       title: "KHÔNG GIAN LÀM VIỆC CHUNG",
       subtitle: "CỘNG TÁC & SÁNG TẠO",
       description:
-        "Khu vực làm việc mở hiện đại – nơi bạn có thể gặp gỡ, trao đổi ý tưởng và hợp tác cùng những người trẻ năng động. Không gian được thiết kế tối giản nhưng đầy cảm hứng, phù hợp cho cả công việc cá nhân và nhóm nhỏ.",
+        "Khu vực làm việc mở hiện đại – nơi bạn có thể gặp gỡ, trao đổi ý tưởng và hợp tác. Thiết kế tối giản nhưng đầy cảm hứng, phù hợp cho cả công việc cá nhân và nhóm nhỏ.",
       imageSrc:
         "https://wink-hotels.com/wp-content/uploads/2024/10/z6031657040844_ed093332ba090d8f8e699a63e148772f-1-e1731575619797.jpg",
-      imageAlt: "Không gian làm việc Wink",
+      imageAlt: "Không gian làm việc Twan Hotel",
       reverse: false,
     },
     {
       title: "BÃI ĐỖ XE",
       subtitle: "AN TOÀN & THUẬN TIỆN",
       description:
-        "Hệ thống bãi đỗ xe rộng rãi, bảo vệ 24/7, đảm bảo an toàn tuyệt đối cho phương tiện của bạn. Dù là khách lưu trú hay chỉ ghé qua, bạn đều có thể yên tâm tận hưởng thời gian tại Wink mà không cần lo lắng.",
+        "Hệ thống bãi đỗ xe rộng rãi, bảo vệ 24/7, đảm bảo an toàn tuyệt đối cho phương tiện của bạn. Dù là khách lưu trú hay chỉ ghé qua, bạn đều có thể yên tâm tại TWAN Hotel.",
       imageSrc:
         "https://acihome.vn/uploads/15/giai-phap-thiet-ke-bai-do-xe-tai-resort.jpg",
-      imageAlt: "Bãi đỗ xe",
+      imageAlt: "Bãi đỗ xe Twan Hotel",
       reverse: true,
     },
   ];
@@ -197,8 +197,7 @@ const Facilities = () => {
               Cơ Sở Vật Chất
             </h1>
             <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-              Khám phá những tiện nghi hiện đại và không gian độc đáo tại Wink
-              Hotels
+              Khám phá những tiện nghi hiện đại và không gian độc đáo tại Twan Hotel
             </p>
           </FadeInSection>
         </div>

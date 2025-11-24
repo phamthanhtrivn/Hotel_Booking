@@ -34,7 +34,7 @@ const AdminHeader = () => {
       {/* Admin Area Title */}
       <div className="flex items-center space-x-3">
         <p className="text-xl font-bold tracking-wide text-gray-800">
-          Hotel Operations Center
+          Hotel Management
         </p>
       </div>
 

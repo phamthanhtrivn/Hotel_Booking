@@ -7,7 +7,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Loader2, Mail, Phone, User } from "lucide-react";
-import ZaloPayLogo from "@/assets/paymentMethodLogo/ZaloPay_Logo.png";
+import VNPayLogo from "@/assets/paymentMethodLogo/VNPAy_Logo.svg";
 import MomoLogo from "@/assets/paymentMethodLogo/MoMo_Logo.png";
 import HotelLogo from "@/assets/hotelLogo/HotelLogo.jpg";
 import { Button } from "@/components/ui/button";
@@ -239,8 +239,8 @@ const Booking = () => {
               <Label className="text-lg">Pay with</Label>
               <div className="flex space-x-2">
                 <img
-                  src={ZaloPayLogo}
-                  alt="Zalopay logo"
+                  src={VNPayLogo}
+                  alt="VNPay logo"
                   className="h-10 w-10 object-contain"
                 />
                 <img
@@ -260,7 +260,7 @@ const Booking = () => {
               <Button className="w-[150px]" onClick={handleOnBook}>
                 {isLoading ? (
                   <div className="flex gap-3 items-center justify-center">
-                    <Loader2 className="animate-spin"/>
+                    <Loader2 className="animate-spin" />
                     <p>Đang xử lý</p>
                   </div>
                 ) : (
