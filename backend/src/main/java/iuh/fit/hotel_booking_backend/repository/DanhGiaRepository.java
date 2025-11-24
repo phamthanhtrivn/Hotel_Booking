@@ -25,12 +25,13 @@ public interface DanhGiaRepository extends JpaRepository<DanhGia, String> {
        AND (:minDiem = 0 OR (d.diemCoSoVatChat + d.diemDichVu + d.diemSachSe)/3.0 <= :minDiem)
        AND (:maxDiem = 0 OR (d.diemCoSoVatChat + d.diemDichVu + d.diemSachSe)/3.0 >= :maxDiem)
        """)
-    public List<DanhGiaRespone> searchDanhGia(
+    public Page<DanhGiaRespone> searchDanhGia(
             @Param("maLoaiPhong") String maLoaiPhong,
             @Param("minDiem") int minDiem,
             @Param("maxDiem") int maxDiem,
             @Param("thang") int thang,
-            @Param("nam") int nam
+            @Param("nam") int nam,
+            Pageable pageable
     );
 
     @Query(

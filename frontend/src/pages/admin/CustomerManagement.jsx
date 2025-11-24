@@ -31,7 +31,7 @@ export default function CustomerManagement() {
     const [openEdit, setOpenEdit] = useState(false);
     const [currentCustomer, setCurrentCustomer] = useState(null);
     const [fliter, setFliter] = useState({
-        keyword: null,
+        keyword: '',
         trangThai: '',
         sortField: '',
     });
@@ -39,8 +39,8 @@ export default function CustomerManagement() {
 
     const fetchCustomers = async () => {
         let params = `?page=${currentPage - 1}`;
-        if(fliter.keyword != null && fliter.keyword !== ''){
-            params += `keyword=${fliter.keyword}`;
+        if( fliter.keyword !== ''){
+            params += `&keyword=${fliter.keyword}`;
         }
         if(fliter.trangThai != '' && fliter.trangThai !== 'all'){
             params += `&trangThai=${fliter.trangThai}`;

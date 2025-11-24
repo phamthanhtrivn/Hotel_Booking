@@ -42,52 +42,40 @@ export default function ReviewManagement() {
     const [openDetail, setOpenDetail] = useState(false);
     const [selectedReview, setSelectedReview] = useState(null);
 
-    useEffect(() => {
-        const fetchReviews = async () => {
-            const req = await get(`danhgia?page=${currentPage - 1}`);
-            const reqYears = await get('danhgia/nam');
-            const reqRoomTypes = await get('loaiphong/loaiPhong');
-            if (reqYears.success) {
-                setYears(reqYears.data);
-            }
-            if (reqRoomTypes.success) {
-                setRoomTypes(reqRoomTypes.data);
-            }
-            if (req.success) {
-                setReviews(req.data.content);
-                setTotalPages(req.data.totalPages);
-            }
-            else {
-                console.log(req.message);
-            }
+
+    const fetchReviews = async () => {
+        
+        const req = await get(
+            `danhgia?page=${currentPage - 1}`
+            + `&maLoaiPhong=${filters.roomType || ""}`
+            +   `&loaiMucDo=${filters.ratingType || ""}` 
+            +    `&diemMucDo=${filters.ratingScore || ""}` 
+            +   `&thang=${filters.month || ""}` 
+            +   `&nam=${filters.year || ""}`
+        );
+        const reqYears = await get('danhgia/nam');
+        const reqRoomTypes = await get('loaiphong/loaiPhong');
+        if (reqYears.success) {
+            setYears(reqYears.data);
         }
-        fetchReviews();
-    }, []);
-
-
-    const handelSearch = () => {
-        console.log('Searching with filters:', filters);
-
-        if (filters.roomType === "all") setFilters({ ...filters, roomType: "" });
-        if (filters.ratingType === "all") setFilters({ ...filters, ratingType: "", ratingScore: "" });
-        if (filters.month === "all") setFilters({ ...filters, month: "" });
-        if (filters.year === "all") setFilters({ ...filters, year: "" });
-
-        const fetchFilteredReviews = async () => {
-            const req = await get(
-                `danhgia/search?maLoaiPhong=${filters.roomType}` +
-                `&loaiMucDo=${filters.ratingType}` +
-                `&diemMucDo=${filters.ratingScore || ""}` +
-                `&thang=${filters.month || ""}` +
-                `&nam=${filters.year || ""}`
-            );
-            if (req?.success) {
-                setReviews(req.data);
-            }
+        if (reqRoomTypes.success) {
+            setRoomTypes(reqRoomTypes.data);
         }
-        fetchFilteredReviews();
+        if (req.success) {
+            setReviews(req.data.content);
+            setTotalPages(req.data.totalPages);
+        }
+        else {
+            console.log(req.message);
+        }
     }
 
+    useEffect(() => {
+        fetchReviews();
+    }, [currentPage]);
+
+
+    
 
 
     const columns = [
@@ -117,9 +105,9 @@ export default function ReviewManagement() {
             render: (row) => {
                 const status = row.danhGia?.tinhTrang;
                 return status ? (
-                    <button onClick={() => handleEdit(row)} className="bg-green-400 text-white font-normal px-1 py-1 rounded">Đã duyệt</button>
+                    <button onClick={() => handleEdit(row)} className="bg-green-400 text-white font-normal px-1 py-0.5 rounded-2xl">đã duyệt</button>
                 ) : (
-                    <button onClick={() => handleEdit(row)} className="bg-red-500 text-white font-normal px-1 py-1 rounded">Đã ẩn</button>
+                    <button onClick={() => handleEdit(row)} className="bg-red-500 text-white font-normal px-1 py-0.5 rounded-2xl">đã ẩn</button>
                 );
             }
         },
@@ -186,7 +174,7 @@ export default function ReviewManagement() {
                                 <SelectValue placeholder="Lọc theo loại phòng" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Tất cả</SelectItem>
+                                <SelectItem value=" ">Tất cả</SelectItem>
                                 {roomTypes.map((item) => (
                                     <SelectItem key={item.maLoaiPhong} value={item.maLoaiPhong}>
                                         {item.tenLoaiPhong}
@@ -209,7 +197,7 @@ export default function ReviewManagement() {
                                 <SelectValue placeholder="Lọc theo trung bình đánh giá" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Tất cả</SelectItem>
+                                <SelectItem value=" ">Tất cả</SelectItem>
                                 <SelectItem value="GOOD" score="9">Xuất Sắc ({">="} 9 sao)</SelectItem>
                                 <SelectItem value="QUITE-GOOD" score="8">Tốt ({">="} 8 sao)</SelectItem>
                                 <SelectItem value="AVERAGE" score="7">Trung Bình ({">="} 7 sao)</SelectItem>
@@ -222,7 +210,7 @@ export default function ReviewManagement() {
                                 <SelectValue placeholder="Lọc theo tháng" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Tất cả</SelectItem>
+                                <SelectItem value=" ">Tất cả</SelectItem>
                                 {[...Array(12)].map((_, i) => (
                                     <SelectItem key={i} value={String(i + 1).padStart(2, "0")}>
                                         Tháng {i + 1}
@@ -236,7 +224,7 @@ export default function ReviewManagement() {
                                 <SelectValue placeholder="Lọc theo năm" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="all">Tất cả</SelectItem>
+                                <SelectItem value=" ">Tất cả</SelectItem>
                                 {years.map((item) => (
                                     <SelectItem key={item} value={item}>
                                         {item}
@@ -248,7 +236,7 @@ export default function ReviewManagement() {
                     </div>
 
                     <div className="flex justify-end mt-6">
-                        <button onClick={handelSearch}
+                        <button onClick={fetchReviews}
                             className="flex items-center gap-2 bg-[var(--color-background)] text-[#fff] px-6 py-2 rounded-lg">
                             <Search size={20} /> Tìm kiếm
                         </button>

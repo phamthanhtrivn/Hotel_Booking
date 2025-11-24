@@ -61,31 +61,24 @@ public class DanhGiaService {
         return repo.save(newDanhGia);
     }
 
-    public List<DanhGiaRespone> searchDanhGia(DanhGiaTimKiemRequest danhGiaTimKiemRequest){
 
-        System.out.println("Searching with request: " + danhGiaTimKiemRequest.toString());
-
+    public Page<DanhGiaRespone> getAllByDanhGia(int page, int size,  DanhGiaTimKiemRequest request) {
         int minDiem = 0, maxDiem = 0;
-        if(danhGiaTimKiemRequest.getDanhGia() != null){
-            if(danhGiaTimKiemRequest.getDanhGia().getLoai().equals("BAD")){
-                minDiem = danhGiaTimKiemRequest.getDanhGia().getDiem();
+        if(request.getDanhGia() != null){
+            if(request.getDanhGia().getLoai().equals("BAD")){
+                minDiem = request.getDanhGia().getDiem();
             }
-            else maxDiem = danhGiaTimKiemRequest.getDanhGia().getDiem();
+            else maxDiem = request.getDanhGia().getDiem();
         }
-
+        Pageable pageable = PageRequest.of(page, size);
         return repo.searchDanhGia(
-                danhGiaTimKiemRequest.getMaLoaiPhong(),
+                request.getMaLoaiPhong(),
                 minDiem,
                 maxDiem,
-                danhGiaTimKiemRequest.getThang(),
-                danhGiaTimKiemRequest.getNam()
+                request.getThang(),
+                request.getNam(),
+                pageable
         );
-    }
-
-
-    public Page<DanhGiaRespone> getAllByDanhGia(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return repo.getAllByDanhGia(pageable);
     }
 
     public List<Integer> findDistinctYears() {

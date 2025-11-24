@@ -25,11 +25,37 @@ public class DanhGiaController {
     @GetMapping
     public APIResponse<Page<DanhGiaRespone>> getAll(
             @RequestParam(defaultValue = "0") int page,
-           @RequestParam(defaultValue = "5") int size
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String maLoaiPhong,
+            @RequestParam(required = false) String loaiMucDo,
+            @RequestParam(required = false) Integer diemMucDo,
+            @RequestParam(required = false, defaultValue = "0") Integer thang,
+            @RequestParam(required = false, defaultValue = "0") Integer nam
     ){
         APIResponse<Page<DanhGiaRespone>> response = new APIResponse<>();
+        DanhGiaTimKiemRequest request = new DanhGiaTimKiemRequest();
+
+
+        if(maLoaiPhong.trim().length() != 0){
+            request.setMaLoaiPhong(maLoaiPhong);
+        }
+        if(loaiMucDo.trim().length() != 0 && loaiMucDo.trim().length() != 0 && diemMucDo != null) {
+            DanhGiaTimKiemRequest.MucDo mucDo = new DanhGiaTimKiemRequest.MucDo();
+            mucDo.setLoai(loaiMucDo);
+            mucDo.setDiem(Integer.parseInt(diemMucDo.toString()));
+            request.setDanhGia(mucDo);
+        }
+        if(thang.toString().length() != 0 ) {
+            request.setThang(Integer.parseInt(thang.toString()));
+        }
+        if(nam.toString().length() != 0 ) {
+            request.setNam(nam);
+        }
+
+        System.out.println("Search Request: " + request.toString());
+
         try{
-            Page<DanhGiaRespone> listDanhGia = danhGiaService.getAllByDanhGia(page, size);
+            Page<DanhGiaRespone> listDanhGia = danhGiaService.getAllByDanhGia(page, size, request);
             response.setData(listDanhGia);
             response.setSuccess(true);
             response.setMessage("Get all danh gia successfully");
@@ -62,44 +88,6 @@ public class DanhGiaController {
     }
 
 
-
-    @GetMapping("search")
-    public  APIResponse<List<DanhGiaRespone>> searchDanhGia(
-            @RequestParam(required = false) String maLoaiPhong,
-            @RequestParam(required = false) String loaiMucDo,
-            @RequestParam(required = false) Integer diemMucDo,
-            @RequestParam(required = false, defaultValue = "0") Integer thang,
-            @RequestParam(required = false, defaultValue = "0") Integer nam
-    ){
-        APIResponse<List<DanhGiaRespone>> response = new APIResponse<>();
-        DanhGiaTimKiemRequest request = new DanhGiaTimKiemRequest();
-        if(maLoaiPhong.trim().length() != 0){
-            request.setMaLoaiPhong(maLoaiPhong);
-        }
-        if(loaiMucDo.trim().length() != 0 && loaiMucDo.trim().length() != 0 && diemMucDo != null) {
-            DanhGiaTimKiemRequest.MucDo mucDo = new DanhGiaTimKiemRequest.MucDo();
-            mucDo.setLoai(loaiMucDo);
-            mucDo.setDiem(Integer.parseInt(diemMucDo.toString()));
-            request.setDanhGia(mucDo);
-        }
-        if(thang.toString().length() != 0 ) {
-            request.setThang(Integer.parseInt(thang.toString()));
-        }
-        if(nam.toString().length() != 0 ) {
-            request.setNam(nam);
-        }
-        try{
-            List<DanhGiaRespone> listDanhGia = danhGiaService.searchDanhGia(request);
-            response.setData(listDanhGia);
-            response.setSuccess(true);
-            response.setMessage("Search danh gia successfully");
-
-        } catch (Exception e) {
-            response.setSuccess(false);
-            response.setMessage("Failed to search danh gia: " + e.getMessage());
-        }
-        return response;
-    }
 
     @PutMapping("/update/{maDanhGia}")
     public APIResponse<DanhGia> updateDanhGia(
