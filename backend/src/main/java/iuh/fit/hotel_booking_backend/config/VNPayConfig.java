@@ -1,6 +1,5 @@
 package iuh.fit.hotel_booking_backend.config;
 
-import iuh.fit.hotel_booking_backend.util.VNPayUtil;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

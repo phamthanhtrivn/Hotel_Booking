@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class VNPayUtil {
+public class PaymentUtil {
 
     public static String hmacSHA512(final String key, final String data) {
         try {
@@ -57,5 +57,26 @@ public class VNPayUtil {
                                 URLEncoder.encode(entry.getValue()
                                         , StandardCharsets.US_ASCII))
                 .collect(Collectors.joining("&"));
+    }
+
+    public static String hmacSHA256(final String key, final String data) {
+        try {
+            if (key == null || data == null) {
+                throw new NullPointerException();
+            }
+            final Mac hmac256 = Mac.getInstance("HmacSHA256");
+            byte[] hmacKeyBytes = key.getBytes(StandardCharsets.UTF_8);
+            final SecretKeySpec secretKey = new SecretKeySpec(hmacKeyBytes, "HmacSHA256");
+            hmac256.init(secretKey);
+            byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
+            byte[] result = hmac256.doFinal(dataBytes);
+            StringBuilder sb = new StringBuilder(2 * result.length);
+            for (byte b : result) {
+                sb.append(String.format("%02x", b & 0xff));
+            }
+            return sb.toString();
+        } catch (Exception ex) {
+            return "";
+        }
     }
 }
