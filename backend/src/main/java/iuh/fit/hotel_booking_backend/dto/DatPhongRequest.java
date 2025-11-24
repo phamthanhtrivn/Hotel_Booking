@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 
@@ -19,11 +19,11 @@ public class DatPhongRequest {
 
     @NotNull(message = "Ngày check-in không được để trống")
     @FutureOrPresent(message = "Ngày check-in phải là hiện tại hoặc tương lai")
-    public LocalDateTime checkIn;
+    public LocalDate checkIn;
 
     @NotNull(message = "Ngày check-out không được để trống")
     @Future(message = "Ngày check-out phải ở tương lai")
-    public LocalDateTime checkOut;
+    public LocalDate checkOut;
     public double tongTien;
     public int vat;
     public double tongTienThanhToan;

@@ -6,7 +6,7 @@ import { tienNghiService } from "@/services/tienNghiService";
 import { LandPlotIcon } from "lucide-react";
 import { IoIosResize, IoMdPeople, IoMdReturnLeft } from "react-icons/io";
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { MdOutlineSingleBed } from "react-icons/md";
 import { Button } from "@/components/ui/button";
@@ -112,6 +112,9 @@ const RoomTypeDetail = () => {
   const { id } = useParams();
   const [room, setRoom] = useState({});
   const [bedTypes, setBedTypes] = useState([]);
+  const location = useLocation();
+  const bookingData = location.state || {};
+  const { checkIn, checkOut } = bookingData;
   const [otherRooms, setOtherRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [amenities, setAmenities] = useState([]);
@@ -196,8 +199,8 @@ const RoomTypeDetail = () => {
       state: {
         maLoaiPhong: room.maLoaiPhong,
         tenLoaiPhong: room.tenLoaiPhong,
-        checkIn: "2025-12-15T13:00:00",
-        checkOut: "2025-12-17T12:30:00",
+        checkIn: checkIn,
+        checkOut: checkOut,
         soKhach: room.soKhach || 2,
         gia: room.gia,
         hinhAnh: room.hinhAnh[0],
@@ -318,7 +321,7 @@ const RoomTypeDetail = () => {
                 </p>
                 <Button
                   onClick={handleBookNow}
-                  className="bg-[var(--color-primary)] hover:bg-[color-mix(in_srgb,var(--color-primary)_70%,transparent)] text-background w-full py-5 transition-colors duration-300 uppercase text-[18px] font-[600px]"
+                  className="bg-[var(--color-primary)] hover:cursor-pointer hover:bg-[color-mix(in_srgb,var(--color-primary)_70%,transparent)] text-background w-full py-5 transition-colors duration-300 uppercase text-[18px] font-[600]"
                 >
                   Đặt phòng
                 </Button>

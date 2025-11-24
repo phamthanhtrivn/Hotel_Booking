@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/input-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Mail, Phone, User } from "lucide-react";
+import { Loader2, Mail, Phone, User } from "lucide-react";
 import ZaloPayLogo from "@/assets/paymentMethodLogo/ZaloPay_Logo.png";
 import MomoLogo from "@/assets/paymentMethodLogo/MoMo_Logo.png";
 import HotelLogo from "@/assets/hotelLogo/HotelLogo.jpg";
@@ -45,6 +45,7 @@ const Booking = () => {
   const [additionalInformation, setAdditionalInformation] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [errors, setErrors] = useState([]);
+  const [isLoading, setLoading] = useState(false);
   const vat = 8;
 
   useEffect(() => {
@@ -109,9 +110,11 @@ const Booking = () => {
   };
 
   const handleOnBook = async () => {
+    setLoading(true);
     const validationErrors = bookingValidation();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      setLoading(false);
       return;
     }
     setErrors({});
@@ -130,11 +133,15 @@ const Booking = () => {
         ghiChu: additionalInformation,
       };
       const result = await donDatPhongService.datPhong(bookingRequest);
-      toast.success("Đặt phòng thành công. Mã đơn đặt phòng: " + result.data.maDatPhong);
+      setLoading(false);
+      toast.success(
+        "Đặt phòng thành công. Mã đơn đặt phòng: " + result.data.maDatPhong
+      );
       navigate("/payment", { state: { maDatPhong: result.data.maDatPhong } });
     } catch (error) {
       console.error("Lỗi khi đặt phòng:", error);
       toast.error("Có lỗi xảy ra khi đặt phòng. Vui lòng thử lại.");
+      setLoading(false);
     }
   };
 
@@ -251,7 +258,14 @@ const Booking = () => {
 
             <div className="flex justify-end">
               <Button className="w-[150px]" onClick={handleOnBook}>
-                Book
+                {isLoading ? (
+                  <div className="flex gap-3 items-center justify-center">
+                    <Loader2 className="animate-spin"/>
+                    <p>Đang xử lý</p>
+                  </div>
+                ) : (
+                  "Đặt phòng"
+                )}
               </Button>
             </div>
           </div>

@@ -90,8 +90,8 @@ public class DonDatPhongService {
         if (req.checkIn.isAfter(req.checkOut)) {
             throw new Exception("Ngày check-in/check-out không hợp lệ");
         }
-        don.setCheckIn(req.checkIn);
-        don.setCheckOut(req.checkOut);
+        don.setCheckIn(req.checkIn.atTime(12, 30));
+        don.setCheckOut(req.checkOut.atTime(13, 0));
 
         don.setTongTien(req.tongTien);
         don.setVAT(req.vat);

@@ -2,6 +2,7 @@ package iuh.fit.hotel_booking_backend.service;
 
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
+import iuh.fit.hotel_booking_backend.helper.QuyDoiKhachHelper;
 import iuh.fit.hotel_booking_backend.repository.LoaiPhongRepository;
 import iuh.fit.hotel_booking_backend.util.IdUtil;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import iuh.fit.hotel_booking_backend.dto.LoaiPhongDTO;
 import iuh.fit.hotel_booking_backend.entity.TrangThaiPhong;
 import iuh.fit.hotel_booking_backend.helper.LoaiPhongSpecification;
 import org.springframework.data.jpa.domain.Specification;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
@@ -156,6 +158,7 @@ public class LoaiPhongService {
             LocalDateTime checkOut,
             String tenLoaiPhong,
             Integer soKhach,
+            Integer[] treEm,
             Double minGia,
             Double maxGia,
             Double minDienTich,
@@ -163,10 +166,16 @@ public class LoaiPhongService {
             String maGiuong
     ) {
 
+        // 👇 Tính lại số khách sau khi quy đổi trẻ em
+        int soKhachThucTe = QuyDoiKhachHelper.tinhSoKhachSauQuyDoi(soKhach, treEm);
+
+        System.out.println("Số khách thực tế: " + soKhachThucTe);
+        if(tenLoaiPhong.equals("ALL")) tenLoaiPhong = "";
+
         Specification<LoaiPhong> spec = Specification.allOf(
                 LoaiPhongSpecification.phongTrong(checkIn, checkOut),
                 LoaiPhongSpecification.tenLoaiPhongContains(tenLoaiPhong),
-                LoaiPhongSpecification.soKhachGreaterOrEqual(soKhach),
+                LoaiPhongSpecification.soKhachGreaterOrEqual(soKhachThucTe),
                 LoaiPhongSpecification.giaBetween(minGia, maxGia),
                 LoaiPhongSpecification.dienTichBetween(minDienTich, maxDienTich),
                 LoaiPhongSpecification.loaiGiuong(maGiuong)
@@ -187,5 +196,6 @@ public class LoaiPhongService {
                 })
                 .collect(Collectors.toList());
     }
+
 
 }

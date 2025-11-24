@@ -12,16 +12,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import iuh.fit.hotel_booking_backend.dto.LoaiPhongDTO;
 import iuh.fit.hotel_booking_backend.dto.LoaiPhongSearchRequest;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 import java.util.Collections;
-
 
 
 @RestController
@@ -59,18 +61,24 @@ public class LoaiPhongController {
     public ResponseEntity<List<LoaiPhongDTO>> searchAdvanced(
             @RequestBody LoaiPhongSearchRequest req
     ) {
+        System.out.println(req);
         if (req.getCheckIn() != null && req.getCheckOut() != null) {
             if (req.getCheckOut().isBefore(req.getCheckIn())) {
                 return ResponseEntity.badRequest()
                         .body(Collections.emptyList());
             }
         }
+        LocalDateTime checkinDateTime =
+                req.getCheckIn().atTime(13, 0); // 13:00 VN
 
+        LocalDateTime checkoutDateTime =
+                req.getCheckOut().atTime(12, 30); // 12:30 VN
         List<LoaiPhongDTO> result = loaiPhongService.searchAdvancedDTO(
-                req.getCheckIn(),
-                req.getCheckOut(),
+                checkinDateTime,
+                checkoutDateTime,
                 req.getTenLoaiPhong(),
                 req.getSoKhach(),
+                req.getTreEm(),
                 req.getMinGia(),
                 req.getMaxGia(),
                 req.getMinDienTich(),
@@ -116,12 +124,13 @@ public class LoaiPhongController {
 
 
     @DeleteMapping
-    public ResponseEntity<APIResponse<Object>> delete(@RequestParam("id") String id){
-            APIResponse<Object> result = loaiPhongService.deleteById(id);
+    public ResponseEntity<APIResponse<Object>> delete(@RequestParam("id") String id) {
+        APIResponse<Object> result = loaiPhongService.deleteById(id);
 
-            return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
+        return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
 
-}
+    }
+
     @GetMapping("/search")
     public ResponseEntity<List<LoaiPhongDTO>> searchAdvancedGet(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime checkIn,
@@ -132,7 +141,8 @@ public class LoaiPhongController {
             @RequestParam(required = false) Double maxGia,
             @RequestParam(required = false) Double minDienTich,
             @RequestParam(required = false) Double maxDienTich,
-            @RequestParam(required = false) String maGiuong
+            @RequestParam(required = false) String maGiuong,
+            @RequestParam(required = false) Integer[] treEm
     ) {
 
         if (checkIn != null && checkOut != null) {
@@ -143,7 +153,7 @@ public class LoaiPhongController {
 
         List<LoaiPhongDTO> result = loaiPhongService.searchAdvancedDTO(
                 checkIn, checkOut,
-                tenLoaiPhong, soKhach,
+                tenLoaiPhong, soKhach, treEm,
                 minGia, maxGia,
                 minDienTich, maxDienTich,
                 maGiuong

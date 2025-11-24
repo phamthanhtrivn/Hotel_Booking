@@ -2,6 +2,7 @@ import { hotel, roomPackageDummyData } from "@/assets/assets";
 import RoomTypeCard from "@/components/common/RoomTypeCard";
 import SearchBar from "@/components/common/SearchBar";
 import { Button } from "@/components/ui/button";
+import { toLocalDate } from "@/helpers/dateHelpers";
 import React, { useEffect, useRef, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -15,12 +16,12 @@ tomorrow.setDate(today.getDate() + 1);
 
 const RoomTypes = () => {
   const [roomTypes, setRoomTypes] = useState([]);
-  const [roomTypeOptions, setRoomTypeOptions] = useState([]);
   const [filters, setFilters] = useState({
-    checkIn: today.toISOString().split("T")[0],
-    checkOut: tomorrow.toISOString().split("T")[0],
+    checkIn: today,
+    checkOut: tomorrow,
     guests: 2,
-    // roomType: "Standard Single",
+    roomType: "ALL",
+    children: [8]
   });
   const navigate = useNavigate();
   const roomSectionRef = useRef(null);
@@ -28,28 +29,13 @@ const RoomTypes = () => {
   useEffect(() => {
     const init = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong`
-        );
-        if (!response.ok) throw new Error("Failed to fetch room types");
-        const data = await response.json();
-
-        const options = [
-          ...new Set(data.map((dto) => dto.loaiPhong.tenLoaiPhong)),
-        ];
-        setRoomTypeOptions(options);
-
-        const defaultRoomType = options.includes("Standard Double")
-          ? "Standard Double"
-          : options[1] || "";
-
         const defaultFilters = {
-          checkIn: today.toISOString().split("T")[0],
-          checkOut: tomorrow.toISOString().split("T")[0],
+          checkIn: today,
+          checkOut: tomorrow,
           guests: 2,
-          roomType: defaultRoomType,
+          roomType: "ALL",
+          children: [8]
         };
-
         setFilters(defaultFilters);
 
         await handleSearch(defaultFilters);
@@ -62,48 +48,29 @@ const RoomTypes = () => {
     init();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    const newFilters = { ...filters, [name]: value };
-
-    if (name === "checkIn" || name === "checkOut") {
-      const checkInDate = new Date(newFilters.checkIn);
-      const checkOutDate = new Date(newFilters.checkOut);
-      const todayDate = new Date(today.toISOString().split("T")[0]);
-
-      if (checkInDate < todayDate) {
-        toast.error("Ngày check-in không được trước hôm nay.");
-        return;
-      }
-
-      if (checkOutDate <= checkInDate) {
-        toast.error("Ngày check-out phải lớn hơn ngày check-in.");
-        return;
-      }
-    }
-
-    setFilters(newFilters);
-  };
-
   const handleSearch = async (currentFilters) => {
     try {
       const body = {
         checkIn: currentFilters.checkIn
-          ? new Date(currentFilters.checkIn).toISOString()
+          ? toLocalDate(new Date(currentFilters.checkIn))
           : null,
+
         checkOut: currentFilters.checkOut
-          ? new Date(currentFilters.checkOut).toISOString()
+          ? toLocalDate(new Date(currentFilters.checkOut))
           : null,
+
         soKhach: currentFilters.guests || null,
         tenLoaiPhong: currentFilters.roomType || null,
         minGia: null,
         maxGia: null,
+        treEm: currentFilters.children,
         minDienTich: null,
         maxDienTich: null,
         maGiuong: null,
       };
-
+      
+      console.log(body)
+      
       const response = await fetch(
         `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong/search`,
         {
@@ -127,8 +94,12 @@ const RoomTypes = () => {
   };
 
   const onDetail = (id) => {
-    navigate(`/room-types/${id}`);
+    navigate(`/room-types/${id}`, {state: {
+      checkIn: filters.checkIn,
+      checkOut: filters.checkOut
+    }});
   };
+
   return (
     <div className="bg-background text-foreground font-sans">
       <Toaster position="top-right" reverseOrder={false} />
@@ -153,16 +124,15 @@ const RoomTypes = () => {
         </div>
 
         {/* SearchBar absolute - có thể tự do điều chỉnh vị trí */}
-        <div className="absolute z-20 left-1/2 transform -translate-x-1/2 -bottom-15 w-full max-w-7xl lg:max-w-8xl px-6 sm:px-8">
+        <div className="absolute z-20 left-1/2 transform -translate-x-1/2 -bottom-10 w-full max-w-7xl lg:max-w-8xl px-6 sm:px-8">
           <SearchBar
             filters={filters}
-            handleChange={handleChange}
+            setFilters={setFilters}
             handleSearch={handleSearch}
-            roomTypeOptions={roomTypeOptions}
           />
         </div>
       </section>
-      <section className="max-w-4xl mx-auto sm:px-8 lg:mx-12 py-14 sm:py-15 md:py-20 text-left">
+      <section className="max-w-4xl mx-auto sm:px-8 lg:mx-12 py-10 sm:py-15 md:py-20 text-left">
         <h2 className="text-3xl lg:text-4xl font-light tracking-tight text-primary">
           Chọn phòng của bạn
         </h2>
