@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.service;
 
+import iuh.fit.hotel_booking_backend.dto.DatPhongRequest;
 import iuh.fit.hotel_booking_backend.dto.DonDatPhongSearchRequest;
 import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
 import iuh.fit.hotel_booking_backend.entity.KhachHang;
@@ -23,20 +24,20 @@ import java.util.concurrent.TimeUnit;
 public class DonDatPhongService {
     private DonDatPhongRepository repo;
 
-    private KhachHangRepository khachHangRepository;
-    private PhongRepository phongRepository;
+    private KhachHangService khachHangService;
+    private PhongService phongService;
     private EmailService emailService;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
 
     public DonDatPhongService(
             DonDatPhongRepository repo,
-            KhachHangRepository khachHangRepository,
-            PhongRepository phongRepository,
+            KhachHangService khachHangService,
+            PhongService phongService,
             EmailService emailService) {
         this.repo = repo;
-        this.khachHangRepository = khachHangRepository;
-        this.phongRepository = phongRepository;
+        this.khachHangService = khachHangService;
+        this.phongService = phongService;
         this.emailService = emailService;
     }
 
@@ -68,84 +69,34 @@ public class DonDatPhongService {
         return repo.findAll(DonDatPhongSpecification.build(req));
     }
 
-    public DonDatPhong createBooking(String maKhachHang,
-                                     String hoTenKH,
-                                     String soDienThoai,
-                                     String email,
-                                     String maPhong,
-                                     LocalDateTime checkIn,
-                                     LocalDateTime checkOut,
-                                     double tongTien,
-                                     int VAT,
-                                     boolean isPaid,
-                                     String ghiChu) throws Exception {
-
+    public DonDatPhong createBooking(DatPhongRequest req) throws Exception {
         DonDatPhong don = new DonDatPhong();
         don.setMaDatPhong(UUID.randomUUID().toString());
 
-        KhachHang khachHang;
-        if (maKhachHang != null) {
-            Optional<KhachHang> khOpt = khachHangRepository.findById(maKhachHang);
-            if (khOpt.isEmpty()) throw new Exception("Khách hàng không tồn tại");
-            khachHang = khOpt.get();
-        } else {
-            khachHang = new KhachHang();
-            khachHang.setMaKhachHang(UUID.randomUUID().toString());
-            khachHang.setHoTenKH(hoTenKH);
-            khachHang.setSoDienThoai(soDienThoai);
-            khachHangRepository.save(khachHang);
-        }
-
+        KhachHang khachHang = khachHangService.getOrCreateCustomer(req);
+        don.setHoTenKhachHang(req.hoTenKhachHang);
+        don.setSoDienThoai(req.soDienThoai);
+        don.setEmail(req.email);
         don.setKhachHang(khachHang);
-        don.setHoTenKhachHang(hoTenKH != null ? hoTenKH : khachHang.getHoTenKH());
-        don.setSoDienThoai(soDienThoai != null ? soDienThoai : khachHang.getSoDienThoai());
-        don.setEmail(email);
 
-        Optional<Phong> phongOpt = phongRepository.findById(maPhong);
-        if (phongOpt.isEmpty()) throw new Exception("Phòng không tồn tại");
-        don.setPhong(phongOpt.get());
+        Phong phong = phongService.getAvailableRoomByRoomType(req.maLoaiPhong);
+        if (phong == null) throw new Exception("Phòng không tồn tại");
+        don.setPhong(phong);
 
-        if (checkIn.isAfter(checkOut) || checkIn.isBefore(LocalDateTime.now())) {
+        if (req.checkIn.isAfter(req.checkOut)) {
             throw new Exception("Ngày check-in/check-out không hợp lệ");
         }
-        don.setCheckIn(checkIn);
-        don.setCheckOut(checkOut);
+        don.setCheckIn(req.checkIn);
+        don.setCheckOut(req.checkOut);
 
-        don.setTongTien(tongTien);
-        don.setVAT(VAT);
-        double tongTienTT = tongTien + tongTien * VAT / 100;
-        don.setTongTienTT(tongTienTT);
-        don.setGhiChu(ghiChu);
+        don.setTongTien(req.tongTien);
+        don.setVAT(req.vat);
+        don.setTongTienTT(req.tongTienThanhToan);
+        don.setGhiChu(req.ghiChu);
+        don.setTrangThai(TrangThaiDon.CHUA_THANH_TOAN);
 
-        if (isPaid) {
-            don.setTrangThai(TrangThaiDon.DA_THANH_TOAN);
-            repo.save(don);
-            if (don.getEmail() != null) {
-                emailService.sendBookingPaidEmail(don.getEmail(), don.getMaDatPhong());
-            }
-        } else {
-            don.setTrangThai(TrangThaiDon.CHUA_THANH_TOAN);
-            repo.save(don);
-            if (don.getEmail() != null) {
-                emailService.sendBookingConfirmationWithPaymentInfo(don.getEmail(), don.getMaDatPhong(), tongTienTT);
-            }
-
-            scheduler.schedule(() -> {
-                try {
-                    DonDatPhong d = repo.findById(don.getMaDatPhong()).orElse(null);
-                    if (d != null && d.getTrangThai() == TrangThaiDon.CHUA_THANH_TOAN) {
-                        d.setTrangThai(TrangThaiDon.DA_HUY);
-                        repo.save(d);
-                        if (d.getEmail() != null) {
-                            emailService.sendBookingCanceledEmail(d.getEmail(), d.getMaDatPhong());
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }, 15, TimeUnit.MINUTES);
-        }
-
+        repo.save(don);
+        emailService.sendBookingConfirmationWithPaymentInfo(don.getEmail(), don.getMaDatPhong(), req.tongTienThanhToan);
         return don;
     }
 

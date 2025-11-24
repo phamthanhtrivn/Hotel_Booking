@@ -1,14 +1,11 @@
 package iuh.fit.hotel_booking_backend.controller;
 
-import iuh.fit.hotel_booking_backend.dto.APIResponse;
-import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.service.CloudinaryService;
 import iuh.fit.hotel_booking_backend.service.LoaiPhongService;
-import org.springframework.web.bind.annotation.GetMapping;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -27,15 +24,20 @@ import java.util.Collections;
 
 
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/loaiphong")
 public class LoaiPhongController {
     private final LoaiPhongService loaiPhongService;
 
-    public LoaiPhongController(LoaiPhongService loaiPhongService, CloudinaryService cloudinaryService) {
+    public LoaiPhongController(LoaiPhongService loaiPhongService) {
         this.loaiPhongService = loaiPhongService;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<APIResponse<LoaiPhong>> findById(@PathVariable String id) {
+        APIResponse<LoaiPhong> result = loaiPhongService.findById(id);
+
+        return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
     }
 
     @GetMapping("/paged")
@@ -47,19 +49,28 @@ public class LoaiPhongController {
         return ResponseEntity.ok(result);
     }
 
+
+
     @GetMapping()
     public ResponseEntity<List<LoaiPhongDTO>> getAll() {
         List<LoaiPhongDTO> result = loaiPhongService.getAllLoaiPhongDTO();
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<LoaiPhong> getById(@PathVariable String id) {
-        LoaiPhong loaiPhong = loaiPhongService.getById(id);
-        if(loaiPhong == null) {
-            return ResponseEntity.notFound().build();
+    @GetMapping("/loaiPhong")
+    public APIResponse<List<LoaiPhong>> getAllLoaiPhong() {
+        APIResponse<List<LoaiPhong>> response = new APIResponse<>();
+        try {
+            List<LoaiPhong> listLoaiPhong = loaiPhongService.getAll();
+            response.setData(listLoaiPhong);
+            response.setSuccess(true);
+            response.setMessage("Get all loai phong successfully");
+            return response;
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage("Failed to get all loai phong: " + e.getMessage());
+            return response;
         }
-        return ResponseEntity.ok(loaiPhong);
     }
 
     @PostMapping("/search")
@@ -160,20 +171,4 @@ public class LoaiPhongController {
 
     }
 
-
-    @GetMapping("loaiPhong")
-    public APIResponse<List<LoaiPhong>> getAllLoaiPhong(){
-        APIResponse<List<LoaiPhong>> response = new APIResponse<>();
-        try{
-            List<LoaiPhong> list = loaiPhongService.getAll();
-            response.setData(list);
-            response.setSuccess(true);
-            response.setMessage("Fetched room types successfully");
-        } catch (Exception e) {
-            response.setSuccess(false);
-            response.setMessage("Failed to fetch room types");
-            return response;
-        }
-        return response;
-    }
 }

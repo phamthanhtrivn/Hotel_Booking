@@ -1,10 +1,13 @@
 package iuh.fit.hotel_booking_backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.time.LocalDateTime;
 
@@ -37,6 +40,9 @@ public class DonDatPhong {
     private LocalDateTime checkIn;
     @Column(name = "check_out")
     private LocalDateTime checkOut;
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime ngayTao;
     @Enumerated(EnumType.STRING)
     @Column(name = "trang_thai")
     private TrangThaiDon trangThai;
@@ -45,6 +51,8 @@ public class DonDatPhong {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ma_danh_gia", unique = true)
     private DanhGia danhGia;
+
+    @Column(name = "vat")
     private int VAT;
     @Column(name = "lan_dau")
     private boolean lanDau;

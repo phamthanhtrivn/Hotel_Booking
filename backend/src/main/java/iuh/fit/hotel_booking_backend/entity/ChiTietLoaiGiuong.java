@@ -21,13 +21,11 @@ public class ChiTietLoaiGiuong {
     @ManyToOne
     @MapsId("loaiPhong")
     @JoinColumn(name = "ma_loai_phong", nullable = false)
-    @JsonBackReference
     private LoaiPhong loaiPhong;
 
     @ManyToOne
     @MapsId("loaiGiuong")
     @JoinColumn(name = "ma_giuong", nullable = false)
-    @JsonBackReference
     private LoaiGiuong loaiGiuong;
 
     @Column(name = "so_giuong")

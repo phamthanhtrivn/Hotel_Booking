@@ -4,6 +4,8 @@ import {
   Users,
   Calendar,
   MessageSquare,
+  Bath,
+  Bed,
   BookOpen,
 } from "lucide-react";
 import {
@@ -31,6 +33,8 @@ const items = [
   { name: "Customer", icon: Users, url: "/admin/customers" },
   { name: "Booking", icon: Calendar, url: "/admin/bookings" },
   { name: "Review", icon: MessageSquare, url: "/admin/reviews" },
+  { name: "Amenities", icon: Bath, url: "/admin/amenities" },
+  { name: "Bed Type", icon: Bed, url: "/admin/bed-types" },
 ];
 
 const AdminSidebar = () => {

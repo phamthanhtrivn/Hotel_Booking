@@ -1,9 +1,6 @@
 package iuh.fit.hotel_booking_backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -26,6 +23,7 @@ public class LoaiPhong {
     @NotBlank
     @Column(name = "ten_loai_phong", nullable = false, unique = true)
     private String tenLoaiPhong;
+
     @Min(value = 25, message = "Diên tích phải lớn hơn 25 m2")
     @Column(name = "dien_tich")
     private double dienTich;
@@ -44,6 +42,7 @@ public class LoaiPhong {
     private String moTa;
 
     @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<ChiTietLoaiGiuong> chiTietLoaiGiuongList = new ArrayList<>();
 
     @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

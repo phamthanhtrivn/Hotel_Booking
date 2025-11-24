@@ -61,12 +61,14 @@ public class TaiKhoanController {
         }
     }
 
+
+
+
     // get all account
     @GetMapping
     public ResponseEntity<List<TaiKhoan>> getAllTaiKhoan() {
         List<TaiKhoan> list = taikhoanService.getAllMembers();
         return ResponseEntity.ok(list);
-
     }
 
     @PostMapping

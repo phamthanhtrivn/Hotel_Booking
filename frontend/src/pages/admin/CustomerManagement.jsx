@@ -1,338 +1,309 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
-import { Edit2, Trash2, Search, Eye } from "lucide-react";
-import { useFetch } from "../../hooks/useFetch";
+import { useFetch } from "@/hooks/useFetch";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { toast } from "react-toastify";
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+} from "@/components/ui/select";
+import AdminPagination from "@/components/common/AdminPagination";
+import AdminTable from "@/components/common/AdminTable";
+import DetailDialog from "@/components/common/DetailDialog";
+import EditCreateDialog from "@/components/common/EditCreateDialog";
+import ConfirmDeleteDialog from "@/components/common/ConfirmDeleteDialog";
+import ActionButtons from "@/components/common/ActionButtons";
+import { Search } from "lucide-react";
 
-const CustomerManagement = () => {
-  const baseURL = import.meta.env.VITE_BASE_API_URL + "/api/";
-  const [customers, setCustomers] = useState([]);
-  const [searchName, setSearchName] = useState("");
-  const [searchPhone, setSearchPhone] = useState("");
-  const [searchEmail, setSearchEmail] = useState("");
-  const [editing, setEditing] = useState(null);
-  const [viewing, setViewing] = useState(null);
+export default function CustomerManagement() {
+    const baseURL = import.meta.env.VITE_BASE_API_URL + "/api/";
+    const [customers, setCustomers] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const { get, put, del } = useFetch(baseURL);
+    const [openDelete, setOpenDelete] = useState(false);
+    const [openDetail, setOpenDetail] = useState(false);
+    const [openEdit, setOpenEdit] = useState(false);
+    const [currentCustomer, setCurrentCustomer] = useState(null);
+    const [fliter, setFliter] = useState({
+        keyword: null,
+        trangThai: '',
+        sortField: '',
+    });
 
-  const { error, get, put } = useFetch(baseURL);
 
-  useEffect(() => {
     const fetchCustomers = async () => {
-      const data = await get("taikhoan");
-      if (data) setCustomers(data);
-    };
-    fetchCustomers();
-  }, []);
-
-  // Lọc khách hàng theo từng tiêu chí
-  const filtered = customers.filter((c) => {
-    const nameMatch = c.khachHang?.hoTenKH
-      ?.toLowerCase()
-      .includes(searchName.toLowerCase());
-    const phoneMatch = c.khachHang?.soDienThoai
-      ?.toLowerCase()
-      .includes(searchPhone.toLowerCase());
-    const emailMatch = c.email
-      ?.toLowerCase()
-      .includes(searchEmail.toLowerCase());
-    return nameMatch && phoneMatch && emailMatch;
-  });
-
-  const handleDelete = async (maTaiKhoan) => {
-    if (window.confirm("Bạn có chắc muốn xóa khách hàng này?")) {
-      try {
-        const response = await fetch(`${baseURL}taikhoan/${maTaiKhoan}`, {
-          method: "DELETE",
-        });
-        const message = await response.text();
-        if (!response.ok) {
-          toast.error(message || "Không thể xóa tài khoản!");
-          return;
+        let params = `?page=${currentPage - 1}`;
+        if(fliter.keyword != null && fliter.keyword !== ''){
+            params += `keyword=${fliter.keyword}`;
         }
-        toast.success(message || "Xóa tài khoản thành công!");
-        setCustomers((prev) => prev.filter((c) => c.maTaiKhoan !== maTaiKhoan));
-      } catch (error) {
-        console.error("Lỗi khi xóa:", error);
-        toast.error("Lỗi kết nối máy chủ!");
-      }
+        if(fliter.trangThai != '' && fliter.trangThai !== 'all'){
+            params += `&trangThai=${fliter.trangThai}`;
+        }
+        if(fliter.sortField != ''){
+            const [field, dir] = fliter.sortField.split('&');
+            params += `&sortField=${field}&sortDir=${dir}`;
+        }
+        console.log("params", params);
+        const data = await get("khachhang" + params);
+        if (data?.content){
+            setCustomers(data.content);
+            setTotalPages(data.totalPages);
+        } 
+    };
+
+
+
+    useEffect(() => {
+        fetchCustomers();
+    }, []);
+
+
+    const columns = [
+        { key: "maTaiKhoan", label: "ID" },
+        {
+            key: "hoTen",
+            label: "Họ và tên",
+            render: (item) => item?.khachHang?.hoTenKH ? item.khachHang.hoTenKH : ''
+        },
+        {
+            key: "soDienThoai",
+            label: "Số điện thoại",
+            render: (item) => item?.khachHang?.soDienThoai ? item.khachHang.soDienThoai : ''
+        },
+        {
+            key: "diemTichLuyKH",
+            label: "Điểm tích lũy",
+            render: (item) =>
+                item?.khachHang?.diemTichLuy ?? 0
+        },
+        {
+            key: "email",
+            label: "Email",
+        },
+        {
+            key: "trangThai",
+            label: "Trạng thái",
+            render: (item) => item.tinhTrang === true ? <span className="text-green-600 font-medium">Hoạt động</span> : <span className="text-red-600 font-medium">Khóa</span>
+        }
+    ]
+
+
+    const handleDetail = (item) => {
+        setCurrentCustomer(item);
+        setOpenDetail(true);
+    };
+    const handleEdit = (item) => {
+        setCurrentCustomer(item);
+        setOpenEdit(true);
+    };
+    const handleDelete = (item) => {
+        setCurrentCustomer(item);
+        setOpenDelete(true);
+    };
+
+
+    const handleEditCustomer = async () => {
+        try {
+            if (!currentCustomer || !currentCustomer.khachHang) {
+                toast.error("Không có dữ liệu để cập nhật!");
+                return;
+            }
+
+            const updatedCustomer = {
+                maKhachHang: currentCustomer.khachHang.maKhachHang,
+                hoTenKH: currentCustomer.khachHang.hoTenKH,
+                soDienThoai: currentCustomer.khachHang.soDienThoai,
+            };
+
+            const response = await put(
+                `khachhang/${updatedCustomer.maKhachHang}/${currentCustomer.tinhTrang}`,
+                updatedCustomer
+            );
+
+            if (!response) {
+                toast.error("Cập nhật thất bại!");
+                return;
+            }
+
+            setCustomers((prev) =>
+                prev.map((c) =>
+                    c.khachHang?.maKhachHang === updatedCustomer.maKhachHang
+                        ? {
+                            ...c,
+                            khachHang: updatedCustomer,
+                            tinhTrang: currentCustomer.tinhTrang
+                        }
+                        : c
+                )
+            );
+
+            toast.success("Lưu thành công!");
+            setCurrentCustomer(null);
+            setOpenEdit(false);
+
+        } catch (err) {
+            console.error("Lỗi khi lưu:", err);
+            toast.error("Lưu thất bại do lỗi hệ thống!");
+        }
+    };
+
+    const handleConfirmDelete = () => {
+        const deleteCustomer = async () => {
+            try {
+                const req = await del(`khachhang/${currentCustomer.khachHang.maKhachHang}`);
+                if (!req) {
+                    toast.error("Xóa thất bại! Do khách hàng đã có đơn hàng");
+                    return;
+                }
+                toast.success("Xóa thành công!");
+                setOpenDelete(false);
+                setCurrentCustomer(null);
+                setCustomers((prev) => prev.filter(c => c.khachHang.maKhachHang !== currentCustomer.khachHang.maKhachHang));
+            }
+            catch (err) {
+                console.error("Lỗi khi xóa:", err);
+                toast.error("Xóa thất bại do lỗi hệ thống!");
+            }
+        }
+        deleteCustomer();
     }
-  };
 
-  const handleSave = async () => {
-    try {
-      if (!editing || !editing.khachHang) {
-        toast.error("Không có dữ liệu để cập nhật!");
-        return;
-      }
-      const updatedCustomer = {
-        maKhachHang: editing.khachHang.maKhachHang,
-        hoTenKH: editing.khachHang.hoTenKH,
-        soDienThoai: editing.khachHang.soDienThoai,
-        diemTichLuy: editing.khachHang.diemTichLuy,
-      };
+    return (
+        <div className="p-6 space-y-4">
+            <Card className={"shadow-md rounded-2xl"}>
+                <CardHeader>
+                    <CardTitle className="text-xl font-semibold">Quản lý khách hàng</CardTitle>
+                </CardHeader>
 
-      const response = await put(
-        `khachhang/${updatedCustomer.maKhachHang}`,
-        updatedCustomer
-      );
-      if (error || !response) {
-        toast.error("Cập nhật thất bại!");
-        return;
-      }
-      setCustomers((prev) =>
-        prev.map((c) =>
-          c.khachHang?.maKhachHang === updatedCustomer.maKhachHang
-            ? { ...c, khachHang: updatedCustomer }
-            : c
-        )
-      );
+                <CardContent>
 
-      toast.success("Lưu thành công!");
-      setEditing(null);
-    } catch (err) {
-      console.error("Lỗi khi lưu:", err);
-      toast.error("Lưu thất bại do lỗi hệ thống!");
-    }
-  };
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        <Input
+                            value={fliter.keyword}
+                            onChange={(e) => setFliter({ ...fliter, keyword: e.target.value })}
+                            placeholder="Tìm kiếm khách hàng, email, số điện thoại..."
+                        />
+                        <Select value={fliter.trangThai} onValueChange={(value) => setFliter({ ...fliter, trangThai: value })}>
+                            <SelectTrigger className="w-full cursor-pointer">
+                                <SelectValue placeholder="Lọc theo trạng thái" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Tất cả</SelectItem>
+                                <SelectItem value="true">Hoạt động</SelectItem>
+                                <SelectItem value="false">Khóa</SelectItem>
+                            </SelectContent>
+                        </Select>
 
-  return (
-    <div>
-      <h1 className="text-4xl font-bold text-center text-[var(--color-accent)] mb-8">
-        Quản Lý Thông Tin Khách Hàng
-      </h1>
+                        <Select value={fliter.sortField} onValueChange={(value) => setFliter({ ...fliter, sortField: value })}>
+                            <SelectTrigger className="w-full cursor-pointer">
+                                <SelectValue placeholder="Sắp xếp" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="khachHang.diemTichLuy&asc">Điểm tăng dần</SelectItem>
+                                <SelectItem value="khachHang.diemTichLuy&desc">Điểm giảm dần</SelectItem>
+                                <SelectItem value="khachHang.hoTenKH&asc">Tên tăng dần</SelectItem>
+                                <SelectItem value="khachHang.hoTenKH&desc">Tên giảm dần</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
 
-      {/* 🔍 Thanh tìm kiếm ngang */}
-      <div className="flex flex-wrap gap-4 bg-[#2b3a4b] p-4 rounded-xl mb-7 shadow-md justify-between">
-        {/* Tìm theo tên */}
-        <div className="flex items-center bg-[#1E2A38] p-2 rounded-lg flex-1 min-w-[250px]">
-          <Search className="text-[var(--color-muted)] mr-2" />
-          <input
-            type="text"
-            placeholder="Tìm theo tên..."
-            className="bg-transparent flex-1 outline-none text-[var(--color-text)]"
-            value={searchName}
-            onChange={(e) => setSearchName(e.target.value)}
-          />
+                    <div className="flex justify-end mt-6 mb-6">
+                        <button
+                            onClick={fetchCustomers}
+                            className="flex items-center gap-2 bg-[var(--color-background)] text-[#fff] px-6 py-2 rounded-lg">
+                            <Search size={20} /> Tìm kiếm
+                        </button>
+                    </div>
+
+
+                    <AdminTable
+                        columns={columns}
+                        data={customers}
+                        renderActions={(item) => (
+                            <ActionButtons
+                                onView={() => handleDetail(item)}
+                                onEdit={() => handleEdit(item)}
+                                onDelete={() => handleDelete(item)}
+                            />
+                        )}
+                    />
+
+                    {/* PAGINATION */}
+                    <AdminPagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onChange={(p) => {setCurrentPage(p); fetchCustomers();}}
+                    />
+
+                </CardContent>
+            </Card>
+            <DetailDialog
+                open={openDetail}
+                onClose={() => setOpenDetail(false)}
+                data={currentCustomer}
+                fields={[
+                    ...columns,
+                    {
+                        key: "vaiTro",
+                        label: "Vai trò",
+                    }
+                ]}
+            />
+
+            <EditCreateDialog
+                open={openEdit}
+                onClose={() => setOpenEdit(false)}
+                title={"Chỉnh sửa khách hàng"}
+                onSubmit={handleEditCustomer}
+            >
+                <div className="space-y-3">
+                    <div className="mb-2">
+                        Họ tên <span className="text-red-600">*</span>
+                    </div>
+                    <Input
+                        value={currentCustomer?.khachHang.hoTenKH}
+                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, khachHang: { ...currentCustomer.khachHang, hoTenKH: e.target.value } })}
+                        required
+                    />
+
+                    <div className="mb-2">
+                        Số điện thoại <span className="text-red-600">*</span>
+                    </div>
+                    <Input
+                        value={currentCustomer?.khachHang.soDienThoai}
+                        onChange={(e) => setCurrentCustomer({ ...currentCustomer, khachHang: { ...currentCustomer.khachHang, soDienThoai: e.target.value } })}
+                        required
+                    />
+
+                    <div className="mb-2 flex  items-center  gap-2">
+                        <span>Trạng thái hoạt động:</span>
+                        <input
+                            type="checkbox"
+                            className="ml-2 scale-150"
+                            checked={currentCustomer?.tinhTrang || false}
+                            onChange={(e) => setCurrentCustomer({ ...currentCustomer, tinhTrang: e.target.checked })}
+                        />
+
+                    </div>
+
+
+                </div>
+            </EditCreateDialog>
+
+
+            <ConfirmDeleteDialog
+                open={openDelete}
+                onClose={() => setOpenDelete(false)}
+                onConfirm={handleConfirmDelete}
+            />
+
+
         </div>
-
-        {/* Tìm theo số điện thoại */}
-        <div className="flex items-center bg-[#1E2A38] p-2 rounded-lg flex-1 min-w-[250px]">
-          <Search className="text-[var(--color-muted)] mr-2" />
-          <input
-            type="text"
-            placeholder="Tìm theo số điện thoại..."
-            className="bg-transparent flex-1 outline-none text-[var(--color-text)]"
-            value={searchPhone}
-            onChange={(e) => setSearchPhone(e.target.value)}
-          />
-        </div>
-
-        {/* Tìm theo email */}
-        <div className="flex items-center bg-[#1E2A38] p-2 rounded-lg flex-1 min-w-[250px]">
-          <Search className="text-[var(--color-muted)] mr-2" />
-          <input
-            type="text"
-            placeholder="Tìm theo email..."
-            className="bg-transparent flex-1 outline-none text-[var(--color-text)]"
-            value={searchEmail}
-            onChange={(e) => setSearchEmail(e.target.value)}
-          />
-        </div>
-      </div>
-
-      {/* 🧾 Bảng dữ liệu */}
-      <div className="rounded-xl shadow-lg bg-[#2b3a4b] overflow-hidden">
-        <div className="max-h-[550px] overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--color-primary)] scrollbar-track-[#2b3a4b]">
-          <table className="w-full text-left">
-            <thead className="bg-[var(--color-primary)] text-[var(--color-background)] sticky top-0 z-10">
-              <tr>
-                <th className="py-3 px-4">STT</th>
-                <th className="py-3 px-4">Họ và Tên</th>
-                <th className="py-3 px-4">Email</th>
-                <th className="py-3 px-4">Số điện thoại</th>
-                <th className="py-3 px-4">Điểm tích lũy</th>
-                <th className="py-3 px-4 text-center">Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length > 0 ? (
-                filtered.map((c, i) => (
-                  <tr
-                    key={c.khachHang?.maKhachHang || c.maTaiKhoan || i}
-                    className="border-b border-gray-700 hover:bg-[#32465a] transition"
-                  >
-                    <td className="py-3 px-4">{i + 1}</td>
-                    <td className="py-3 px-4">{c.khachHang?.hoTenKH || "—"}</td>
-                    <td className="py-3 px-4">{c.email}</td>
-                    <td className="py-3 px-4">
-                      {c.khachHang?.soDienThoai || "—"}
-                    </td>
-                    <td className="py-3 px-4">
-                      {c.khachHang?.diemTichLuy ?? 0}
-                    </td>
-                    <td className="py-3 px-4 text-center space-x-4">
-                      <button
-                        onClick={() => setViewing(c)}
-                        className="hover:text-blue-400 transition"
-                        title="Xem chi tiết"
-                      >
-                        <Eye size={18} />
-                      </button>
-                      <button
-                        onClick={() => setEditing(c)}
-                        className="hover:text-[var(--color-accent)] transition"
-                        title="Chỉnh sửa"
-                      >
-                        <Edit2 size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(c.maTaiKhoan)}
-                        className="hover:text-red-400 transition"
-                        title="Xóa"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="text-center py-6 text-[var(--color-muted)]"
-                  >
-                    Không tìm thấy khách hàng nào
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {editing && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#2b3a4b] p-8 rounded-2xl w-[550px] shadow-2xl">
-            <h2 className="text-3xl font-semibold text-[var(--color-accent)] mb-6 text-center">
-              Cập nhật thông tin khách hàng
-            </h2>
-            <div className="space-y-4">
-              <input
-                type="text"
-                value={editing.khachHang?.hoTenKH ?? ""}
-                onChange={(e) =>
-                  setEditing((prev) => ({
-                    ...prev,
-                    khachHang: { ...prev.khachHang, hoTenKH: e.target.value },
-                  }))
-                }
-                className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
-                placeholder="Họ tên"
-              />
-              <input
-                type="email"
-                value={editing.email ?? ""}
-                onChange={(e) =>
-                  setEditing((prev) => ({ ...prev, email: e.target.value }))
-                }
-                className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
-                placeholder="Email"
-                disabled
-              />
-              <input
-                type="text"
-                value={editing.khachHang?.soDienThoai ?? ""}
-                onChange={(e) =>
-                  setEditing((prev) => ({
-                    ...prev,
-                    khachHang: {
-                      ...prev.khachHang,
-                      soDienThoai: e.target.value,
-                    },
-                  }))
-                }
-                className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
-                placeholder="Số điện thoại"
-              />
-              <input
-                type="number"
-                value={editing.khachHang?.diemTichLuy ?? 0}
-                onChange={(e) =>
-                  setEditing((prev) => ({
-                    ...prev,
-                    khachHang: {
-                      ...prev.khachHang,
-                      diemTichLuy: Number(e.target.value) || 0,
-                    },
-                  }))
-                }
-                className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
-                placeholder="Điểm tích lũy"
-                min={0}
-              />
-            </div>
-            <div className="flex justify-end mt-6 space-x-4">
-              <button
-                onClick={() => setEditing(null)}
-                className="px-5 py-2 bg-gray-500 rounded hover:bg-gray-600 transition"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-5 py-2 bg-[var(--color-primary)] text-[var(--color-background)] rounded hover:bg-[var(--color-accent)] transition"
-              >
-                Lưu
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 👁️ Modal Xem chi tiết */}
-      {viewing && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#2b3a4b] p-8 rounded-2xl w-[550px] shadow-2xl text-[var(--color-text)]">
-            <h2 className="text-3xl font-semibold text-[var(--color-accent)] mb-6 text-center">
-              Thông Tin Chi Tiết Khách Hàng
-            </h2>
-            <div className="space-y-4 text-lg">
-              <p>
-                <span className="font-semibold text-[var(--color-accent)]">
-                  Họ tên:
-                </span>{" "}
-                {viewing.khachHang?.hoTenKH ?? "—"}
-              </p>
-              <p>
-                <span className="font-semibold text-[var(--color-accent)]">
-                  Email:
-                </span>{" "}
-                {viewing.email ?? "—"}
-              </p>
-              <p>
-                <span className="font-semibold text-[var(--color-accent)]">
-                  Số điện thoại:
-                </span>{" "}
-                {viewing.khachHang?.soDienThoai ?? "—"}
-              </p>
-              <p>
-                <span className="font-semibold text-[var(--color-accent)]">
-                  Điểm tích lũy:
-                </span>{" "}
-                {viewing.khachHang?.diemTichLuy ?? 0}
-              </p>
-            </div>
-            <div className="flex justify-end mt-8">
-              <button
-                onClick={() => setViewing(null)}
-                className="px-5 py-2 bg-[var(--color-primary)] text-[var(--color-background)] rounded hover:bg-[var(--color-accent)] transition"
-              >
-                Đóng
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default CustomerManagement;
+    )
+}

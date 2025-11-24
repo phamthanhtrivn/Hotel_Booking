@@ -14,21 +14,23 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-
 -- Dumping database structure for hotelbooking
-CREATE DATABASE IF NOT EXISTS `hotelbooking` /*!40100 DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci */;
+CREATE DATABASE IF NOT EXISTS `hotelbooking` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
 USE `hotelbooking`;
+
+-- Chuyển đổi database sang UTF8MB4
+ALTER DATABASE `hotelbooking` CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- Dumping structure for table hotelbooking.chi_tiet_loai_giuong
 CREATE TABLE IF NOT EXISTS `chi_tiet_loai_giuong` (
                                                       `so_giuong` int(11) DEFAULT NULL,
                                                       `ma_giuong` varchar(255) NOT NULL,
                                                       `ma_loai_phong` varchar(255) NOT NULL,
-                                                      PRIMARY KEY (`ma_giuong`,`ma_loai_phong`),
+                                                      PRIMARY KEY (`ma_giuong`, `ma_loai_phong`),
                                                       KEY `FKai1qp0y0h8jqmyid2x05yprbo` (`ma_loai_phong`),
                                                       CONSTRAINT `FKai1qp0y0h8jqmyid2x05yprbo` FOREIGN KEY (`ma_loai_phong`) REFERENCES `loai_phong` (`ma_loai_phong`),
                                                       CONSTRAINT `FKb4rfmyb06o3njjdjmevnqf52k` FOREIGN KEY (`ma_giuong`) REFERENCES `loai_giuong` (`ma_giuong`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table hotelbooking.chi_tiet_loai_giuong: ~8 rows (approximately)
 INSERT INTO `chi_tiet_loai_giuong` (`so_giuong`, `ma_giuong`, `ma_loai_phong`) VALUES
@@ -45,11 +47,11 @@ INSERT INTO `chi_tiet_loai_giuong` (`so_giuong`, `ma_giuong`, `ma_loai_phong`) V
 CREATE TABLE IF NOT EXISTS `chi_tiet_tien_nghi` (
                                                     `ma_loai_phong` varchar(255) NOT NULL,
                                                     `ma_tien_nghi` varchar(255) NOT NULL,
-                                                    PRIMARY KEY (`ma_loai_phong`,`ma_tien_nghi`),
+                                                    PRIMARY KEY (`ma_loai_phong`, `ma_tien_nghi`),
                                                     KEY `FKqsv5nl7a6f3rsfxpgqykj2q2j` (`ma_tien_nghi`),
                                                     CONSTRAINT `FKl0w8jxjdq9mpok2rhgypmjqd8` FOREIGN KEY (`ma_loai_phong`) REFERENCES `loai_phong` (`ma_loai_phong`),
                                                     CONSTRAINT `FKqsv5nl7a6f3rsfxpgqykj2q2j` FOREIGN KEY (`ma_tien_nghi`) REFERENCES `tien_nghi` (`ma_tien_nghi`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table hotelbooking.chi_tiet_tien_nghi: ~57 rows (approximately)
 INSERT INTO `chi_tiet_tien_nghi` (`ma_loai_phong`, `ma_tien_nghi`) VALUES
@@ -114,18 +116,25 @@ INSERT INTO `chi_tiet_tien_nghi` (`ma_loai_phong`, `ma_tien_nghi`) VALUES
 -- Dumping structure for table hotelbooking.danh_gia
 CREATE TABLE IF NOT EXISTS `danh_gia` (
                                           `ma_danh_gia` varchar(255) NOT NULL,
-                                          `binh_luan` varchar(255) DEFAULT NULL,
+                                          `binh_luan` text DEFAULT NULL,
                                           `diem_co_so_vat_chat` int(11) DEFAULT NULL,
                                           `diem_dich_vu` int(11) DEFAULT NULL,
                                           `diem_sach_se` int(11) DEFAULT NULL,
                                           `thoi_gian_danh_gia` datetime(6) DEFAULT NULL,
                                           `ma_loai_phong` varchar(255) NOT NULL,
+                                          `tinh_trang` bit(1) DEFAULT b'1',
                                           PRIMARY KEY (`ma_danh_gia`),
                                           KEY `FK5l9noa6ee16y7twqcfqdalytn` (`ma_loai_phong`),
                                           CONSTRAINT `FK5l9noa6ee16y7twqcfqdalytn` FOREIGN KEY (`ma_loai_phong`) REFERENCES `loai_phong` (`ma_loai_phong`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.danh_gia: ~0 rows (approximately)
+-- Dumping data for table hotelbooking.danh_gia: ~5 rows (approximately)
+INSERT INTO `danh_gia` (`ma_danh_gia`, `binh_luan`, `diem_co_so_vat_chat`, `diem_dich_vu`, `diem_sach_se`, `thoi_gian_danh_gia`, `ma_loai_phong`, `tinh_trang`) VALUES
+                                                                                                                                                                    ('DG001', 'Phòng rất đẹp và sạch sẽ, nhân viên thân thiện', 9, 8, 10, '2024-11-25 10:00:00.000000', 'LP1', b'1'),
+                                                                                                                                                                    ('DG002', 'View ban công tuyệt vời, không gian yên tĩnh', 8, 9, 9, '2024-11-26 14:30:00.000000', 'LP2', b'1'),
+                                                                                                                                                                    ('DG003', 'Phòng suite rộng rãi, đầy đủ tiện nghi cao cấp', 10, 9, 10, '2024-11-27 16:45:00.000000', 'LP6', b'1'),
+                                                                                                                                                                    ('DG004', 'Phòng family rất tiện lợi cho gia đình có trẻ nhỏ', 8, 8, 9, '2024-11-28 11:20:00.000000', 'LP7', b'1'),
+                                                                                                                                                                    ('DG005', 'Giá cả hợp lý, dịch vụ tốt, sẽ quay lại', 7, 8, 8, '2024-11-29 09:15:00.000000', 'LP3', b'1');
 
 -- Dumping structure for table hotelbooking.don_dat_phong
 CREATE TABLE IF NOT EXISTS `don_dat_phong` (
@@ -134,17 +143,18 @@ CREATE TABLE IF NOT EXISTS `don_dat_phong` (
                                                `check_in` datetime(6) DEFAULT NULL,
                                                `check_out` datetime(6) DEFAULT NULL,
                                                `email` varchar(255) DEFAULT NULL,
-                                               `ghi_chu` varchar(255) DEFAULT NULL,
+                                               `ghi_chu` text DEFAULT NULL,
                                                `giam_gia_diem_tich_luy` double DEFAULT NULL,
                                                `ho_ten_khach_hang` varchar(255) DEFAULT NULL,
                                                `lan_dau` bit(1) DEFAULT NULL,
                                                `so_dien_thoai` varchar(255) DEFAULT NULL,
                                                `tong_tien` double DEFAULT NULL,
                                                `tong_tien_tt` double DEFAULT NULL,
-                                               `trang_thai` enum('CHUA_THANH_TOAN','DA_HUY','DA_THANH_TOAN') DEFAULT NULL,
+                                               `trang_thai` enum('CHUA_THANH_TOAN','DA_THANH_TOAN','DA_HUY') DEFAULT NULL,
                                                `ma_danh_gia` varchar(255) DEFAULT NULL,
                                                `ma_khach_hang` varchar(255) NOT NULL,
                                                `ma_phong` varchar(255) DEFAULT NULL,
+                                               `ngay_tao` datetime(6) DEFAULT NULL,
                                                PRIMARY KEY (`ma_dat_phong`),
                                                UNIQUE KEY `UKipxmhku7rgbv70o63oeg3eqt8` (`ma_danh_gia`),
                                                KEY `FK31kww3fnehujkecraaf12t7uo` (`ma_khach_hang`),
@@ -152,9 +162,17 @@ CREATE TABLE IF NOT EXISTS `don_dat_phong` (
                                                CONSTRAINT `FK31kww3fnehujkecraaf12t7uo` FOREIGN KEY (`ma_khach_hang`) REFERENCES `khach_hang` (`ma_khach_hang`),
                                                CONSTRAINT `FKiwe3j9tstd4okh7carw4b6imb` FOREIGN KEY (`ma_phong`) REFERENCES `phong` (`ma_phong`),
                                                CONSTRAINT `FKoofpaiwyvbalhesqbxlfsp2gq` FOREIGN KEY (`ma_danh_gia`) REFERENCES `danh_gia` (`ma_danh_gia`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.don_dat_phong: ~0 rows (approximately)
+-- Dumping data for table hotelbooking.don_dat_phong: ~7 rows (approximately)
+INSERT INTO `don_dat_phong` (`ma_dat_phong`, `vat`, `check_in`, `check_out`, `email`, `ghi_chu`, `giam_gia_diem_tich_luy`, `ho_ten_khach_hang`, `lan_dau`, `so_dien_thoai`, `tong_tien`, `tong_tien_tt`, `trang_thai`, `ma_danh_gia`, `ma_khach_hang`, `ma_phong`, `ngay_tao`) VALUES
+                                                                                                                                                                                                                                                                                   ('DP_SUCCESS_001', 8, '2024-11-20 14:00:00.000000', '2024-11-22 12:00:00.000000', 'vana@gmail.com', 'Yêu cầu phòng tầng cao, view đẹp', 0, 'Nguyễn Văn A', b'1', '0901234567', 1000000, 1080000, 'DA_THANH_TOAN', 'DG001', 'KH1', 'P101', '2024-11-15 10:30:00.000000'),
+                                                                                                                                                                                                                                                                                   ('DP_SUCCESS_002', 8, '2024-11-25 14:00:00.000000', '2024-11-27 12:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Kỷ niệm 1 năm ngày cưới', 50000, 'Hà Thanh Tuấn', b'0', '0367155132', 1200000, 1246000, 'DA_THANH_TOAN', 'DG002', 'KH2', 'P201', '2024-11-18 15:45:00.000000'),
+                                                                                                                                                                                                                                                                                   ('DP_SUCCESS_003', 8, '2024-12-01 14:00:00.000000', '2024-12-03 12:00:00.000000', 'vanb@gmail.com', 'Công tác kết hợp nghỉ dưỡng', 0, 'Nguyễn Văn B', b'1', '0912345678', 4400000, 4752000, 'DA_THANH_TOAN', 'DG003', 'KH3', 'P701', '2024-11-22 09:20:00.000000'),
+                                                                                                                                                                                                                                                                                   ('DP_SUCCESS_004', 8, '2024-12-05 14:00:00.000000', '2024-12-07 12:00:00.000000', 'vanc@gmail.com', 'Du lịch gia đình cuối tuần', 100000, 'Nguyễn Văn C', b'0', '0923456789', 3800000, 4004000, 'DA_THANH_TOAN', 'DG004', 'KH4', 'P601', '2024-11-25 14:15:00.000000'),
+                                                                                                                                                                                                                                                                                   ('DP_SUCCESS_005', 8, '2024-12-10 14:00:00.000000', '2024-12-12 12:00:00.000000', 'vana@gmail.com', 'Đi công tác', 0, 'Nguyễn Văn A', b'0', '0901234567', 1400000, 1512000, 'DA_THANH_TOAN', 'DG005', 'KH1', 'P301', '2024-11-28 16:30:00.000000'),
+                                                                                                                                                                                                                                                                                   ('DP_PENDING_001', 8, '2024-12-15 14:00:00.000000', '2024-12-17 12:00:00.000000', 'vana@gmail.com', 'Chưa có yêu cầu đặc biệt', 0, 'Nguyễn Văn A', b'0', '0901234567', 900000, 972000, 'CHUA_THANH_TOAN', NULL, 'KH1', 'P102', '2024-11-29 11:00:00.000000'),
+                                                                                                                                                                                                                                                                                   ('DP_PENDING_002', 8, '2024-12-20 14:00:00.000000', '2024-12-22 12:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Tổ chức sinh nhật', 20000, 'Hà Thanh Tuấn', b'0', '0367155132', 1800000, 1926400, 'CHUA_THANH_TOAN', NULL, 'KH2', 'P501', '2024-11-30 14:20:00.000000');
 
 -- Dumping structure for table hotelbooking.hinh_anh
 CREATE TABLE IF NOT EXISTS `hinh_anh` (
@@ -162,165 +180,225 @@ CREATE TABLE IF NOT EXISTS `hinh_anh` (
                                           `url` varchar(255) DEFAULT NULL,
                                           KEY `FKdb9nyfdtytcn97nx5i6n3ka7i` (`ma_loai_phong`),
                                           CONSTRAINT `FKdb9nyfdtytcn97nx5i6n3ka7i` FOREIGN KEY (`ma_loai_phong`) REFERENCES `loai_phong` (`ma_loai_phong`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.hinh_anh: ~26 rows (approximately)
+-- Dumping data for table hotelbooking.hinh_anh: ~32 rows (approximately)
 INSERT INTO `hinh_anh` (`ma_loai_phong`, `url`) VALUES
-                                                    ('LP5', '/images/deluxe_2queen_1.jpg'),
-                                                    ('LP5', '/images/deluxe_2queen_2.jpg'),
-                                                    ('LP5', '/images/deluxe_2queen_3.jpg'),
-                                                    ('LP5', '/images/deluxe_2queen_4.jpg'),
-                                                    ('LP6', '/images/suite_king_1.jpg'),
-                                                    ('LP6', '/images/suite_king_2.jpg'),
-                                                    ('LP6', '/images/suite_king_3.jpg'),
-                                                    ('LP6', '/images/suite_king_4.jpg'),
-                                                    ('LP6', '/images/suite_king_5.jpg'),
-                                                    ('LP7', '/images/family_2double_1.jpg'),
-                                                    ('LP7', '/images/family_2double_2.jpg'),
-                                                    ('LP7', '/images/family_2double_3.jpg'),
-                                                    ('LP7', '/images/family_2double_4.jpg'),
-                                                    ('LPUEGBP9MT63', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763134897/loai_phong/umgllnzfgcjkvcio9y2b.avif'),
-                                                    ('LP3', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763206301/loai_phong/eagpgscbl1xfqse22hqu.avif'),
-                                                    ('LP2', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763206011/loai_phong/mlv0d39jnl3kbhvkvsih.avif'),
-                                                    ('LP4', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763207450/loai_phong/kr0wj0js544bytpcge00.avif'),
-                                                    ('LPZ7XEZ49O8X', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763207497/loai_phong/mumkdenma1tmslzwrszz.avif'),
-                                                    ('LPZ7XEZ49O8X', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763207499/loai_phong/cp3yzovm2sipfuu4tvbp.avif'),
-                                                    ('LPZ9GSQNJ6WS', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763207516/loai_phong/epglqhxzumm8bmfcpqhe.avif'),
-                                                    ('LP8', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763207615/loai_phong/hz0hseep4dmsjfq5mpkt.avif'),
-                                                    ('LP2JSFX6M5CX', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763206058/loai_phong/ulj42tcwyhhkleet1epc.avif'),
-                                                    ('LP2JSFX6M5CX', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763207919/loai_phong/vdepew9cr334dv69z6nc.avif'),
-                                                    ('LPBY2N76H6W5', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763368949/loai_phong/gfhwc9folrdntf68cz4z.avif'),
-                                                    ('LP1', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763205964/loai_phong/opdyvfwdwpfiuljyan6a.avif'),
-                                                    ('LP1', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763207872/loai_phong/bhwzng2fzitqy6zdaywh.avif');
+                                                    ('LP1', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731345/StandardOne1_z93s0j.jpg'),
+                                                    ('LP1', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731346/StandardOne2_ed0ebs.webp'),
+                                                    ('LP1', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731893/cac-loai-giuong-khach-san-2_goljtq.jpg'),
+                                                    ('LP1', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731919/StandardOne3_yqsdlj.jpg'),
+                                                    ('LP2', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731346/StandardDouble_cduqku.webp'),
+                                                    ('LP2', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731344/StandardDouble2_kji0gh.webp'),
+                                                    ('LP2', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763732209/StandardDouble3_tgc5o4.jpg'),
+                                                    ('LP3', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731347/StandardDoubleDouble3_agvn52.jpg'),
+                                                    ('LP3', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731346/StandardDoubleDouble_biyvxc.jpg'),
+                                                    ('LP3', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731346/StandardDoubleDouble2_zvljfn.jpg'),
+                                                    ('LP3', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731349/StandardDoubleDouble4_nco2f8.jpg'),
+                                                    ('LP4', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731345/StandardOne1_z93s0j.jpg'),
+                                                    ('LP4', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731346/StandardOne2_ed0ebs.webp'),
+                                                    ('LP4', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731893/cac-loai-giuong-khach-san-2_goljtq.jpg'),
+                                                    ('LP4', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731919/StandardOne3_yqsdlj.jpg'),
+                                                    ('LP5', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731345/StandardOne1_z93s0j.jpg'),
+                                                    ('LP5', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731346/StandardOne2_ed0ebs.webp'),
+                                                    ('LP5', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731893/cac-loai-giuong-khach-san-2_goljtq.jpg'),
+                                                    ('LP5', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731919/StandardOne3_yqsdlj.jpg'),
+                                                    ('LP6', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731347/Suite2_j4bhxm.avif'),
+                                                    ('LP6', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731348/Suite1_sb40m5.avif'),
+                                                    ('LP6', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731350/Suite3_rv4tx2.avif'),
+                                                    ('LP6', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763732724/suite4webp_zc1gkg.webp'),
+                                                    ('LP7', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731349/Family1_h153rl.avif'),
+                                                    ('LP7', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763731347/Family2_ve1was.avif'),
+                                                    ('LP7', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763732954/family2double_oqtxji.jpg'),
+                                                    ('LP7', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763732958/Family2Double2_boldkh.jpg'),
+                                                    ('LP8', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763733270/p3-7_ih6l4y.jpg'),
+                                                    ('LP8', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763733271/p3-6_pmdy4j.jpg'),
+                                                    ('LP8', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763733268/Family3Doubble_ciapa8.jpg'),
+                                                    ('LP8', 'https://res.cloudinary.com/dude7j76s/image/upload/v1763733273/p3-19_tdmch1.jpg');
 
 -- Dumping structure for table hotelbooking.khach_hang
 CREATE TABLE IF NOT EXISTS `khach_hang` (
                                             `ma_khach_hang` varchar(255) NOT NULL,
-                                            `diem_tich_luy` int(11) DEFAULT NULL,
+                                            `diem_tich_luy` int(11) DEFAULT 0,
                                             `ho_ten_khach_hang` varchar(255) DEFAULT NULL,
                                             `so_dien_thoai` varchar(255) DEFAULT NULL,
                                             PRIMARY KEY (`ma_khach_hang`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.khach_hang: ~1 rows (approximately)
+-- Dumping data for table hotelbooking.khach_hang: ~4 rows (approximately)
 INSERT INTO `khach_hang` (`ma_khach_hang`, `diem_tich_luy`, `ho_ten_khach_hang`, `so_dien_thoai`) VALUES
-    ('KH1', 0, 'Nguyen Van A', '0901234567');
+                                                                                                      ('KH1', 500, 'Nguyễn Văn A', '0901234567'),
+                                                                                                      ('KH2', 300, 'Hà Thanh Tuấn', '0367155132'),
+                                                                                                      ('KH3', 800, 'Nguyễn Văn B', '0912345678'),
+                                                                                                      ('KH4', 600, 'Nguyễn Văn C', '0923456789');
 
 -- Dumping structure for table hotelbooking.loai_giuong
 CREATE TABLE IF NOT EXISTS `loai_giuong` (
                                              `ma_giuong` varchar(255) NOT NULL,
-                                             `mo_ta` varchar(255) DEFAULT NULL,
+                                             `mo_ta` text DEFAULT NULL,
                                              `ten_giuong` varchar(255) NOT NULL,
+                                             `tinh_trang` bit(1) DEFAULT b'1',
                                              PRIMARY KEY (`ma_giuong`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table hotelbooking.loai_giuong: ~4 rows (approximately)
-INSERT INTO `loai_giuong` (`ma_giuong`, `mo_ta`, `ten_giuong`) VALUES
-                                                                   ('G1', 'Giuong don danh cho 1 khach', 'Single'),
-                                                                   ('G2', 'Giuong doi danh cho 2 khach', 'Double'),
-                                                                   ('G3', 'Giuong doi lon, thoai mai cho 2 khach', 'Queen'),
-                                                                   ('G4', 'Giuong sieu lon, cao cap cho khach sang trong', 'King');
+INSERT INTO `loai_giuong` (`ma_giuong`, `mo_ta`, `ten_giuong`, `tinh_trang`) VALUES
+                                                                                 ('G1', 'Giường đơn dành cho 1 khách', 'Single', b'1'),
+                                                                                 ('G2', 'Giường đôi dành cho 2 khách', 'Double', b'1'),
+                                                                                 ('G3', 'Giường đôi lớn, thoải mái cho 2 khách', 'Queen', b'1'),
+                                                                                 ('G4', 'Giường siêu lớn, cao cấp cho khách sang trọng', 'King', b'1');
 
 -- Dumping structure for table hotelbooking.loai_phong
 CREATE TABLE IF NOT EXISTS `loai_phong` (
                                             `ma_loai_phong` varchar(255) NOT NULL,
                                             `dien_tich` double DEFAULT NULL,
                                             `gia` double DEFAULT NULL,
-                                            `mo_ta` varchar(255) DEFAULT NULL,
+                                            `mo_ta` text DEFAULT NULL,
                                             `so_khach` int(11) DEFAULT NULL,
                                             `ten_loai_phong` varchar(255) NOT NULL,
+                                            `tinh_trang` bit(1) DEFAULT b'1',
                                             PRIMARY KEY (`ma_loai_phong`),
                                             UNIQUE KEY `UK69ws9ijpn3ywvy883h3bbawj1` (`ten_loai_phong`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.loai_phong: ~13 rows (approximately)
-INSERT INTO `loai_phong` (`ma_loai_phong`, `dien_tich`, `gia`, `mo_ta`, `so_khach`, `ten_loai_phong`) VALUES
-                                                                                                          ('LP1', 35, 500000, 'Phong tieu chuan voi 1 giuong don, dien tich 20m2, thiet ke toi gian nhung day du tien nghi, bao gom TV, minibar, dieu hoa, ban lam viec va phong tam hien dai. Phu hop cho 1 khach, mang den khong gian nghi ngoi thoai mai va tien loi.', 1, 'Standard Single'),
-                                                                                                          ('LP2', 25, 600000, 'Phong tieu chuan voi 1 giuong doi, dien tich 20m2, trang bi day du tien nghi nhu TV, minibar, dieu hoa, ban lam viec va phong tam hien dai. Phu hop cho 2 khach, ly tuong cho cap doi hoac ban be muon nghi ngoi trong khong gian vua du thoai mai.', 2, 'Standard Double'),
-                                                                                                          ('LP2JSFX6M5CX', 30, 500000, 'SDFASDFASDF', 2, 'Standard Double 3'),
-                                                                                                          ('LP3', 30, 700000, 'Phong tieu chuan voi 2 giuong don, dien tich 20m2, duoc trang bi TV, minibar, dieu hoa, ban lam viec va phong tam hien dai. Phu hop cho 2 khach, mang lai su tien nghi va linh hoat cho nhung ai muon nghi ngoi rieng tu trong cung mot phong.', 2, 'Standard 2 Single'),
-                                                                                                          ('LP4', 30, 900000, 'Phong cao cap Deluxe voi 1 giuong sieu lon King, dien tich 30m2, thiet ke tinh te va sang trong. Phong co cua so hoac ban cong, trang bi day du tien nghi nhu TV, minibar, dieu hoa, sofa, ban tra va phong tam co bon tam.', 2, 'Deluxe King'),
-                                                                                                          ('LP5', 30, 1100000, 'Phong cao cap Deluxe voi 2 giuong doi lon Queen, dien tich 30m2, thiet ke rong rai, trang bi TV, minibar, dieu hoa, sofa, ban tra, phong tam sang trong voi bon tam va ban cong. Phu hop cho 2–4 khach, ly tuong cho gia dinh hoac nhom ban.', 4, 'Deluxe 2 Queen'),
-                                                                                                          ('LP6', 60, 2200000, 'Phong Suite hang sang voi giuong King va phong khach rieng, dien tich 60m2, gom phong ngu va phong khach rieng biet. Trang bi day du tien nghi cao cap: TV, minibar, dieu hoa, sofa, ban lam viec, phong tam co bon tam va ban cong rong.', 3, 'Suite King'),
-                                                                                                          ('LP7', 40, 1900000, 'Phong Family rong 40m2 voi 2 giuong doi, thiet ke tien loi cho gia dinh hoac nhom ban 4 khach. Co TV, minibar, dieu hoa, ban lam viec, ban an nho va bep tien dung.', 4, 'Family 2 Double'),
-                                                                                                          ('LP8', 40, 2100000, 'Phong Family rong 40m2 voi 3 giuong doi, danh cho nhom 4–6 khach. Co day du tien nghi: TV, minibar, dieu hoa, ban lam viec, ban an/bep nho. Ly tuong cho gia dinh hoac nhom ban muon nghi duong cung nhau.', 6, 'Family 3 Double'),
-                                                                                                          ('LPBY2N76H6W5', 26, 234234234, 'ádfsd', 2, 'Delux Double 22'),
-                                                                                                          ('LPUEGBP9MT63', 30, 10000000, 'ádfdsafasdf', 2, 'Delux Double 2'),
-                                                                                                          ('LPZ7XEZ49O8X', 33, 1000000, 'ádfsdfasdfasdff', 2, 'Standard 2 Single 22'),
-                                                                                                          ('LPZ9GSQNJ6WS', 25, 500000, 'sdfasdfasdfasdf', 2, 'Standard Double 2');
+-- Dumping data for table hotelbooking.loai_phong: ~8 rows (approximately)
+INSERT INTO `loai_phong` (`ma_loai_phong`, `dien_tich`, `gia`, `mo_ta`, `so_khach`, `ten_loai_phong`, `tinh_trang`) VALUES
+                                                                                                                        ('LP1', 25, 500000, 'Phòng tiêu chuẩn với 1 giường đơn, diện tích 20m2, thiết kế tối giản nhưng đầy đủ tiện nghi, bao gồm TV, minibar, điều hòa, bàn làm việc và phòng tắm hiện đại. Phù hợp cho 1 khách, mang đến không gian nghỉ ngơi thoải mái và tiện lợi.', 1, 'Standard Single', b'1'),
+                                                                                                                        ('LP2', 25, 600000, 'Phòng tiêu chuẩn với 1 giường đôi, diện tích 20m2, trang bị đầy đủ tiện nghi như TV, minibar, điều hòa, bàn làm việc và phòng tắm hiện đại. Phù hợp cho 2 khách, lý tưởng cho cặp đôi hoặc bạn bè muốn nghỉ ngơi trong không gian vừa đủ thoải mái.', 2, 'Standard Double', b'1'),
+                                                                                                                        ('LP3', 30, 700000, 'Phòng tiêu chuẩn với 2 giường đơn, diện tích 20m2, được trang bị TV, minibar, điều hòa, bàn làm việc và phòng tắm hiện đại. Phù hợp cho 2 khách, mang lại sự tiện nghi và linh hoạt cho những ai muốn nghỉ ngơi riêng tư trong cùng một phòng.', 2, 'Standard 2 Single', b'1'),
+                                                                                                                        ('LP4', 30, 900000, 'Phòng cao cấp Deluxe với 1 giường siêu lớn King, diện tích 30m2, thiết kế tinh tế và sang trọng. Phòng có cửa sổ hoặc ban công, trang bị đầy đủ tiện nghi như TV, minibar, điều hòa, sofa, bàn trà và phòng tắm có bồn tắm.', 2, 'Deluxe King', b'1'),
+                                                                                                                        ('LP5', 35, 1100000, 'Phòng cao cấp Deluxe với 2 giường đôi lớn Queen, diện tích 30m2, thiết kế rộng rãi, trang bị TV, minibar, điều hòa, sofa, bàn trà, phòng tắm sang trọng với bồn tắm và ban công. Phù hợp cho 2–4 khách, lý tưởng cho gia đình hoặc nhóm bạn.', 4, 'Deluxe 2 Queen', b'1'),
+                                                                                                                        ('LP6', 60, 2200000, 'Phòng Suite hạng sang với giường King và phòng khách riêng, diện tích 60m2, gồm phòng ngủ và phòng khách riêng biệt. Trang bị đầy đủ tiện nghi cao cấp: TV, minibar, điều hòa, sofa, bàn làm việc, phòng tắm có bồn tắm và ban công rộng.', 3, 'Suite King', b'1'),
+                                                                                                                        ('LP7', 40, 1900000, 'Phòng Family rộng 40m2 với 2 giường đôi, thiết kế tiện lợi cho gia đình hoặc nhóm bạn 4 khách. Có TV, minibar, điều hòa, bàn làm việc, bàn ăn nhỏ và bếp tiện dụng.', 4, 'Family 2 Double', b'1'),
+                                                                                                                        ('LP8', 40, 2100000, 'Phòng Family rộng 40m2 với 3 giường đôi, dành cho nhóm 4–6 khách. Có đầy đủ tiện nghi: TV, minibar, điều hòa, bàn làm việc, bàn ăn/bếp nhỏ. Lý tưởng cho gia đình hoặc nhóm bạn muốn nghỉ dưỡng cùng nhau.', 6, 'Family 3 Double', b'1');
 
 -- Dumping structure for table hotelbooking.phong
 CREATE TABLE IF NOT EXISTS `phong` (
                                        `ma_phong` varchar(255) NOT NULL,
-                                       `trang_thai` enum('BAO_TRI','PHUC_VU','TRONG') DEFAULT NULL,
+                                       `trang_thai` ENUM('TRONG', 'PHUC_VU', 'BAO_TRI') DEFAULT 'TRONG',
                                        `vi_tri` varchar(255) DEFAULT NULL,
                                        `ma_loai_phong` varchar(255) NOT NULL,
+                                       `tinh_trang` bit(1) DEFAULT b'1',
                                        PRIMARY KEY (`ma_phong`),
                                        KEY `FK378h0h60ooky42egxi2ckdqu` (`ma_loai_phong`),
                                        CONSTRAINT `FK378h0h60ooky42egxi2ckdqu` FOREIGN KEY (`ma_loai_phong`) REFERENCES `loai_phong` (`ma_loai_phong`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.phong: ~10 rows (approximately)
-INSERT INTO `phong` (`ma_phong`, `trang_thai`, `vi_tri`, `ma_loai_phong`) VALUES
-                                                                              ('P101', 'TRONG', 'Tang 1', 'LP1'),
-                                                                              ('P102', 'TRONG', 'Tang 1', 'LP1'),
-                                                                              ('P103', 'TRONG', 'Tang 1', 'LP1'),
-                                                                              ('P104', 'TRONG', 'Tang 1', 'LP1'),
-                                                                              ('P105', 'TRONG', 'Tang 1', 'LP1'),
-                                                                              ('P106', 'TRONG', 'Tang 1', 'LP1'),
-                                                                              ('P107', 'TRONG', 'Tang 1', 'LP1'),
-                                                                              ('P108', 'TRONG', 'Tang 1', 'LP1'),
-                                                                              ('P109', 'TRONG', 'Tang 1', 'LP1'),
-                                                                              ('P110', 'TRONG', 'Tang 1', 'LP1');
+-- Dumping data for table hotelbooking.phong: ~64 rows (approximately)
+INSERT INTO `phong` (`ma_phong`, `trang_thai`, `vi_tri`, `ma_loai_phong`, `tinh_trang`) VALUES
+                                                                                            ('P101', 'TRONG', 'Tầng 1', 'LP1', b'1'),
+                                                                                            ('P102', 'TRONG', 'Tầng 1', 'LP1', b'1'),
+                                                                                            ('P103', 'TRONG', 'Tầng 1', 'LP1', b'1'),
+                                                                                            ('P104', 'TRONG', 'Tầng 1', 'LP1', b'1'),
+                                                                                            ('P105', 'TRONG', 'Tầng 1', 'LP1', b'1'),
+                                                                                            ('P106', 'TRONG', 'Tầng 1', 'LP1', b'1'),
+                                                                                            ('P107', 'TRONG', 'Tầng 1', 'LP1', b'1'),
+                                                                                            ('P108', 'TRONG', 'Tầng 1', 'LP1', b'1'),
+                                                                                            ('P109', 'TRONG', 'Tầng 1', 'LP1', b'1'),
+                                                                                            ('P110', 'TRONG', 'Tầng 1', 'LP2', b'1'),
+                                                                                            ('P201', 'TRONG', 'Tầng 2', 'LP2', b'1'),
+                                                                                            ('P202', 'TRONG', 'Tầng 2', 'LP2', b'1'),
+                                                                                            ('P203', 'TRONG', 'Tầng 2', 'LP2', b'1'),
+                                                                                            ('P204', 'TRONG', 'Tầng 2', 'LP2', b'1'),
+                                                                                            ('P205', 'TRONG', 'Tầng 2', 'LP2', b'1'),
+                                                                                            ('P206', 'TRONG', 'Tầng 2', 'LP2', b'1'),
+                                                                                            ('P207', 'TRONG', 'Tầng 2', 'LP1', b'1'),
+                                                                                            ('P208', 'TRONG', 'Tầng 2', 'LP2', b'1'),
+                                                                                            ('P209', 'TRONG', 'Tầng 2', 'LP1', b'1'),
+                                                                                            ('P210', 'TRONG', 'Tầng 2', 'LP2', b'1'),
+                                                                                            ('P301', 'TRONG', 'Tầng 3', 'LP3', b'1'),
+                                                                                            ('P302', 'TRONG', 'Tầng 3', 'LP3', b'1'),
+                                                                                            ('P303', 'TRONG', 'Tầng 3', 'LP3', b'1'),
+                                                                                            ('P304', 'TRONG', 'Tầng 3', 'LP3', b'1'),
+                                                                                            ('P305', 'TRONG', 'Tầng 3', 'LP3', b'1'),
+                                                                                            ('P306', 'TRONG', 'Tầng 3', 'LP3', b'1'),
+                                                                                            ('P307', 'TRONG', 'Tầng 3', 'LP2', b'1'),
+                                                                                            ('P308', 'TRONG', 'Tầng 3', 'LP2', b'1'),
+                                                                                            ('P309', 'TRONG', 'Tầng 3', 'LP2', b'1'),
+                                                                                            ('P310', 'TRONG', 'Tầng 3', 'LP2', b'1'),
+                                                                                            ('P401', 'TRONG', 'Tầng 4', 'LP3', b'1'),
+                                                                                            ('P402', 'TRONG', 'Tầng 4', 'LP3', b'1'),
+                                                                                            ('P403', 'TRONG', 'Tầng 4', 'LP3', b'1'),
+                                                                                            ('P404', 'TRONG', 'Tầng 4', 'LP3', b'1'),
+                                                                                            ('P405', 'TRONG', 'Tầng 4', 'LP3', b'1'),
+                                                                                            ('P406', 'TRONG', 'Tầng 4', 'LP3', b'1'),
+                                                                                            ('P407', 'TRONG', 'Tầng 4', 'LP2', b'1'),
+                                                                                            ('P408', 'TRONG', 'Tầng 4', 'LP2', b'1'),
+                                                                                            ('P409', 'TRONG', 'Tầng 4', 'LP2', b'1'),
+                                                                                            ('P410', 'TRONG', 'Tầng 4', 'LP2', b'1'),
+                                                                                            ('P501', 'TRONG', 'Tầng 5', 'LP4', b'1'),
+                                                                                            ('P502', 'TRONG', 'Tầng 5', 'LP5', b'1'),
+                                                                                            ('P503', 'TRONG', 'Tầng 5', 'LP4', b'1'),
+                                                                                            ('P504', 'TRONG', 'Tầng 5', 'LP5', b'1'),
+                                                                                            ('P505', 'TRONG', 'Tầng 5', 'LP4', b'1'),
+                                                                                            ('P506', 'TRONG', 'Tầng 5', 'LP5', b'1'),
+                                                                                            ('P507', 'TRONG', 'Tầng 5', 'LP4', b'1'),
+                                                                                            ('P508', 'TRONG', 'Tầng 5', 'LP5', b'1'),
+                                                                                            ('P509', 'TRONG', 'Tầng 5', 'LP4', b'1'),
+                                                                                            ('P510', 'TRONG', 'Tầng 5', 'LP5', b'1'),
+                                                                                            ('P601', 'TRONG', 'Tầng 6', 'LP8', b'1'),
+                                                                                            ('P602', 'TRONG', 'Tầng 6', 'LP8', b'1'),
+                                                                                            ('P603', 'TRONG', 'Tầng 6', 'LP8', b'1'),
+                                                                                            ('P604', 'TRONG', 'Tầng 6', 'LP7', b'1'),
+                                                                                            ('P605', 'TRONG', 'Tầng 6', 'LP7', b'1'),
+                                                                                            ('P606', 'TRONG', 'Tầng 6', 'LP7', b'1'),
+                                                                                            ('P701', 'TRONG', 'Tầng 7', 'LP6', b'1'),
+                                                                                            ('P702', 'TRONG', 'Tầng 7', 'LP6', b'1'),
+                                                                                            ('P703', 'TRONG', 'Tầng 7', 'LP6', b'1'),
+                                                                                            ('P704', 'TRONG', 'Tầng 7', 'LP6', b'1');
 
 -- Dumping structure for table hotelbooking.tai_khoan
 CREATE TABLE IF NOT EXISTS `tai_khoan` (
                                            `ma_tai_khoan` varchar(255) NOT NULL,
                                            `email` varchar(255) DEFAULT NULL,
-                                           `is_active` bit(1) DEFAULT NULL,
                                            `mat_khau` varchar(255) DEFAULT NULL,
-                                           `vai_tro` enum('ADMIN','MEMBER') DEFAULT NULL,
+                                           `vai_tro` enum('ADMIN','MEMBER') DEFAULT 'MEMBER',
                                            `ma_khach_hang` varchar(255) DEFAULT NULL,
+                                           `tinh_trang` bit(1) DEFAULT b'1',
                                            PRIMARY KEY (`ma_tai_khoan`),
                                            UNIQUE KEY `UKd0golrlr34gkql6so1i4gbuw5` (`email`),
                                            UNIQUE KEY `UKpfxkkprixt2p7mhm82db4lyhu` (`ma_khach_hang`),
                                            CONSTRAINT `FK5i1pbvg3w3w28px50xa67aho3` FOREIGN KEY (`ma_khach_hang`) REFERENCES `khach_hang` (`ma_khach_hang`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.tai_khoan: ~2 rows (approximately)
-INSERT INTO `tai_khoan` (`ma_tai_khoan`, `email`, `mat_khau`, `vai_tro`, `ma_khach_hang`) VALUES
-                                                                                                           ('TK1', 'admin@twan.com',  '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'ADMIN', NULL),
-                                                                                                           ('TK2', 'vana@gmail.com',  '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH1');
+-- Dumping data for table hotelbooking.tai_khoan: ~5 rows (approximately)
+INSERT INTO `tai_khoan` (`ma_tai_khoan`, `email`, `mat_khau`, `vai_tro`, `ma_khach_hang`, `tinh_trang`) VALUES
+                                                                                                            ('TK1', 'admin@twan.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'ADMIN', NULL, b'1'),
+                                                                                                            ('TK2', 'hthanhtuan.2307@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH2', b'1'),
+                                                                                                            ('TK3', 'vana@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH1', b'1'),
+                                                                                                            ('TK4', 'vanb@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH3', b'1'),
+                                                                                                            ('TK5', 'vanc@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH4', b'1');
 
 -- Dumping structure for table hotelbooking.tien_nghi
 CREATE TABLE IF NOT EXISTS `tien_nghi` (
                                            `ma_tien_nghi` varchar(255) NOT NULL,
                                            `ten_tien_nghi` varchar(255) NOT NULL,
+                                           `icon` varchar(100) NOT NULL,
+                                           `tinh_trang` bit(1) DEFAULT b'1',
                                            PRIMARY KEY (`ma_tien_nghi`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.tien_nghi: ~15 rows (approximately)
-INSERT INTO `tien_nghi` (`ma_tien_nghi`, `ten_tien_nghi`) VALUES
-                                                              ('TN1', 'Wifi mien phi'),
-                                                              ('TN10', 'May say toc'),
-                                                              ('TN11', 'Mini bar cao cap'),
-                                                              ('TN12', 'Bon tam jacuzzi'),
-                                                              ('TN13', 'Sofa thu gian'),
-                                                              ('TN14', 'Ket an toan'),
-                                                              ('TN15', 'Ban an / Bep nho'),
-                                                              ('TN2', 'TV man hinh phang'),
-                                                              ('TN3', 'Minibar'),
-                                                              ('TN4', 'Dieu hoa'),
-                                                              ('TN5', 'Bon tam'),
-                                                              ('TN6', 'Ban cong'),
-                                                              ('TN7', 'Ban lam viec'),
-                                                              ('TN8', 'Dich vu phong 24/7'),
-                                                              ('TN9', 'Tu quan ao lon');
+-- Dumping data for table hotelbooking.tien_nghi: ~16 rows (approximately)
+INSERT INTO `tien_nghi` (`ma_tien_nghi`, `ten_tien_nghi`, `icon`, `tinh_trang`) VALUES
+                                                                                    ('TN1', 'Wifi miễn phí', 'wifi', b'1'),
+                                                                                    ('TN10', 'Máy sấy tóc', 'wind', b'1'),
+                                                                                    ('TN11', 'Mini bar cao cấp', 'martini', b'1'),
+                                                                                    ('TN12', 'Bồn tắm jacuzzi', 'jacuzzi', b'1'),
+                                                                                    ('TN13', 'Sofa thư giãn', 'sofa', b'1'),
+                                                                                    ('TN14', 'Két an toàn', 'shield', b'1'),
+                                                                                    ('TN15', 'Bàn ăn / Bếp nhỏ', 'utensils', b'1'),
+                                                                                    ('TN16', 'Phòng tắm vòi sen', 'shower', b'1'),
+                                                                                    ('TN2', 'TV màn hình phẳng', 'tv', b'1'),
+                                                                                    ('TN3', 'Minibar', 'coffee', b'1'),
+                                                                                    ('TN4', 'Điều hòa', 'snowflake', b'1'),
+                                                                                    ('TN5', 'Bồn tắm', 'bath-tub', b'1'),
+                                                                                    ('TN6', 'Ban công', 'square', b'1'),
+                                                                                    ('TN7', 'Bàn làm việc', 'table', b'1'),
+                                                                                    ('TN8', 'Dịch vụ phòng 24/7', 'bell', b'1'),
+                                                                                    ('TN9', 'Tủ quần áo lớn', 'shirt', b'1');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
-
-

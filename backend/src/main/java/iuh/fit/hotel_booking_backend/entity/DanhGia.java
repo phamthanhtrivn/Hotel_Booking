@@ -27,6 +27,7 @@ public class DanhGia {
     private String binhLuan;
     @ManyToOne
     @JoinColumn(name = "ma_loai_phong", nullable = false)
+    @JsonIgnore
     private LoaiPhong loaiPhong;
     @Column(name = "thoi_gian_danh_gia")
     private LocalDateTime thoiGianDanhGia;

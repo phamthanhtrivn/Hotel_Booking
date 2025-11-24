@@ -1,9 +1,14 @@
-import { hotel, roomPackageDummyData } from "@/assets/assets";
+import {
+  hotel,
+  roomPackageDummyData,
+
+} from "@/assets/assets";
 import RoomTypeCard from "@/components/common/RoomTypeCard";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useRef, useState } from "react";
+import { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast";
+import { toast } from "react-toastify";
 
 const roomPackages = roomPackageDummyData;
 
@@ -12,7 +17,6 @@ const tomorrow = new Date(today);
 tomorrow.setDate(today.getDate() + 1);
 
 const RoomTypes = () => {
-  const baseUrl = import.meta.env.VITE_BASE_API_URL;
   const [roomTypes, setRoomTypes] = useState([]);
   const [roomTypeOptions, setRoomTypeOptions] = useState([]);
   const [filters, setFilters] = useState({

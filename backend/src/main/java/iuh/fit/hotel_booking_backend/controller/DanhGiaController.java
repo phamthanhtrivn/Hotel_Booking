@@ -8,6 +8,7 @@ import iuh.fit.hotel_booking_backend.dto.DanhGiaTimKiemRequest;
 import iuh.fit.hotel_booking_backend.entity.DanhGia;
 import iuh.fit.hotel_booking_backend.repository.DanhGiaRepository;
 import iuh.fit.hotel_booking_backend.service.DanhGiaService;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,10 +23,13 @@ public class DanhGiaController {
     }
 
     @GetMapping
-    public APIResponse<List<DanhGiaRespone>> getAll(){
-        APIResponse<List<DanhGiaRespone>> response = new APIResponse<>();
+    public APIResponse<Page<DanhGiaRespone>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+           @RequestParam(defaultValue = "5") int size
+    ){
+        APIResponse<Page<DanhGiaRespone>> response = new APIResponse<>();
         try{
-            List<DanhGiaRespone> listDanhGia = danhGiaService.getAllByDanhGia();
+            Page<DanhGiaRespone> listDanhGia = danhGiaService.getAllByDanhGia(page, size);
             response.setData(listDanhGia);
             response.setSuccess(true);
             response.setMessage("Get all danh gia successfully");
@@ -42,7 +46,7 @@ public class DanhGiaController {
     @PostMapping("/create")
     public APIResponse<DanhGia> createDanhGia(@RequestBody DanhGiaRequest danhGiaRequest){
         APIResponse<DanhGia> response = new APIResponse<>();
-        System.out.println("Received danh gia: " + danhGiaRequest);
+        System.out.println("Received danh gia: " + danhGiaRequest.toString());
         try {
             DanhGia newDanhGia = danhGiaService.save(danhGiaRequest);
             response.setData(newDanhGia);
@@ -50,12 +54,15 @@ public class DanhGiaController {
             response.setMessage("Create danh gia successfully");
             return response;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println(e);
             response.setSuccess(false);
             response.setMessage("Failed to create danh gia");
             return response;
         }
     }
+
+
+
     @GetMapping("search")
     public  APIResponse<List<DanhGiaRespone>> searchDanhGia(
             @RequestParam(required = false) String maLoaiPhong,
@@ -69,15 +76,18 @@ public class DanhGiaController {
         if(maLoaiPhong.trim().length() != 0){
             request.setMaLoaiPhong(maLoaiPhong);
         }
-        if(loaiMucDo != null && loaiMucDo.trim().length() != 0 && diemMucDo != null) {
+        if(loaiMucDo.trim().length() != 0 && loaiMucDo.trim().length() != 0 && diemMucDo != null) {
             DanhGiaTimKiemRequest.MucDo mucDo = new DanhGiaTimKiemRequest.MucDo();
             mucDo.setLoai(loaiMucDo);
-            mucDo.setDiem(diemMucDo);
+            mucDo.setDiem(Integer.parseInt(diemMucDo.toString()));
             request.setDanhGia(mucDo);
         }
-        request.setThang(thang);
-        request.setNam(nam);
-        System.out.println("Search request: " + request.toString());
+        if(thang.toString().length() != 0 ) {
+            request.setThang(Integer.parseInt(thang.toString()));
+        }
+        if(nam.toString().length() != 0 ) {
+            request.setNam(nam);
+        }
         try{
             List<DanhGiaRespone> listDanhGia = danhGiaService.searchDanhGia(request);
             response.setData(listDanhGia);
@@ -90,6 +100,24 @@ public class DanhGiaController {
         }
         return response;
     }
+
+    @PutMapping("/update/{maDanhGia}")
+    public APIResponse<DanhGia> updateDanhGia(
+            @PathVariable String maDanhGia
+    ){
+        APIResponse<DanhGia> response = new APIResponse<>();
+        try {
+            boolean check = danhGiaService.updateById(maDanhGia);
+            response.setSuccess(check);
+            response.setMessage("Update danh gia successfully");
+        } catch (Exception e) {
+            System.out.println(e);
+            response.setSuccess(false);
+            response.setMessage("Failed to update danh gia: " + e.getMessage());
+        }
+        return response;
+    }
+
 
     @GetMapping("/nam")
     public APIResponse<List<Integer>> getDistinctYears() {

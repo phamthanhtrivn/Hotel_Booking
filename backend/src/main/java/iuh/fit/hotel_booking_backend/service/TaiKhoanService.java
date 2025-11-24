@@ -4,14 +4,14 @@ import iuh.fit.hotel_booking_backend.entity.LoaiTaiKhoan;
 import iuh.fit.hotel_booking_backend.entity.TaiKhoan;
 import iuh.fit.hotel_booking_backend.repository.TaiKhoanRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
 @Service
 public class TaiKhoanService {
-    private TaiKhoanRepository repo;
+    private final TaiKhoanRepository repo;
     private final DonDatPhongService donDatPhongService;
-
 
     public TaiKhoanService(TaiKhoanRepository repo, DonDatPhongService donDatPhongService) {
         this.repo = repo;
@@ -31,7 +31,22 @@ public class TaiKhoanService {
     }
 
 
-    public TaiKhoan update(TaiKhoan t) {
+    public boolean deleteById(String id) {
+        TaiKhoan tk = repo.findById(id).orElse(null);
+        if (tk == null) return false;
+        if (tk.getKhachHang() != null) {
+            String maKH = tk.getKhachHang().getMaKhachHang();
+            int soDon = donDatPhongService.countByKhachHangId(maKH);
+            if (soDon > 0) {
+                throw new IllegalStateException("Khách hàng đang có đơn đặt phòng, không thể xóa tài khoản!");
+            }
+        }
+        repo.deleteById(id);
+        return true;
+    }
+
+
+    public TaiKhoan update( TaiKhoan t) {
         TaiKhoan existingTaiKhoan = repo.findById(t.getMaTaiKhoan()).orElse(null);
         if(existingTaiKhoan == null) throw new RuntimeException("TaiKhoan not found");
         else{
@@ -46,20 +61,7 @@ public class TaiKhoanService {
     }
 
 
-    public boolean deleteById(String id) {
-        TaiKhoan tk = repo.findById(id).orElse(null);
-        if (tk == null) return false;
-        if (tk.getKhachHang() != null) {
-            String maKH = tk.getKhachHang().getMaKhachHang();
-            int soDon = donDatPhongService.countByKhachHangId(maKH);
-            if (soDon > 0) {
-                throw new IllegalStateException("Khách hàng đang có đơn đặt phòng, không thể xóa tài khoản!");
-            }
-        }
 
-        repo.deleteById(id);
-        return true;
-    }
 
     public List<TaiKhoan> getAllMembers() {
         return repo.findAllMembers();

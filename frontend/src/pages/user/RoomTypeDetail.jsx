@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const amenities = [
   "40-inch Samsung® LED TV",
@@ -142,7 +143,7 @@ const OtherRoomsSlider = ({ otherRooms }) => {
 };
 const RoomTypeDetail = () => {
   const { id } = useParams();
-  const [room, setRoom] = useState(null);
+  const [room, setRoom] = useState({});
   const [otherRooms, setOtherRooms] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -195,7 +196,7 @@ const RoomTypeDetail = () => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [id]);
+  }, [id]); 
 
   if (loading) return <p className="text-center text-2xl mt-20">Loading...</p>;
   if (!room) return null;
@@ -351,6 +352,7 @@ const RoomTypeDetail = () => {
           </div>
         </div>
       </section>
+
       <section id="gallery" className="relative w-full overflow-hidden mt-2">
         <ImageSlider
           images={room?.hinhAnh || []}

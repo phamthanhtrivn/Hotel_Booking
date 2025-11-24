@@ -1,6 +1,7 @@
 package iuh.fit.hotel_booking_backend.service;
 
 import iuh.fit.hotel_booking_backend.entity.ChiTietTienNghi;
+import iuh.fit.hotel_booking_backend.entity.ChiTietTienNghiId;
 import iuh.fit.hotel_booking_backend.repository.ChiTietTienNghiRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ public class ChiTietTienNghiService {
         return repo.findAll();
     }
 
-    public ChiTietTienNghi getById(ChiTietTienNghi.ChiTietTienNghiId id) {
+    public ChiTietTienNghi getById(ChiTietTienNghiId id) {
         return repo.findById(id).orElse(null);
     }
 
@@ -26,7 +27,7 @@ public class ChiTietTienNghiService {
         return repo.save(chiTietTienNghi);
     }
 
-    public void deleteById(ChiTietTienNghi.ChiTietTienNghiId id) {
+    public void deleteById(ChiTietTienNghiId id) {
         repo.deleteById(id);
     }
 }

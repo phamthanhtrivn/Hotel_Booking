@@ -2,38 +2,16 @@ import React, { useState } from 'react';
 import {useFetch} from '@/hooks/useFetch';
 import { Star,X } from 'lucide-react';
 import { toast } from "react-toastify";
+import {Input} from "@/components/ui/input";
 
 export default function ReviewModel({ booking, isOpen, onClose }) {
 
-    const [danhGia, setDanhGia] = useState({ diemSachSe: 0, diemDichVu: 0, diemCoSoVatChat: 0, binhLuan: '', maLoaiPhong: booking.phong.loaiPhong.maLoaiPhong, maDatPhong: booking.maDatPhong });
+    const [danhGia, setDanhGia] = useState({ diemSachSe: 10, diemDichVu: 10, diemCoSoVatChat: 10, binhLuan: '', maLoaiPhong: booking.phong.loaiPhong.maLoaiPhong, maDatPhong: booking.maDatPhong });
     const { post } = useFetch(import.meta.env.VITE_BASE_API_URL + '/api/');
 
 
-    console.log(danhGia);
 
-
-    const renderStars = (currentRating, nameDanhGia) => {
-        return (
-            <div className="flex gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                        key={star}
-                        type="button"
-                        onClick={() => setDanhGia({ ...danhGia, [nameDanhGia]: star })}
-                        className="transition-transform hover:scale-110"
-                    >
-                        <Star
-                            size={28}
-                            className={`${star <= (currentRating)
-                                ? 'fill-yellow-400 text-yellow-400'
-                                : 'text-gray-300'
-                                } transition-colors`}
-                        />
-                    </button>
-                ))}
-            </div>
-        );
-    }
+   
 
 
     const handleSubmit = () => {
@@ -70,21 +48,21 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Điểm Sạch Sẽ
                         </label>
-                        {renderStars(danhGia.diemSachSe, 'diemSachSe')}
+                        <Input value={danhGia.diemSachSe} onChange={(e) => setDanhGia({ ...danhGia, diemSachSe: e.target.value })} min={0} max={10} type="number" placeholder="Điểm Sạch Sẽ" />
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Điểm Dịch Vụ
                         </label>
-                        {renderStars(danhGia.diemDichVu, 'diemDichVu')}
+                        <Input value={danhGia.diemDichVu} onChange={(e) => setDanhGia({ ...danhGia, diemDichVu: e.target.value })} min={0} max={10} type="number" placeholder="Điểm Dịch Vụ" />
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Điểm Cơ Sở Vật Chất
                         </label>
-                        {renderStars(danhGia.diemCoSoVatChat, 'diemCoSoVatChat')}
+                        <Input value={danhGia.diemCoSoVatChat} onChange={(e) => setDanhGia({ ...danhGia, diemCoSoVatChat: e.target.value })} min={0} max={10} type="number" placeholder="Điểm Cơ Sở Vật Chất" />
                     </div>
 
                     <div>

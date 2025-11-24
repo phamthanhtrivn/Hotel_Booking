@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
@@ -27,12 +26,4 @@ public class ChiTietTienNghi {
     @JoinColumn(name = "ma_loai_phong", nullable = false)
     private LoaiPhong loaiPhong;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Embeddable
-    public static class ChiTietTienNghiId implements Serializable {
-        private String tienNghi;
-        private String loaiPhong;
-    }
 }

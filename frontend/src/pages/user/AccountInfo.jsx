@@ -1,20 +1,24 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import { Input } from '../../components/ui/input'
 import { Button } from '../../components/ui/button'
 import { User, Phone, Mail, Award } from 'lucide-react'
 import { useState } from 'react'
 import { useFetch } from "../../hooks/useFetch";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
+import { AuthContext } from "@/context/AuthContext"
+import axios from 'axios'
 const AccountInfo = () => {
-  const { get, put, error } = useFetch(`${import.meta.env.VITE_BASE_API_URL}/api`);
-  const [user, setUser] = useState(null);
-  const userId = "TK2";
+  const { user } = useContext(AuthContext)
+  const { get, error } = useFetch(`${import.meta.env.VITE_BASE_API_URL}/api`);
+  const [acc, setAcc] = useState(null);
+
+
 
   useEffect(() => {
     const fetchUser = async () => {
-      const req = await get(`/taikhoan/${userId}`);
+      const req = await get(`/taikhoan/${user?.maTaiKhoan}`);
       if (req) {
-        setUser(req.data);
+        setAcc(req.data);
       }
       else {
         toast.error('Failed to fetch user data: ' + error);
@@ -26,13 +30,19 @@ const AccountInfo = () => {
 
   const handelSave = () => {
     const updateUser = async () => {
-      const req = await put(`/taikhoan/update`, user);
-      if (req.success) {
-        setUser(req.data);
-        toast.success('Cập nhật thông tin thành công!');
-      }
-      else {
-        toast.error(req.message || 'Cập nhật thông tin thất bại!');
+      try {
+        const req = await axios.put(
+          `${import.meta.env.VITE_BASE_API_URL}/api/taikhoan/update`,
+          acc,
+          {
+            headers: { "Content-Type": "application/json" }
+          }
+        );
+        if(req){
+          toast.success("Cập nhật thông tin thành công!");
+        }
+      } catch (err) {
+        console.log("REQUEST FAILED:", err);
       }
     }
     updateUser();
@@ -68,8 +78,8 @@ const AccountInfo = () => {
                 type="text"
                 placeholder="Nhập tên đăng nhập của bạn"
                 required
-                value={user ? user.khachHang.hoTenKH : ''}
-                onChange={(e) => { setUser({ ...user, khachHang: { ...user.khachHang, hoTenKH: e.target.value } }) }}
+                value={acc ? acc.khachHang.hoTenKH : ''}
+                onChange={(e) => { setAcc({ ...acc, khachHang: { ...acc.khachHang, hoTenKH: e.target.value } }) }}
                 className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -89,8 +99,8 @@ const AccountInfo = () => {
                 type="tel"
                 placeholder="Nhập số điện thoại của bạn"
                 required
-                value={user ? user.khachHang.soDienThoai : ''}
-                onChange={(e) => { setUser({ ...user, khachHang: { ...user.khachHang, soDienThoai: e.target.value } }) }}
+                value={acc ? acc.khachHang.soDienThoai : ''}
+                onChange={(e) => { setAcc({ ...acc, khachHang: { ...acc.khachHang, soDienThoai: e.target.value } }) }}
                 className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -111,8 +121,8 @@ const AccountInfo = () => {
                 type="email"
                 placeholder="Nhập địa chỉ email của bạn"
                 required
-                value={user ? user.email : ''}
-                onChange={(e) => { setUser({ ...user, email: e.target.value }) }}
+                value={acc ? acc.email : ''}
+                onChange={(e) => { setAcc({ ...acc, email: e.target.value }) }}
                 className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>

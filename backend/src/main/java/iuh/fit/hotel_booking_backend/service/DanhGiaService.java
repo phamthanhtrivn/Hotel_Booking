@@ -9,6 +9,9 @@ import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.repository.DanhGiaRepository;
 import iuh.fit.hotel_booking_backend.repository.DonDatPhongRepository;
 import iuh.fit.hotel_booking_backend.repository.LoaiPhongRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,10 +29,6 @@ public class DanhGiaService {
         this.loaiPhongRepo = loaiPhongRepo;
     }
 
-    public List<DanhGia> getAll() {
-        return repo.findAll();
-    }
-
     public DanhGia getById(String id) {
         return repo.findById(id).orElse(null);
     }
@@ -39,7 +38,7 @@ public class DanhGiaService {
         DanhGia dg = repo.findTopByOrderByMaDanhGiaDesc();
         int cnt = 0;
         if(dg != null){
-            cnt = Integer.parseInt(dg.getMaDanhGia().substring(dg.getMaDanhGia().length() - 4));
+            cnt = Integer.parseInt(dg.getMaDanhGia().substring(dg.getMaDanhGia().length() - 3));
         }
         String maDG = "DG" + String.format("%04d", cnt + 1);
 
@@ -63,6 +62,9 @@ public class DanhGiaService {
     }
 
     public List<DanhGiaRespone> searchDanhGia(DanhGiaTimKiemRequest danhGiaTimKiemRequest){
+
+        System.out.println("Searching with request: " + danhGiaTimKiemRequest.toString());
+
         int minDiem = 0, maxDiem = 0;
         if(danhGiaTimKiemRequest.getDanhGia() != null){
             if(danhGiaTimKiemRequest.getDanhGia().getLoai().equals("BAD")){
@@ -70,7 +72,7 @@ public class DanhGiaService {
             }
             else maxDiem = danhGiaTimKiemRequest.getDanhGia().getDiem();
         }
-        System.out.println("MinDiem: " + minDiem + ", MaxDiem: " + maxDiem);
+
         return repo.searchDanhGia(
                 danhGiaTimKiemRequest.getMaLoaiPhong(),
                 minDiem,
@@ -81,15 +83,22 @@ public class DanhGiaService {
     }
 
 
-    public List<DanhGiaRespone> getAllByDanhGia() {
-        return repo.getAllByDanhGia();
+    public Page<DanhGiaRespone> getAllByDanhGia(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return repo.getAllByDanhGia(pageable);
     }
 
     public List<Integer> findDistinctYears() {
         return repo.findDistinctYears();
     }
 
-    public void deleteById(String id) {
-        repo.deleteById(id);
+    public boolean updateById(String id) {
+        DanhGia existingDanhGia = repo.findById(id).orElse(null);
+        if (existingDanhGia != null) {
+            existingDanhGia.setTinhTrang(!existingDanhGia.isTinhTrang());
+            repo.save(existingDanhGia);
+            return true;
+        }
+        return false;
     }
 }
