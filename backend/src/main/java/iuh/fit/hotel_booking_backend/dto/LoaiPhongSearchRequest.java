@@ -14,6 +14,7 @@ public class LoaiPhongSearchRequest {
     private Integer[] treEm;
     private Double minGia;
     private Double maxGia;
+    private boolean tinhTrang;
     private Double minDienTich;
     private Double maxDienTich;
     private String maGiuong;

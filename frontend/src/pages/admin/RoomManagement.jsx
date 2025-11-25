@@ -1,453 +1,302 @@
-import React, { useState } from "react";
-import { Edit2, Trash2, Search, Eye, Plus } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { phongService } from "@/services/phongService";
+import AdminTable from "@/components/common/AdminTable";
+import AdminPagination from "@/components/common/AdminPagination";
+import ActionButtons from "@/components/common/ActionButtons";
+import EditCreateDialog from "@/components/common/EditCreateDialog";
+import { loaiPhongService } from "@/services/loaiPhongService";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import AdminSelect from "@/components/admin/AdminSelect";
 
 const RoomManagement = () => {
-  const [roomTypes] = useState([
-    {
-      maLoaiPhong: "LP01",
-      tenLoaiPhong: "Deluxe",
-      moTa: "Phòng sang trọng với view hồ bơi.",
-      soKhachToiDa: 3,
-      dienTich: "35m²",
-      tienNghi: "Wi-Fi, TV, Mini Bar, Bồn tắm",
-      giaCoBan: "1,200,000 VNĐ/đêm",
-      cauHinhGiuong: "1 Giường King",
-      hinhAnh: "https://postimg.cc/67jHrSCg",
-    },
-    {
-      maLoaiPhong: "LP02",
-      tenLoaiPhong: "Suite",
-      moTa: "Phòng cao cấp có phòng khách riêng.",
-      soKhachToiDa: 4,
-      dienTich: "50m²",
-      tienNghi: "Wi-Fi, TV 55inch, Bếp mini, View thành phố",
-      giaCoBan: "2,000,000 VNĐ/đêm",
-      cauHinhGiuong: "2 Giường Queen",
-      hinhAnh: "https://postimg.cc/67jHrSCg",
-    },
-    {
-      maLoaiPhong: "LP03",
-      tenLoaiPhong: "Standard",
-      moTa: "Phòng tiêu chuẩn đầy đủ tiện nghi cơ bản.",
-      soKhachToiDa: 2,
-      dienTich: "25m²",
-      tienNghi: "Wi-Fi, TV, Máy lạnh",
-      giaCoBan: "800,000 VNĐ/đêm",
-      cauHinhGiuong: "1 Giường Queen",
-      hinhAnh: "https://postimg.cc/67jHrSCg",
-    },
-  ]);
+  const [rooms, setRooms] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isShowEditModal, setShowEditModal] = useState(false);
+  const [roomTypes, setRoomTypes] = useState([]);
+  const [isAdd, setIsAdd] = useState(false);
 
-  const [rooms, setRooms] = useState([
-    {
-      id: 1,
-      maPhong: "P101",
-      maLoaiPhong: "LP01",
-      loaiPhong: { tenLoaiPhong: "Deluxe" },
-      trangThai: "Trống",
-      viTri: "Tầng 1",
-    },
-    {
-      id: 2,
-      maPhong: "P202",
-      maLoaiPhong: "LP02",
-      loaiPhong: { tenLoaiPhong: "Suite" },
-      trangThai: "Đang phục vụ",
-      viTri: "Tầng 2",
-    },
-    {
-      id: 3,
-      maPhong: "P303",
-      maLoaiPhong: "LP03",
-      loaiPhong: { tenLoaiPhong: "Standard" },
-      trangThai: "Đang bảo trì",
-      viTri: "Tầng 3",
-    },
-  ]);
+  const [formData, setFormData] = useState({
+    maPhong: "",
+    maLoaiPhong: "",
+    viTri: "",
+    trangThai: "",
+    tinhTrang: true,
+  });
 
-  const [search, setSearch] = useState("");
-  const [editing, setEditing] = useState(null);
-  const [viewing, setViewing] = useState(null);
-  const [adding, setAdding] = useState(false);
+  const [filters, setFilters] = useState({
+    maLoaiPhong: "ALL",
+    viTri: "ALL",
+    trangThai: "ALL",
+    tinhTrang: "ALL",
+  });
 
-  const filtered = rooms.filter(
-    (r) =>
-      r.maPhong.toLowerCase().includes(search.toLowerCase()) ||
-      r.loaiPhong.tenLoaiPhong.toLowerCase().includes(search.toLowerCase()) ||
-      r.trangThai.toLowerCase().includes(search.toLowerCase()) ||
-      r.viTri.toLowerCase().includes(search.toLowerCase())
-  );
+  const resetFormData = () => {
+    setFormData({
+      maPhong: "",
+      maLoaiPhong: "",
+      viTri: "",
+      trangThai: "",
+      tinhTrang: true,
+    });
+  };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Bạn có chắc muốn xóa phòng này?")) {
-      setRooms((prev) => prev.filter((r) => Number(r.id) !== Number(id)));
-      setViewing(null);
-      setEditing(null);
+  // Fetch phòng
+  const fetchRooms = async () => {
+    try {
+      const payload = {
+        ...filters,
+        tinhTrang: filters.tinhTrang === "ALL" ? null : filters.tinhTrang,
+        viTri: filters.viTri === "ALL" ? null : filters.viTri,
+        maLoaiPhong: filters.maLoaiPhong === "ALL" ? null : filters.maLoaiPhong,
+        trangThai: filters.trangThai === "ALL" ? null : filters.trangThai,
+      };
+      const result = await phongService.search(currentPage, 10, payload);
+      setRooms(result.data.content);
+      setTotalPages(result.data.totalPages);
+    } catch (e) {
+      console.log("Lỗi fetch phòng!", e);
     }
   };
 
-  const handleSave = () => {
-    setRooms((prev) =>
-      prev.map((r) =>
-        r.id === editing.id
-          ? {
-              ...editing,
-              loaiPhong: {
-                tenLoaiPhong: roomTypes.find(
-                  (lp) => lp.maLoaiPhong === editing.maLoaiPhong
-                )?.tenLoaiPhong,
-              },
-            }
-          : r
-      )
-    );
-    setEditing(null);
+  // Fetch loại phòng
+  const fetchRoomType = async () => {
+    try {
+      const result = await loaiPhongService.getForDropdown();
+      setRoomTypes([
+        { maLoaiPhong: "ALL", tenLoaiPhong: "Tất cả" }, // 👈 thêm dòng này
+        ...result.data,
+      ]);
+    } catch (e) {
+      console.log("Lỗi fetch loại phòng!", e);
+    }
   };
 
-  const handleAdd = () => {
-    const loaiPhongChon = roomTypes.find(
-      (lp) => lp.maLoaiPhong === adding.maLoaiPhong
-    );
-    const newRoom = {
-      id: Date.now(),
-      maPhong: adding.maPhong,
-      maLoaiPhong: adding.maLoaiPhong,
-      loaiPhong: { tenLoaiPhong: loaiPhongChon?.tenLoaiPhong || "" },
-      trangThai: adding.trangThai,
-      viTri: adding.viTri,
-    };
-    setRooms((prev) => [...prev, newRoom]);
-    setAdding(false);
+  // Khi click edit
+  const onEdit = (room) => {
+    setShowEditModal(true);
+    setFormData({
+      maPhong: room.maPhong,
+      maLoaiPhong: room.maLoaiPhong,
+      viTri: room.viTri || "",
+      trangThai: room.trangThai,
+      tinhTrang: room.tinhTrang,
+    });
   };
+
+  const onAdd = () => {
+    setIsAdd(true);
+    setShowEditModal(true);
+  }
+
+  // Submit update
+  const handleUpdate = async () => {
+    try {
+      await phongService.update(formData);
+      fetchRooms();
+      resetFormData();
+      setShowEditModal(false);
+    } catch (error) {
+      console.log("Lỗi cập nhật phòng!", error);
+    }
+  };
+
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleChangeFilters = (field, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const onClose = () => {
+    setShowEditModal(false);
+    resetFormData();
+  }
+
+  useEffect(() => {
+    fetchRooms();
+    fetchRoomType();
+  }, [currentPage]);
+
+  // Dữ liệu filters
+  const floors = [
+    { label: "Tất cả", value: "ALL" },
+    { label: "Tầng 1", value: "Tầng 1" },
+    { label: "Tầng 2", value: "Tầng 2" },
+    { label: "Tầng 3", value: "Tầng 3" },
+    { label: "Tầng 4", value: "Tầng 4" },
+    { label: "Tầng 5", value: "Tầng 5" },
+    { label: "Tầng 6", value: "Tầng 6" },
+    { label: "Tầng 7", value: "Tầng 7" },
+    { label: "Tầng 8", value: "Tầng 8" },
+  ];
+
+  const status = [
+    { label: "Tất cả", value: "ALL" },
+    { label: "Trống", value: "TRONG" },
+    { label: "Phục vụ", value: "PHUC_VU" },
+    { label: "Bảo trì", value: "BAO_TRI" },
+  ];
+
+  const activeStatus = [
+    { label: "Tất cả", value: "ALL" },
+    { label: "Hoạt động", value: "true" },
+    { label: "Dừng hoạt động", value: "false" },
+  ];
+
+  const columns = [
+    { key: "maPhong", label: "ID" },
+    { key: "tenLoaiPhong", label: "Tên loại phòng" },
+    { key: "viTri", label: "Vị trí" },
+    { key: "trangThai", label: "Trạng thái" },
+    {
+      key: "tinhTrang",
+      label: "Tình trạng",
+      render: (i) => (
+        <span
+          className={
+            i.tinhTrang ? "text-green-600 italic" : "text-red-600 italic"
+          }
+        >
+          {i.tinhTrang ? "Hoạt động" : "Không hoạt động"}
+        </span>
+      ),
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text)] p-8">
-      <style>{`
-        :root {
-          --color-primary: #CBA75E;
-          --color-background: #1E2A38;
-          --color-text: #FFFFFF;
-          --color-muted: #B5B5B5;
-          --color-accent: #E5C97B;
-        }
-        ::placeholder { color: var(--color-muted); }
-      `}</style>
+    <div className="p-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold flex justify-between">
+            <p>Quản lý phòng</p>
+            <Button className="rounded-2xl bg-blue-600" onClick={onAdd}>Thêm phòng</Button>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {/* FILTERS */}
+          <div className="mb-4 flex justify-between">
+            <div className="flex gap-3">
+              {/* Loại phòng */}
+              <AdminSelect
+                value={filters.maLoaiPhong}
+                onChange={(v) => handleChangeFilters("maLoaiPhong", v)}
+                label="Loại phòng"
+                options={roomTypes}
+                labelKey="tenLoaiPhong"
+                valueKey="maLoaiPhong"
+                className="w-48"
+              />
 
-      <h1 className="text-4xl font-bold text-center text-[var(--color-accent)] mb-8">
-        Quản Lý Phòng
-      </h1>
+              {/* Vị trí */}
+              <AdminSelect
+                label="Vị trí"
+                value={filters.viTri}
+                onChange={(v) => handleChangeFilters("viTri", v)}
+                options={floors}
+                className="w-40"
+              />
 
-      
-      <div className="flex items-center justify-between bg-[#2b3a4b] p-3 rounded-xl mb-7 shadow-md">
-        <div className="flex items-center flex-1 mr-4">
-          <Search className="text-[var(--color-muted)] mr-3" />
-          <input
-            type="text"
-            placeholder="Tìm kiếm phòng..."
-            className="bg-transparent flex-1 outline-none text-[var(--color-text)]"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+              {/* Trạng thái */}
+              <AdminSelect
+                label="Trạng thái"
+                value={filters.trangThai}
+                onChange={(v) => handleChangeFilters("trangThai", v)}
+                options={status}
+                className="w-48"
+              />
+
+              {/* Tình trạng hoạt động */}
+              <AdminSelect
+                label="Active"
+                value={filters.tinhTrang}
+                onChange={(v) => handleChangeFilters("tinhTrang", v)}
+                options={activeStatus}
+                className="w-48"
+              />
+              <Button className="rounded-2xl bg-blue-600" onClick={fetchRooms}>
+                Tìm kiếm
+              </Button>
+            </div>
+          </div>
+
+          {/* TABLE */}
+          <AdminTable
+            columns={columns}
+            data={rooms}
+            renderActions={(item) => (
+              <ActionButtons onEdit={() => onEdit(item)} />
+            )}
           />
-        </div>
-        <button
-          onClick={() =>
-            setAdding({
-              maPhong: "",
-              maLoaiPhong: "",
-              trangThai: "",
-              viTri: "",
-            })
-          }
-          className="flex items-center bg-[var(--color-primary)] text-[var(--color-background)] px-4 py-2 rounded-lg hover:bg-[var(--color-accent)] transition"
-        >
-          <Plus size={18} className="mr-2" /> Thêm Phòng
-        </button>
-      </div>
+        </CardContent>
 
-  
-      <div className="rounded-xl shadow-lg bg-[#2b3a4b] overflow-hidden">
-        <div className="max-h-[550px] overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--color-primary)] scrollbar-track-[#2b3a4b]">
-          <table className="w-full text-left">
-            <thead className="bg-[var(--color-primary)] text-[var(--color-background)] sticky top-0 z-10">
-              <tr>
-                <th className="py-3 px-4">STT</th>
-                <th className="py-3 px-4">Mã Phòng</th>
-                <th className="py-3 px-4">Loại Phòng</th>
-                <th className="py-3 px-4">Trạng Thái</th>
-                <th className="py-3 px-4">Vị Trí</th>
-                <th className="py-3 px-4 text-center">Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length > 0 ? (
-                filtered.map((r, i) => (
-                  <tr
-                    key={r.id}
-                    className="border-b border-gray-700 hover:bg-[#32465a] transition"
-                  >
-                    <td className="py-3 px-4">{i + 1}</td>
-                    <td className="py-3 px-4">{r.maPhong}</td>
-                    <td className="py-3 px-4">{r.loaiPhong.tenLoaiPhong}</td>
-                    <td className="py-3 px-4">{r.trangThai}</td>
-                    <td className="py-3 px-4">{r.viTri}</td>
-                    <td className="py-3 px-4 text-center space-x-4">
-                      <button
-                        onClick={() => setViewing(r)}
-                        className="hover:text-blue-400 transition"
-                        title="Xem chi tiết"
-                      >
-                        <Eye size={18} />
-                      </button>
-                      <button
-                        onClick={() =>
-                          setEditing({
-                            ...r,
-                            loaiPhong: r.loaiPhong.tenLoaiPhong,
-                          })
-                        }
-                        className="hover:text-[var(--color-accent)] transition"
-                        title="Chỉnh sửa"
-                      >
-                        <Edit2 size={18} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(r.id)}
-                        className="hover:text-red-400 transition"
-                        title="Xóa"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="text-center py-6 text-[var(--color-muted)]"
-                  >
-                    Không tìm thấy phòng nào
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        <AdminPagination
+          currentPage={currentPage + 1}
+          totalPages={totalPages}
+          onChange={(p) => setCurrentPage(p - 1)}
+        />
+      </Card>
 
-      
-      {adding && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#2b3a4b] p-8 rounded-2xl w-[550px] shadow-2xl">
-            <h2 className="text-3xl font-semibold text-[var(--color-accent)] mb-6 text-center">
-              Thêm Phòng Mới
-            </h2>
-            <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Mã phòng"
-                value={adding.maPhong}
-                onChange={(e) => setAdding({ ...adding, maPhong: e.target.value })}
-                className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
-              />
+      {/* Modal Edit */}
+      <EditCreateDialog
+        open={isShowEditModal}
+        title={isAdd ? "Thêm phòng" : "Cập nhật thông tin phòng"}
+        onClose={onClose}
+        onSubmit={handleUpdate}
+      >
+        <div className="space-y-4">
+          {/* ID */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Mã phòng</label>
+            <Input disabled value={formData.maPhong} />
+          </div>
 
-              <select
-                value={adding.maLoaiPhong}
-                onChange={(e) => setAdding({ ...adding, maLoaiPhong: e.target.value })}
-                className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
-              >
-                <option value="">-- Chọn loại phòng --</option>
-                {roomTypes.map((lp) => (
-                  <option key={lp.maLoaiPhong} value={lp.maLoaiPhong}>
-                    {lp.tenLoaiPhong}
-                  </option>
-                ))}
-              </select>
+          {/* Loại phòng */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Loại phòng</label>
+            <AdminSelect
+              value={formData.maLoaiPhong}
+              onChange={(v) => handleChange("maLoaiPhong", v)}
+              placeholder="Chọn loại phòng"
+              options={roomTypes}
+              labelKey="tenLoaiPhong"
+              valueKey="maLoaiPhong"
+            />
+          </div>
 
-              <input
-                type="text"
-                placeholder="Trạng thái (Trống / Đang phục vụ / Đang bảo trì)"
-                value={adding.trangThai}
-                onChange={(e) => setAdding({ ...adding, trangThai: e.target.value })}
-                className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
-              />
-              <input
-                type="text"
-                placeholder="Vị trí"
-                value={adding.viTri}
-                onChange={(e) => setAdding({ ...adding, viTri: e.target.value })}
-                className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
-              />
-            </div>
-            <div className="flex justify-end mt-6 space-x-4">
-              <button
-                onClick={() => setAdding(false)}
-                className="px-5 py-2 bg-gray-500 rounded hover:bg-gray-600 transition"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={handleAdd}
-                className="px-5 py-2 bg-[var(--color-primary)] text-[var(--color-background)] rounded hover:bg-[var(--color-accent)] transition"
-              >
-                Thêm
-              </button>
-            </div>
+          {/* Vị trí */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Vị trí</label>
+            <input
+              type="text"
+              value={formData.viTri}
+              onChange={(e) => handleChange("viTri", e.target.value)}
+              className="w-full p-2 border rounded"
+              placeholder="Nhập vị trí phòng"
+            />
+          </div>
+
+          {/* Trạng thái hoạt động */}
+          <div>
+            <label className="block text-sm font-medium mb-2">Tình trạng</label>
+            <AdminSelect
+              value={formData.tinhTrang}
+              onChange={(v) => handleChange("tinhTrang", v)}
+              placeholder="Chọn tình trạng"
+              options={activeStatus}
+            />
           </div>
         </div>
-      )}
-
-      
-      {viewing && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#2b3a4b] p-8 rounded-2xl w-[650px] shadow-2xl text-[var(--color-text)]">
-            <h2 className="text-3xl font-semibold text-[var(--color-accent)] mb-6 text-center">
-              Thông Tin Chi Tiết Phòng
-            </h2>
-            {(() => {
-              const lp = roomTypes.find(
-                (type) => type.maLoaiPhong === viewing.maLoaiPhong
-              );
-              return (
-                <div className="space-y-3 text-lg">
-                  <p>
-                    <span className="font-semibold text-[var(--color-accent)]">
-                      Mã phòng:
-                    </span>{" "}
-                    {viewing.maPhong}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-[var(--color-accent)]">
-                      Loại phòng:
-                    </span>{" "}
-                    {lp?.tenLoaiPhong}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-[var(--color-accent)]">
-                      Mô tả:
-                    </span>{" "}
-                    {lp?.moTa}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-[var(--color-accent)]">
-                      Số khách tối đa:
-                    </span>{" "}
-                    {lp?.soKhachToiDa}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-[var(--color-accent)]">
-                      Diện tích:
-                    </span>{" "}
-                    {lp?.dienTich}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-[var(--color-accent)]">
-                      Tiện nghi:
-                    </span>{" "}
-                    {lp?.tienNghi}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-[var(--color-accent)]">
-                      Cấu hình giường:
-                    </span>{" "}
-                    {lp?.cauHinhGiuong}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-[var(--color-accent)]">
-                      Giá cơ bản:
-                    </span>{" "}
-                    {lp?.giaCoBan}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-[var(--color-accent)]">
-                      Trạng thái:
-                    </span>{" "}
-                    {viewing.trangThai}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-[var(--color-accent)]">
-                      Vị trí:
-                    </span>{" "}
-                    {viewing.viTri}
-                  </p>
-                  {lp?.hinhAnh && (
-                    <img
-                      src={lp.hinhAnh}
-                      alt={lp.tenLoaiPhong}
-                      className="w-full h-52 object-cover rounded-lg mt-3"
-                    />
-                  )}
-                </div>
-              );
-            })()}
-            <div className="flex justify-end mt-8">
-              <button
-                onClick={() => setViewing(null)}
-                className="px-5 py-2 bg-[var(--color-primary)] text-[var(--color-background)] rounded hover:bg-[var(--color-accent)] transition"
-              >
-                Đóng
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-     
-      {editing && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#2b3a4b] p-8 rounded-2xl w-[550px] shadow-2xl">
-            <h2 className="text-3xl font-semibold text-[var(--color-accent)] mb-6 text-center">
-              Cập nhật thông tin phòng
-            </h2>
-            <div className="space-y-4">
-              <input
-                type="text"
-                value={editing.maPhong}
-                onChange={(e) => setEditing({ ...editing, maPhong: e.target.value })}
-                className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
-              />
-              <select
-                value={editing.maLoaiPhong}
-                onChange={(e) => setEditing({ ...editing, maLoaiPhong: e.target.value })}
-                className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
-              >
-                <option value="">-- Chọn loại phòng --</option>
-                {roomTypes.map((lp) => (
-                  <option key={lp.maLoaiPhong} value={lp.maLoaiPhong}>
-                    {lp.tenLoaiPhong}
-                  </option>
-                ))}
-              </select>
-              <input
-                type="text"
-                value={editing.trangThai}
-                onChange={(e) => setEditing({ ...editing, trangThai: e.target.value })}
-                className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
-              />
-              <input
-                type="text"
-                value={editing.viTri}
-                onChange={(e) => setEditing({ ...editing, viTri: e.target.value })}
-                className="w-full p-3 rounded-lg bg-[#1E2A38] text-[var(--color-text)] outline-none"
-              />
-            </div>
-            <div className="flex justify-end mt-6 space-x-4">
-              <button
-                onClick={() => setEditing(null)}
-                className="px-5 py-2 bg-gray-500 rounded hover:bg-gray-600 transition"
-              >
-                Hủy
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-5 py-2 bg-[var(--color-primary)] text-[var(--color-background)] rounded hover:bg-[var(--color-accent)] transition"
-              >
-                Lưu
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      </EditCreateDialog>
     </div>
   );
 };

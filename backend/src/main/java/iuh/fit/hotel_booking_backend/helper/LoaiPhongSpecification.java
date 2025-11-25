@@ -89,4 +89,11 @@ public class LoaiPhongSpecification {
         };
     }
 
+    public static Specification<LoaiPhong> tinhTrangEquals(Boolean tinhTrang){
+        return (root, query, cb) -> {
+            if(tinhTrang == null) return null;
+            return cb.equal(root.get("tinhTrang"), tinhTrang);
+        };
+    }
+
 }

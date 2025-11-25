@@ -6,10 +6,11 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
-const EditCreateDialog = ({ open, onClose, title, children, onSubmit }) => (
+const EditCreateDialog = ({ open, onClose, title, children, onSubmit, className, loading = false }) => (
   <Dialog open={open} onOpenChange={onClose}>
-    <DialogContent>
+    <DialogContent className={className}>
       <DialogHeader>
         <DialogTitle>{title}</DialogTitle>
       </DialogHeader>
@@ -18,7 +19,7 @@ const EditCreateDialog = ({ open, onClose, title, children, onSubmit }) => (
 
       <DialogFooter>
         <Button onClick={onSubmit} className="cursor-pointer">
-          Lưu
+           {loading && <Loader2 className="animate-spin h-5 w-5"/>} Lưu
         </Button>
       </DialogFooter>
     </DialogContent>

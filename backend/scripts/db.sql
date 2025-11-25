@@ -427,7 +427,7 @@ CREATE TABLE IF NOT EXISTS `tai_khoan` (
 
 -- Dumping data for table hotelbooking.tai_khoan: ~5 rows (approximately)
 INSERT INTO `tai_khoan` (`ma_tai_khoan`, `email`, `mat_khau`, `vai_tro`, `ma_khach_hang`, `tinh_trang`) VALUES
-                                                                                                            ('TK1', 'admin@twan.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'ADMIN', NULL, b'1'),
+                                                                                                            ('TK1', 'twanhotel@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'ADMIN', NULL, b'1'),
                                                                                                             ('TK2', 'hthanhtuan.2307@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH2', b'1'),
                                                                                                             ('TK3', 'vana@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH1', b'1'),
                                                                                                             ('TK4', 'vanb@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH3', b'1'),

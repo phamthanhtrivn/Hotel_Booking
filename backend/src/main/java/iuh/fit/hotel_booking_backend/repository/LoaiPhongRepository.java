@@ -2,12 +2,14 @@ package iuh.fit.hotel_booking_backend.repository;
 
 import iuh.fit.hotel_booking_backend.dto.LoaiPhongDTO;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
+import iuh.fit.hotel_booking_backend.projections.LoaiPhongDropdownProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 public interface LoaiPhongRepository extends JpaRepository<LoaiPhong, String>, JpaSpecificationExecutor<LoaiPhong> {
@@ -32,5 +34,7 @@ public interface LoaiPhongRepository extends JpaRepository<LoaiPhong, String>, J
             @Param("checkIn") LocalDateTime checkIn,
             @Param("checkOut") LocalDateTime checkOut
     );
+
+    List<LoaiPhongDropdownProjection> findAllProjectedBy();
 
 }

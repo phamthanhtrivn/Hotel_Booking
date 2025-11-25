@@ -1,8 +1,10 @@
 package iuh.fit.hotel_booking_backend.service;
 
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
+import iuh.fit.hotel_booking_backend.dto.LoaiPhongSearchRequest;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.helper.QuyDoiKhachHelper;
+import iuh.fit.hotel_booking_backend.projections.LoaiPhongDropdownProjection;
 import iuh.fit.hotel_booking_backend.repository.LoaiPhongRepository;
 import iuh.fit.hotel_booking_backend.util.IdUtil;
 import org.springframework.data.domain.Page;
@@ -39,9 +41,15 @@ public class LoaiPhongService {
         return loaiPhongRepository.findAll();
     }
 
-    public Page<LoaiPhong> findAll(int page, int size) {
+    public Page<LoaiPhong> findByConditions(int page, int size, LoaiPhongSearchRequest dto) {
         Pageable pageable = PageRequest.of(page, size);
-        return loaiPhongRepository.findAll(pageable);
+
+        Specification<LoaiPhong> spec = Specification.allOf(
+                LoaiPhongSpecification.tenLoaiPhongContains(dto.getTenLoaiPhong()),
+                LoaiPhongSpecification.soKhachGreaterOrEqual(dto.getSoKhach()),
+                LoaiPhongSpecification.giaBetween(dto.getMinGia(), dto.getMaxGia()),
+                LoaiPhongSpecification.dienTichBetween(dto.getMinDienTich(), dto.getMaxDienTich()));
+        return loaiPhongRepository.findAll(spec, pageable);
     }
 
     public LoaiPhong getById(String id) {
@@ -99,10 +107,14 @@ public class LoaiPhongService {
         return response;
     }
 
+    public List<LoaiPhongDropdownProjection> getForDropdown() {
+        return loaiPhongRepository.findAllProjectedBy();
+    }
+
+    ;
 
     public APIResponse<LoaiPhong> save(LoaiPhong loaiPhong,
                                        List<MultipartFile> images) {
-
         APIResponse<LoaiPhong> response = new APIResponse<>();
         try {
             List<String> urls = cloudinaryService.uploadFiles(images, "loai_phong");
@@ -170,7 +182,7 @@ public class LoaiPhongService {
         int soKhachThucTe = QuyDoiKhachHelper.tinhSoKhachSauQuyDoi(soKhach, treEm);
 
         System.out.println("Số khách thực tế: " + soKhachThucTe);
-        if(tenLoaiPhong.equals("ALL")) tenLoaiPhong = "";
+        if (tenLoaiPhong.equals("ALL")) tenLoaiPhong = "";
 
         Specification<LoaiPhong> spec = Specification.allOf(
                 LoaiPhongSpecification.phongTrong(checkIn, checkOut),

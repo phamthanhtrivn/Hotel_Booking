@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
-import iuh.fit.hotel_booking_backend.service.CloudinaryService;
+import iuh.fit.hotel_booking_backend.projections.LoaiPhongDropdownProjection;
 import iuh.fit.hotel_booking_backend.service.LoaiPhongService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -42,12 +42,29 @@ public class LoaiPhongController {
         return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
     }
 
-    @GetMapping("/paged")
+    @GetMapping("/get-dropdown")
+    public ResponseEntity<APIResponse<List<LoaiPhongDropdownProjection>>> findForDropdown(){
+        APIResponse<List<LoaiPhongDropdownProjection>> response = new APIResponse<>();
+        try{
+            List<LoaiPhongDropdownProjection> projections = loaiPhongService.getForDropdown();
+            response.setMessage("Lấy dropdown thành công!");
+            response.setSuccess(true);
+            response.setData(projections);
+        }catch (Exception e){
+            response.setMessage("Lỗi khi lấy dropdown!");
+            response.setSuccess(false);
+            return ResponseEntity.status(500).body(response);
+        }
+        return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
+    }
+
+    @PostMapping("/find-conditions")
     public ResponseEntity<?> findAllPaged(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "7") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestBody LoaiPhongSearchRequest requestbody
     ) {
-        Page<LoaiPhong> result = loaiPhongService.findAll(page, size);
+        Page<LoaiPhong> result = loaiPhongService.findByConditions(page, size, requestbody);
         return ResponseEntity.ok(result);
     }
 

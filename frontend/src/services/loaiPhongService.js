@@ -1,10 +1,11 @@
 import api from "./api";
 
 export const loaiPhongService = {
-  findAllPaged: async (page = 0, size = 7) => {
-    const result = await api.get("/api/loaiphong/paged", {
-      params: { page, size },
-    });
+  search: async (page = 0, size = 10, filters) => {
+    const result = await api.post(
+      `/api/loaiphong/find-conditions?page=${page}&size=${size}`,
+      filters
+    );
     return result.data;
   },
   add: async (formData) => {
@@ -13,7 +14,7 @@ export const loaiPhongService = {
     });
     return result.data;
   },
-  update: async (formData)  =>  {
+  update: async (formData) => {
     const result = await api.put(`/api/loaiphong`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
@@ -23,7 +24,8 @@ export const loaiPhongService = {
     const result = await api.get(`/api/loaiphong/${id}`);
     return result.data;
   },
-  search: async (req) => {
-    return api.post(`/api/loaiphong/search`, req).then(res => res.data)
-  }
+  getForDropdown: async () => {
+    const result = api.get(`/api/loaiphong/get-dropdown`);
+    return (await result).data;
+  },
 };

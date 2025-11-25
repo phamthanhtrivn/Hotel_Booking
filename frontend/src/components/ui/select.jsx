@@ -20,7 +20,10 @@ function SelectValue({ ...props }) {
 export function RoomSelectTrigger({ children, className, ...props }) {
   return (
     <SelectPrimitive.Trigger
-      className={cn("flex items-center w-full border rounded-md justify-between px-3.5 h-full", className)}
+      className={cn(
+        "flex items-center w-full border rounded-md justify-between px-3.5 h-full",
+        className
+      )}
       {...props}
     >
       {/* Label + giá trị hiển thị */}

@@ -6,6 +6,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { formatVND } from "@/helpers/currencyFormatter";
+import { Image } from "lucide-react";
 
 const AdminTable = ({ columns, data, renderActions }) => {
   return (
@@ -26,11 +28,14 @@ const AdminTable = ({ columns, data, renderActions }) => {
               <TableCell key={col.key} className="max-w-xs truncate">
                 {typeof col.render === "function"
                   ? col.render(item)
+                  : col.key === "hinhAnh" ? <img src={item[col.key]?.[0]} className="w-20 h-15" alt="hình ảnh phòng" />
+                  : col.key === "gia" ? formatVND(item[col.key])
+                  : col.key === "dienTich" ?  item[col.key] + " m²"
                   : item[col.key]}
               </TableCell>
             ))}
 
-            <TableCell className="text-right">{renderActions(item)}</TableCell>
+            <TableCell className="text-right">{renderActions && renderActions(item)}</TableCell>
           </TableRow>
         ))}
       </TableBody>

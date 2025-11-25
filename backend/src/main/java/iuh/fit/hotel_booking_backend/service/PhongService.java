@@ -1,7 +1,15 @@
 package iuh.fit.hotel_booking_backend.service;
 
+import iuh.fit.hotel_booking_backend.dto.PhongDTO;
+import iuh.fit.hotel_booking_backend.dto.PhongFilter;
+import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.entity.Phong;
+import iuh.fit.hotel_booking_backend.helper.PhongSpecification;
+import iuh.fit.hotel_booking_backend.projections.LoaiPhongDropdownProjection;
 import iuh.fit.hotel_booking_backend.repository.PhongRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +27,10 @@ public class PhongService {
                 .orElse(null);
     }
 
+    public Page<Phong> searchPhong(PhongFilter filter, Pageable pageable) {
+        return repo.findAll(PhongSpecification.filter(filter), pageable);
+    }
+
     public List<Phong> getAll() {
         return repo.findAll();
     }
@@ -27,8 +39,17 @@ public class PhongService {
         return repo.findById(id).orElse(null);
     }
 
-    public Phong save(Phong phong) {
-        return repo.save(phong);
+    public Phong save(PhongDTO phong) {
+        Phong p = new Phong();
+        p.setMaPhong(phong.getMaPhong());
+        LoaiPhong lp = new LoaiPhong();
+        lp.setMaLoaiPhong(phong.getMaLoaiPhong());
+        p.setLoaiPhong(lp);
+        p.setViTri(phong.getViTri());
+        p.setTinhTrang(phong.isTinhTrang());
+        p.setTrangThai(phong.getTrangThai());
+
+        return repo.save(p);
     }
 
     public void deleteById(String id) {
