@@ -1,17 +1,17 @@
 package iuh.fit.hotel_booking_backend.service;
 
+import iuh.fit.hotel_booking_backend.entity.LoaiTaiKhoan;
 import iuh.fit.hotel_booking_backend.entity.TaiKhoan;
 import iuh.fit.hotel_booking_backend.repository.TaiKhoanRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
 @Service
 public class TaiKhoanService {
     private final TaiKhoanRepository repo;
-
     private final DonDatPhongService donDatPhongService;
-
 
     public TaiKhoanService(TaiKhoanRepository repo, DonDatPhongService donDatPhongService) {
         this.repo = repo;
@@ -41,10 +41,27 @@ public class TaiKhoanService {
                 throw new IllegalStateException("Khách hàng đang có đơn đặt phòng, không thể xóa tài khoản!");
             }
         }
-
         repo.deleteById(id);
         return true;
     }
+
+
+    public TaiKhoan update( TaiKhoan t) {
+        TaiKhoan existingTaiKhoan = repo.findById(t.getMaTaiKhoan()).orElse(null);
+        if(existingTaiKhoan == null) throw new RuntimeException("TaiKhoan not found");
+        else{
+            if(t.getVaiTro() != null) existingTaiKhoan.setVaiTro(t.getVaiTro());
+            if(t.getKhachHang() != null) existingTaiKhoan.setKhachHang(t.getKhachHang());
+            if(t.getKhachHang() != null){
+                if(t.getKhachHang().getHoTenKH().trim() != "") existingTaiKhoan.getKhachHang().setHoTenKH(t.getKhachHang().getHoTenKH());
+                if(t.getKhachHang().getSoDienThoai().trim() != "" ) existingTaiKhoan.getKhachHang().setSoDienThoai(t.getKhachHang().getSoDienThoai());
+            }
+        }
+        return repo.save(existingTaiKhoan);
+    }
+
+
+
 
     public List<TaiKhoan> getAllMembers() {
         return repo.findAllMembers();

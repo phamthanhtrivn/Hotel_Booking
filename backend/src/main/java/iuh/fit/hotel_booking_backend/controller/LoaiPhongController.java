@@ -68,10 +68,28 @@ public class LoaiPhongController {
         return ResponseEntity.ok(result);
     }
 
+
+
     @GetMapping()
     public ResponseEntity<List<LoaiPhongDTO>> getAll() {
         List<LoaiPhongDTO> result = loaiPhongService.getAllLoaiPhongDTO();
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/loaiPhong")
+    public APIResponse<List<LoaiPhong>> getAllLoaiPhong() {
+        APIResponse<List<LoaiPhong>> response = new APIResponse<>();
+        try {
+            List<LoaiPhong> listLoaiPhong = loaiPhongService.getAll();
+            response.setData(listLoaiPhong);
+            response.setSuccess(true);
+            response.setMessage("Get all loai phong successfully");
+            return response;
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage("Failed to get all loai phong: " + e.getMessage());
+            return response;
+        }
     }
 
     @PostMapping("/search")

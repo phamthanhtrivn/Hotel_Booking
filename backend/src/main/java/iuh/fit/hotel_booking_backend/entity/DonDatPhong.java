@@ -59,4 +59,8 @@ public class DonDatPhong {
     private boolean lanDau;
     @Column(name = "giam_gia_diem_tich_luy")
     private double giamGiaDiemTichLuy;
+
+    public DonDatPhong(String maDatPhong) {
+        this.maDatPhong = maDatPhong;
+    }
 }

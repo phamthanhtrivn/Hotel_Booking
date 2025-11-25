@@ -20,7 +20,6 @@ public class TaiKhoan {
     private LoaiTaiKhoan vaiTro;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ma_khach_hang", unique = true)
-    @JsonManagedReference
     private KhachHang khachHang;
     @Column(unique = true)
     private String email;

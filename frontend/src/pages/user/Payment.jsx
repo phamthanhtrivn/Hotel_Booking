@@ -85,7 +85,18 @@ const Payment = () => {
           toast.error(res.data.message);
         }
       } else if (paymentMethod === "momo") {
-        toast.info("Chức năng MOMO đang phát triển.");
+        const res = await axios.post(`${baseUrl}/api/payments/momo`, {
+          amount: booking.tongTienTT,
+          bookingId: booking.maDatPhong,
+        })
+
+        if (res.data.resultCode == 0) {
+          window.location.href = res.data.payUrl;
+        } 
+        else {
+          toast.error(res.data.message);
+        }
+        
       }
     } catch (error) {
       toast.error("Lỗi khi tạo giao dịch.");
