@@ -175,7 +175,6 @@ const RoomTypeDetail = () => {
         setLoading(false);
       }
     };
-
     fetchRoomData();
   }, [id, navigate]);
 
@@ -204,7 +203,6 @@ const RoomTypeDetail = () => {
       },
     });
   };
-
   if (loading) return <p className="text-center text-2xl mt-20">Loading...</p>;
   if (!room) return null;
 

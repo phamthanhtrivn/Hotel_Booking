@@ -13,23 +13,33 @@ const ActionButtons = ({ onView, onEdit, onDelete }) => {
         <Eye />
       </Button>
 
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={onEdit}
-        className="text-yellow-500 cursor-pointer"
-      >
-        <PencilLine />
-      </Button>
+      {
+        onEdit && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onEdit}
+            className="text-yellow-500 cursor-pointer"
+          >
+            <PencilLine />
+          </Button>
+        )
+      }
 
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={onDelete}
-        className="text-red-500 cursor-pointer"
-      >
-        <Trash2 />
-      </Button>
+      {
+        onDelete && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onDelete}
+            className="text-red-500 cursor-pointer"
+          >
+            <Trash2 />
+          </Button>
+        )
+      }
+
+
     </div>
   );
 };

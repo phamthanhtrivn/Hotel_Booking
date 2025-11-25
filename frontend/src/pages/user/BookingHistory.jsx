@@ -1,9 +1,8 @@
-/* eslint-disable no-unused-vars */
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState,useContext } from "react";
 import BookingItem from "@/components/common/BookingItem";
 import BookingDetailModal from "@/components/common/BookingDetailModal";
-import { motion, AnimatePresence } from "framer-motion";
-import { AuthContext } from "@/context/AuthContext";
+import {motion,AnimatePresence } from "framer-motion";
+import { AuthContext } from "@/context/AuthContext"
 
 const BookingHistory = () => {
   const { user } = useContext(AuthContext)
@@ -183,3 +182,13 @@ const BookingHistory = () => {
 };
 
 export default BookingHistory;
+
+
+
+
+
+
+
+
+
+

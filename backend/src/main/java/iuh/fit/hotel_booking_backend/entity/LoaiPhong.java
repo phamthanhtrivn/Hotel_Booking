@@ -42,6 +42,7 @@ public class LoaiPhong {
     private String moTa;
 
     @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<ChiTietLoaiGiuong> chiTietLoaiGiuongList = new ArrayList<>();
 
     @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

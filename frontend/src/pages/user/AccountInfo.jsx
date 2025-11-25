@@ -1,9 +1,53 @@
-import React from 'react'
+import React, { useEffect, useContext } from 'react'
 import { Input } from '../../components/ui/input'
 import { Button } from '../../components/ui/button'
-import { User, Phone, Mail } from 'lucide-react'
-
+import { User, Phone, Mail, Award } from 'lucide-react'
+import { useState } from 'react'
+import { useFetch } from "../../hooks/useFetch";
+import { toast } from "react-toastify";
+import { AuthContext } from "@/context/AuthContext"
+import axios from 'axios'
 const AccountInfo = () => {
+  const { user } = useContext(AuthContext)
+  const { get, error } = useFetch(`${import.meta.env.VITE_BASE_API_URL}/api`);
+  const [acc, setAcc] = useState(null);
+
+
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const req = await get(`/taikhoan/${user?.maTaiKhoan}`);
+      if (req) {
+        setAcc(req.data);
+      }
+      else {
+        toast.error('Failed to fetch user data: ' + error);
+      }
+    }
+
+    fetchUser();
+  }, []);
+
+  const handelSave = () => {
+    const updateUser = async () => {
+      try {
+        const req = await axios.put(
+          `${import.meta.env.VITE_BASE_API_URL}/api/taikhoan/update`,
+          acc,
+          {
+            headers: { "Content-Type": "application/json" }
+          }
+        );
+        if(req){
+          toast.success("Cập nhật thông tin thành công!");
+        }
+      } catch (err) {
+        console.log("REQUEST FAILED:", err);
+      }
+    }
+    updateUser();
+  }
+
   return (
     <div className="flex justify-center items-start min-h-screen bg-gray-50 pt-16 pb-20">
       {/* Form Container */}
@@ -18,7 +62,7 @@ const AccountInfo = () => {
 
         {/* Form */}
         <div className="px-10 py-10">
-          <form className="space-y-8">
+          <div className="space-y-8">
             {/* Username */}
             <div className="space-y-2">
               <label
@@ -34,6 +78,8 @@ const AccountInfo = () => {
                 type="text"
                 placeholder="Nhập tên đăng nhập của bạn"
                 required
+                value={acc ? acc.khachHang.hoTenKH : ''}
+                onChange={(e) => { setAcc({ ...acc, khachHang: { ...acc.khachHang, hoTenKH: e.target.value } }) }}
                 className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -53,6 +99,8 @@ const AccountInfo = () => {
                 type="tel"
                 placeholder="Nhập số điện thoại của bạn"
                 required
+                value={acc ? acc.khachHang.soDienThoai : ''}
+                onChange={(e) => { setAcc({ ...acc, khachHang: { ...acc.khachHang, soDienThoai: e.target.value } }) }}
                 className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -67,25 +115,44 @@ const AccountInfo = () => {
                 Email
               </label>
               <Input
+                disabled
                 id="email"
                 name="email"
                 type="email"
                 placeholder="Nhập địa chỉ email của bạn"
                 required
+                value={acc ? acc.email : ''}
+                onChange={(e) => { setAcc({ ...acc, email: e.target.value }) }}
                 className="w-full px-5 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
+            </div>
+
+
+            <div className="space-y-2">
+              <label
+                htmlFor="loyaltyPoints"
+                className=" text-base font-semibold text-gray-700 flex items-center gap-2"
+              >
+                <Award size={18} />
+                Điểm Tích Lũy :
+
+                <span className='text-gray-700 font-semibold'>
+                  {user ? user.khachHang.diemTichLuy : 0} điểm
+                </span>
+              </label>
+
             </div>
 
             {/* Submit */}
             <div className="pt-6">
               <Button
-                type="submit"
                 className="w-full bg-blue-600 hover:bg-gray-800 text-white font-semibold py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg"
+                onClick={handelSave}
               >
                 Lưu thông tin
               </Button>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
