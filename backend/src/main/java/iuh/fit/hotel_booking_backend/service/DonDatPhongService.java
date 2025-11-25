@@ -112,8 +112,7 @@ public class DonDatPhongService {
         if (donDatPhong == null) {
             response.setMessage("Đơn đặt phòng không tồn tại");
             return response;
-        }
-        else {
+        } else {
             response.setSuccess(true);
             response.setMessage("Lấy đơn đặt phòng thành công");
             return response;
