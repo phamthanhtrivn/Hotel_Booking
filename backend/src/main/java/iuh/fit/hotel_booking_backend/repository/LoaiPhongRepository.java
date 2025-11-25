@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 public interface LoaiPhongRepository extends JpaRepository<LoaiPhong, String>, JpaSpecificationExecutor<LoaiPhong> {
@@ -32,5 +33,10 @@ public interface LoaiPhongRepository extends JpaRepository<LoaiPhong, String>, J
             @Param("checkIn") LocalDateTime checkIn,
             @Param("checkOut") LocalDateTime checkOut
     );
+
+    // Lấy tổng số phòng theo từng loại phòng
+    @Query("SELECT p.loaiPhong.maLoaiPhong, COUNT(p) FROM Phong p GROUP BY p.loaiPhong.maLoaiPhong")
+    List<Object[]> countTotalByRoomType();
+
 
 }

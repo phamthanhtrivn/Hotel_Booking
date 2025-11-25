@@ -14,4 +14,9 @@ public interface PhongRepository extends JpaRepository<Phong, String> {
             nativeQuery = true)
     Optional<Phong> findFirstAvailableRoomNative(@Param("maLoaiPhong") String maLoaiPhong);
 
+    @Query("SELECT COUNT(p) FROM Phong p")
+    long countTotalRooms();
+
+
+
 }

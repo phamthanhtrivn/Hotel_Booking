@@ -1,28 +1,75 @@
+import React from "react";
+import { LogIn, LogOut, Home, BedDouble, Users } from "lucide-react";
 
-import React from 'react'
+const Overview = ({ overviewData }) => {
+  const mapLabel = (label) => {
+    const lower = label.toLowerCase();
+    if (lower.includes("check-in"))
+      return {
+        name: "Check-in hôm nay",
+        icon: <LogIn />,
+        color: "text-blue-600",
+        bg: "bg-blue-100",
+      };
+    if (lower.includes("check-out"))
+      return {
+        name: "Check-out hôm nay",
+        icon: <LogOut />,
+        color: "text-orange-600",
+        bg: "bg-orange-100",
+      };
+    if (lower.includes("in hotel"))
+      return {
+        name: "Đang lưu trú",
+        icon: <Users />,
+        color: "text-purple-600",
+        bg: "bg-purple-100",
+      };
+    if (lower.includes("available"))
+      return {
+        name: "Phòng trống",
+        icon: <Home />,
+        color: "text-emerald-600",
+        bg: "bg-emerald-100",
+      };
+    if (lower.includes("occupied"))
+      return {
+        name: "Phòng đã thuê",
+        icon: <BedDouble />,
+        color: "text-rose-600",
+        bg: "bg-rose-100",
+      };
+    return {
+      name: label,
+      icon: <Home />,
+      color: "text-slate-600",
+      bg: "bg-slate-100",
+    };
+  };
 
-const Overview = ({overviewData}) => {
-  
   return (
-    <div className='bg-background p-6 rounded-xl shadow-sm w-full'>
-        <h2 className='text-4xl font-semibold mb-4'>
-          Overview
-        </h2>
-        <div className='flex flex-wrap items-center justify-between gap-6'>
-          {
-            overviewData.map((o, index) => (
-              <div key={index} className='grid grid-cols-1 md:grid-cols-2 flex-1 text-center justify-center md:text-left gap-3 '>
-                <div className='flex flex-col items-start justify-center'>
-                  <p className='text-sm text-foreground/70'>{o.label.split(" ")[0]}</p>
-                  <p className='text-sm font-bold text-foreground'>{o.label.split(" ").slice(1).join(" ")}</p>
-                </div>
-                <p className='text-3xl font-bold text-chart-3/70'>{o.value}</p>
-              </div>
-            ))
-          }
-        </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      {overviewData.map((o, index) => {
+        const style = mapLabel(o.label);
+        return (
+          <div
+            key={index}
+            className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow duration-200 flex flex-col items-start justify-between space-y-4"
+          >
+            <div className={`p-3 rounded-xl ${style.bg} ${style.color}`}>
+              {React.cloneElement(style.icon, { size: 24 })}
+            </div>
+            <div>
+              <p className="text-sm font-medium text-slate-500">{style.name}</p>
+              <p className="text-3xl font-bold text-slate-800 mt-1">
+                {o.value}
+              </p>
+            </div>
+          </div>
+        );
+      })}
     </div>
-  )
-}
+  );
+};
 
-export default Overview
+export default Overview;
