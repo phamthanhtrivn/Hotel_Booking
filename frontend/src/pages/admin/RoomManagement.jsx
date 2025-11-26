@@ -9,6 +9,14 @@ import { loaiPhongService } from "@/services/loaiPhongService";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import AdminSelect from "@/components/admin/AdminSelect";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const RoomManagement = () => {
   const [rooms, setRooms] = useState([]);
@@ -16,10 +24,10 @@ const RoomManagement = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [isShowEditModal, setShowEditModal] = useState(false);
   const [roomTypes, setRoomTypes] = useState([]);
-  const [isAdd, setIsAdd] = useState(false);
 
   const [formData, setFormData] = useState({
     maPhong: "",
+    tenPhong: "",
     maLoaiPhong: "",
     viTri: "",
     trangThai: "",
@@ -36,6 +44,7 @@ const RoomManagement = () => {
   const resetFormData = () => {
     setFormData({
       maPhong: "",
+      tenPhong: "",
       maLoaiPhong: "",
       viTri: "",
       trangThai: "",
@@ -79,17 +88,13 @@ const RoomManagement = () => {
     setShowEditModal(true);
     setFormData({
       maPhong: room.maPhong,
+      tenPhong: room.tenPhong,
       maLoaiPhong: room.maLoaiPhong,
       viTri: room.viTri || "",
       trangThai: room.trangThai,
       tinhTrang: room.tinhTrang,
     });
   };
-
-  const onAdd = () => {
-    setIsAdd(true);
-    setShowEditModal(true);
-  }
 
   // Submit update
   const handleUpdate = async () => {
@@ -120,7 +125,7 @@ const RoomManagement = () => {
   const onClose = () => {
     setShowEditModal(false);
     resetFormData();
-  }
+  };
 
   useEffect(() => {
     fetchRooms();
@@ -154,7 +159,7 @@ const RoomManagement = () => {
   ];
 
   const columns = [
-    { key: "maPhong", label: "ID" },
+    { key: "tenPhong", label: "Tên phòng" },
     { key: "tenLoaiPhong", label: "Tên loại phòng" },
     { key: "viTri", label: "Vị trí" },
     { key: "trangThai", label: "Trạng thái" },
@@ -179,7 +184,6 @@ const RoomManagement = () => {
         <CardHeader>
           <CardTitle className="text-xl font-semibold flex justify-between">
             <p>Quản lý phòng</p>
-            <Button className="rounded-2xl bg-blue-600" onClick={onAdd}>Thêm phòng</Button>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -249,15 +253,15 @@ const RoomManagement = () => {
       {/* Modal Edit */}
       <EditCreateDialog
         open={isShowEditModal}
-        title={isAdd ? "Thêm phòng" : "Cập nhật thông tin phòng"}
+        title="Cập nhật thông tin phòng"
         onClose={onClose}
         onSubmit={handleUpdate}
       >
         <div className="space-y-4">
           {/* ID */}
           <div>
-            <label className="block text-sm font-medium mb-2">Mã phòng</label>
-            <Input disabled value={formData.maPhong} />
+            <label className="block text-sm font-medium mb-2">Tên phòng</label>
+            <Input disabled value={formData.tenPhong} />
           </div>
 
           {/* Loại phòng */}
@@ -276,13 +280,31 @@ const RoomManagement = () => {
           {/* Vị trí */}
           <div>
             <label className="block text-sm font-medium mb-2">Vị trí</label>
-            <input
-              type="text"
+            <Select
               value={formData.viTri}
-              onChange={(e) => handleChange("viTri", e.target.value)}
-              className="w-full p-2 border rounded"
-              placeholder="Nhập vị trí phòng"
-            />
+              onValueChange={(v) => handleChange("viTri", v)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn vị trí"/>
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectGroup>
+                  {[
+                    { label: "Tầng 1", value: "Tầng 1" },
+                    { label: "Tầng 2", value: "Tầng 2" },
+                    { label: "Tầng 3", value: "Tầng 3" },
+                    { label: "Tầng 4", value: "Tầng 4" },
+                    { label: "Tầng 5", value: "Tầng 5" },
+                    { label: "Tầng 6", value: "Tầng 6" },
+                    { label: "Tầng 7", value: "Tầng 7" },
+                    { label: "Tầng 8", value: "Tầng 8" },
+                  ].map((item) => (
+                    <SelectItem value={item.value}>{item.label}</SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Trạng thái hoạt động */}
@@ -292,7 +314,10 @@ const RoomManagement = () => {
               value={formData.tinhTrang}
               onChange={(v) => handleChange("tinhTrang", v)}
               placeholder="Chọn tình trạng"
-              options={activeStatus}
+              options={[
+                { label: "Hoạt động", value: "true" },
+                { label: "Dừng hoạt động", value: "false" },
+              ]}
             />
           </div>
         </div>

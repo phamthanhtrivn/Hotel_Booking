@@ -3,14 +3,14 @@ package iuh.fit.hotel_booking_backend.service;
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.dto.LoaiPhongSearchRequest;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
+import iuh.fit.hotel_booking_backend.helper.DTOMapper;
 import iuh.fit.hotel_booking_backend.helper.QuyDoiKhachHelper;
 import iuh.fit.hotel_booking_backend.projections.LoaiPhongDropdownProjection;
+import iuh.fit.hotel_booking_backend.repository.DonDatPhongRepository;
 import iuh.fit.hotel_booking_backend.repository.LoaiPhongRepository;
+import iuh.fit.hotel_booking_backend.repository.PhongRepository;
 import iuh.fit.hotel_booking_backend.util.IdUtil;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import iuh.fit.hotel_booking_backend.dto.LoaiPhongDTO;
@@ -26,13 +26,19 @@ import java.util.stream.Collectors;
 @Service
 public class LoaiPhongService {
     private final LoaiPhongRepository loaiPhongRepository;
+    private final PhongRepository phongRepository;
+    private final DonDatPhongRepository donDatPhongRepository;
     private final CloudinaryService cloudinaryService;
     private final IdUtil idUtil;
 
     public LoaiPhongService(LoaiPhongRepository loaiPhongRepository,
+                            PhongRepository phongRepository,
+                            DonDatPhongRepository donDatPhongRepository,
                             CloudinaryService cloudinaryService,
                             IdUtil IdUtil) {
         this.loaiPhongRepository = loaiPhongRepository;
+        this.donDatPhongRepository = donDatPhongRepository;
+        this.phongRepository = phongRepository;
         this.cloudinaryService = cloudinaryService;
         this.idUtil = IdUtil;
     }
@@ -41,7 +47,7 @@ public class LoaiPhongService {
         return loaiPhongRepository.findAll();
     }
 
-    public Page<LoaiPhong> findByConditions(int page, int size, LoaiPhongSearchRequest dto) {
+    public Page<LoaiPhongDTO> findByConditions(int page, int size, LoaiPhongSearchRequest dto) {
         Pageable pageable = PageRequest.of(page, size);
 
         Specification<LoaiPhong> spec = Specification.allOf(
@@ -49,7 +55,18 @@ public class LoaiPhongService {
                 LoaiPhongSpecification.soKhachGreaterOrEqual(dto.getSoKhach()),
                 LoaiPhongSpecification.giaBetween(dto.getMinGia(), dto.getMaxGia()),
                 LoaiPhongSpecification.dienTichBetween(dto.getMinDienTich(), dto.getMaxDienTich()));
-        return loaiPhongRepository.findAll(spec, pageable);
+
+        Page<LoaiPhong> loaiPhongPage = loaiPhongRepository.findAll(spec, pageable);
+
+        List<LoaiPhongDTO> dtos = loaiPhongPage.getContent().stream().map(lp -> {
+            LoaiPhongDTO dtoItem = DTOMapper.loaiPhongMapToDTO(lp);
+            boolean hasPhong = phongRepository.existsByLoaiPhongMaLoaiPhong(lp.getMaLoaiPhong());
+            boolean hasDon = donDatPhongRepository.existsByLoaiPhongDaDuocDat(lp.getMaLoaiPhong());
+            dtoItem.setCanDelete(!hasPhong && !hasDon);
+
+            return dtoItem;
+        }).collect(Collectors.toList());
+        return new PageImpl<>(dtos, pageable, loaiPhongPage.getTotalElements());
     }
 
     public LoaiPhong getById(String id) {
@@ -88,7 +105,6 @@ public class LoaiPhongService {
         }
         return response;
     }
-
 
     public APIResponse<LoaiPhong> findById(String id) {
         APIResponse<LoaiPhong> response = new APIResponse<>();
@@ -134,27 +150,18 @@ public class LoaiPhongService {
         }
     }
 
-    public APIResponse<Object> deleteById(String id) {
-        APIResponse<Object> response = new APIResponse<>();
-        try {
-            loaiPhongRepository.deleteById(id);
-            response.setSuccess(true);
-            response.setMessage("Xóa loại phòng thành công");
-            return response;
-        } catch (Exception e) {
-            response.setSuccess(false);
-            response.setMessage("Lỗi khi xóa loại phòng: " + e.getMessage());
-            return response;
-        }
-
+    public void deleteById(String id) {
+        boolean hasPhong = phongRepository.existsByLoaiPhongMaLoaiPhong(id);
+        boolean hasDon = donDatPhongRepository.existsByLoaiPhongDaDuocDat(id);
+        if(!hasDon && !hasPhong) loaiPhongRepository.deleteById(id);
+        else throw new RuntimeException("Không thể xóa loại phòng này");
     }
 
     public List<LoaiPhongDTO> getAllLoaiPhongDTO() {
         List<LoaiPhong> list = loaiPhongRepository.findAll();
 
         return list.stream().map(loaiPhong -> {
-            LoaiPhongDTO dto = new LoaiPhongDTO();
-            dto.setLoaiPhong(loaiPhong);
+            LoaiPhongDTO dto = DTOMapper.loaiPhongMapToDTO(loaiPhong);
             long soPhongTrong = loaiPhong.getPhongList() != null
                     ? loaiPhong.getPhongList().stream()
                     .filter(p -> p.getTrangThai() == TrangThaiPhong.TRONG)
@@ -177,12 +184,7 @@ public class LoaiPhongService {
             Double maxDienTich,
             String maGiuong
     ) {
-
-        // 👇 Tính lại số khách sau khi quy đổi trẻ em
         int soKhachThucTe = QuyDoiKhachHelper.tinhSoKhachSauQuyDoi(soKhach, treEm);
-
-        System.out.println("Số khách thực tế: " + soKhachThucTe);
-        if (tenLoaiPhong.equals("ALL")) tenLoaiPhong = "";
 
         Specification<LoaiPhong> spec = Specification.allOf(
                 LoaiPhongSpecification.phongTrong(checkIn, checkOut),
@@ -201,13 +203,10 @@ public class LoaiPhongService {
                             lp.getMaLoaiPhong(), checkIn, checkOut
                     );
 
-                    LoaiPhongDTO dto = new LoaiPhongDTO();
-                    dto.setLoaiPhong(lp);
+                    LoaiPhongDTO dto = DTOMapper.loaiPhongMapToDTO(lp);
                     dto.setSoPhongTrong(soPhongTrong);
                     return dto;
                 })
                 .collect(Collectors.toList());
     }
-
-
 }

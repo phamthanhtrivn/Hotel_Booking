@@ -13,7 +13,7 @@ public class LoaiPhongSpecification {
 
     public static Specification<LoaiPhong> tenLoaiPhongContains(String keyword){
         return (root, query, cb) -> {
-            if(keyword == null || keyword.isBlank()) return null;
+            if(keyword == null || keyword.equals("ALL") || keyword.isBlank()) return null;
             return cb.like(cb.lower(root.get("tenLoaiPhong")), "%" + keyword.toLowerCase() + "%");
         };
     }

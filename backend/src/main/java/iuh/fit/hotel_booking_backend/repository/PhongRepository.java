@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface PhongRepository extends JpaRepository<Phong, String>, JpaSpecificationExecutor<Phong> {
     @Query(value = "SELECT * FROM phong p WHERE p.ma_loai_phong = :maLoaiPhong AND p.trang_thai = 'TRONG' AND p.tinh_trang = true LIMIT 1",
             nativeQuery = true)
-
     Optional<Phong> findFirstAvailableRoomNative(@Param("maLoaiPhong") String maLoaiPhong);
 
+    boolean existsByLoaiPhongMaLoaiPhong(String maLoaiPhong);
 }

@@ -146,7 +146,7 @@ const RoomTypes = () => {
           roomTypes.map((dto, index) => (
             <RoomTypeCard
               key={index}
-              room={{ ...dto.loaiPhong, soPhongTrong: dto.soPhongTrong }}
+              room={dto}
               onDetail={onDetail}
             />
           ))

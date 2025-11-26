@@ -13,8 +13,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "phong")
 public class Phong {
     @Id
-    @Column(name = "maPhong")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "ma_phong")
     private String maPhong;
+    @Column(name = "ten_phong")
+    private String tenPhong;
     @ManyToOne
     @JoinColumn(name = "ma_loai_phong", nullable = false)
     @JsonIgnore

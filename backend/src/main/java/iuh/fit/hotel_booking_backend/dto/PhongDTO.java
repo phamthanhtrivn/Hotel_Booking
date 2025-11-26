@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class PhongDTO {
     private String maPhong;
+    private String tenPhong;
     private String maLoaiPhong;
     private String viTri;
     private TrangThaiPhong trangThai;

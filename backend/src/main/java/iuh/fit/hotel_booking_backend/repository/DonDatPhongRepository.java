@@ -25,4 +25,12 @@ public interface DonDatPhongRepository extends JpaRepository<DonDatPhong, String
     );
 
     boolean existsDonDatPhongByMaDatPhong(String maDatPhong);
+
+    @Query("""
+           SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END
+           FROM DonDatPhong d
+           JOIN d.phong p
+           WHERE p.loaiPhong.maLoaiPhong = :maLoaiPhong
+           """)
+    boolean existsByLoaiPhongDaDuocDat(@Param("maLoaiPhong") String maLoaiPhong);
 }

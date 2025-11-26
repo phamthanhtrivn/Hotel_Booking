@@ -50,7 +50,7 @@ public class DonDatPhongService {
     }
 
     public DonDatPhong getById(String id) {
-        return repo.findById(id).orElse(null);
+        return repo.findById(id).orElseThrow(() -> new RuntimeException("Đơn đặt phòng không tồn tại"));
     }
 
     public DonDatPhong save(DonDatPhong donDatPhong) {
@@ -77,7 +77,7 @@ public class DonDatPhongService {
         DonDatPhong don = new DonDatPhong();
         don.setMaDatPhong(idUtil.generateUniqueCodeForDonDatPhong());
 
-        KhachHang khachHang = khachHangService.getOrCreateCustomer(req);
+        KhachHang khachHang = khachHangService.getById(req.maKhachHang);
         don.setHoTenKhachHang(req.hoTenKhachHang);
         don.setSoDienThoai(req.soDienThoai);
         don.setEmail(req.email);
@@ -102,21 +102,6 @@ public class DonDatPhongService {
         repo.save(don);
         emailService.sendBookingConfirmationWithPaymentInfo(don.getEmail(), don.getMaDatPhong(), req.tongTienThanhToan);
         return don;
-    }
-
-    public APIResponse<DonDatPhong> findById(String id) {
-        APIResponse<DonDatPhong> response = new APIResponse<>();
-        response.setSuccess(false);
-        DonDatPhong donDatPhong = repo.findById(id).orElse(null);
-        response.setData(donDatPhong);
-        if (donDatPhong == null) {
-            response.setMessage("Đơn đặt phòng không tồn tại");
-            return response;
-        } else {
-            response.setSuccess(true);
-            response.setMessage("Lấy đơn đặt phòng thành công");
-            return response;
-        }
     }
 
     public void updateStatusPaymentSuccess(String maDatPhong) {

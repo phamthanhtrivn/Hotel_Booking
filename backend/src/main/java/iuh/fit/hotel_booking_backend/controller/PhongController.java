@@ -71,7 +71,7 @@ public class PhongController {
     }
 
     @PutMapping
-    public ResponseEntity<APIResponse<Phong>> update(@RequestBody(required = true) PhongDTO phong) {
+    public ResponseEntity<APIResponse<Phong>> update(@RequestBody PhongDTO phong) {
         APIResponse<Phong> response = new APIResponse<>();
         try {
             Phong p = phongService.save(phong);

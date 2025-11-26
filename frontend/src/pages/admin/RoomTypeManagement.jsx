@@ -19,6 +19,8 @@ import { SelectContent, SelectGroup } from "@radix-ui/react-select";
 import MDEditor from "@uiw/react-md-editor";
 import { Trash2, Upload } from "lucide-react";
 import DetailDialog from "@/components/common/DetailDialog";
+import { toast } from "react-toastify";
+import ConfirmDeleteDialog from "@/components/common/ConfirmDeleteDialog";
 
 const defaultForm = {
   maLoaiPhong: "",
@@ -55,7 +57,8 @@ const RoomTypeManagement = () => {
   const [isEditModal, setShowEditModal] = useState(false);
   const [isDetailModal, setShowDetailModal] = useState(false);
   const [currentRoomType, setCurrentRoomType] = useState({});
-
+  const [openDelete, setOpenDelete] = useState(false);
+  const [idDelete, setIdDelete] = useState("");
   // ============================ FETCH ===============================
   const fetchLoaiPhong = async () => {
     try {
@@ -65,6 +68,7 @@ const RoomTypeManagement = () => {
       };
 
       const result = await loaiPhongService.search(currentPage, 10, payload);
+      console.log(result.content);
       setLoaiPhongs(result.content);
       setTotalPages(result.totalPages);
     } catch (err) {
@@ -97,7 +101,7 @@ const RoomTypeManagement = () => {
   const onOpenDetail = (roomType) => {
     setShowDetailModal(true);
     setCurrentRoomType(roomType);
-  }
+  };
 
   const onOpenEdit = (item) => {
     resetFormData();
@@ -117,7 +121,28 @@ const RoomTypeManagement = () => {
 
   const onClose = () => {
     resetFormData();
+    setLoading(false);
     setShowEditModal(false);
+  };
+
+  const onDelete = (id) => {
+    setIdDelete(id);
+    setOpenDelete(true);
+  };
+
+  const handleOnDelete = async () => {
+    try {
+      const result = await loaiPhongService.delete(idDelete);
+      console.log(result);
+      result.success
+        ? toast.success(`Xóa loại phòng ${result.data} thành công!`)
+        : toast.error(`Xóa loại phòng ${result.data} không thành công!`);
+      setOpenDelete(false);
+      setIdDelete("");
+      fetchLoaiPhong();
+    } catch (e) {
+      toast.error("Lỗi khi xóa " + e);
+    }
   };
   // ============================ ON CHANGE =====================
   const handleInputChange = (e) => {
@@ -309,7 +334,14 @@ const RoomTypeManagement = () => {
             data={loaiPhongs}
             columns={columns}
             renderActions={(item) => (
-              <ActionButtons onEdit={() => onOpenEdit(item)} onView={()=> onOpenDetail(item)}/>
+              <ActionButtons
+                canDelete={item.canDelete}
+                onEdit={() => onOpenEdit(item)}
+                onView={() => onOpenDetail(item)}
+                onDelete={() => {
+                  onDelete(item.maLoaiPhong);
+                }}
+              />
             )}
           />
         </CardContent>
@@ -320,28 +352,33 @@ const RoomTypeManagement = () => {
         />
       </Card>
 
-      <DetailDialog data={currentRoomType} open={isDetailModal} fields={[
-    { key: "maLoaiPhong", label: "ID" },
-    { key: "hinhAnh", label: "Hình ảnh" },
-    { key: "tenLoaiPhong", label: "Tên loại phòng" },
-    { key: "dienTich", label: "Diện tích" },
-    { key: "soKhach", label: "Khách" },
-    { key: "gia", label: "Giá / đêm" },
-    {
-      key: "tinhTrang",
-      label: "Tình trạng",
-      render: (i) => (
-        <span
-          className={
-            i.tinhTrang ? "text-green-600 italic" : "text-red-600 italic"
-          }
-        >
-          {i.tinhTrang ? "Hoạt động" : "Không hoạt động"}
-        </span>
-      ),
-    },
-    {key: "moTa", label: "Mô tả"}
-  ]} onClose={()=>setShowDetailModal(false)}/>
+      <DetailDialog
+        data={currentRoomType}
+        open={isDetailModal}
+        fields={[
+          { key: "maLoaiPhong", label: "ID" },
+          { key: "hinhAnh", label: "Hình ảnh" },
+          { key: "tenLoaiPhong", label: "Tên loại phòng" },
+          { key: "dienTich", label: "Diện tích" },
+          { key: "soKhach", label: "Khách" },
+          { key: "gia", label: "Giá / đêm" },
+          {
+            key: "tinhTrang",
+            label: "Tình trạng",
+            render: (i) => (
+              <span
+                className={
+                  i.tinhTrang ? "text-green-600 italic" : "text-red-600 italic"
+                }
+              >
+                {i.tinhTrang ? "Hoạt động" : "Không hoạt động"}
+              </span>
+            ),
+          },
+          { key: "moTa", label: "Mô tả" },
+        ]}
+        onClose={() => setShowDetailModal(false)}
+      />
 
       <EditCreateDialog
         loading={loading}
@@ -483,6 +520,11 @@ const RoomTypeManagement = () => {
           </div>
         </div>
       </EditCreateDialog>
+      <ConfirmDeleteDialog
+        open={openDelete}
+        onClose={() => setOpenDelete(false)}
+        onConfirm={handleOnDelete}
+      />
     </div>
   );
 };

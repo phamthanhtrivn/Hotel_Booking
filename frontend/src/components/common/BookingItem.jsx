@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BedDoubleIcon, UsersIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import ReviewModel from "./ReviewModel";
@@ -11,6 +11,8 @@ const BookingItem = ({ booking, onViewDetail }) => {
     DA_THANH_TOAN: { text: "Đã thanh toán", color: "text-green-600" },
     DA_HUY: { text: "Đã hủy", color: "text-red-600" },
   };
+
+  useEffect(()=>{console.log(booking)}, []);
 
   const currentStatus =
     statusMap[booking.trangThai] || { text: booking.trangThai, color: "text-gray-500" };
@@ -92,7 +94,7 @@ const BookingItem = ({ booking, onViewDetail }) => {
       </div>
 
 
-      <ReviewModel booking={booking} isOpen={isReviewOpen} onClose={() => setIsReviewOpen(false)} />
+      {/* <ReviewModel booking={booking} isOpen={isReviewOpen} onClose={() => setIsReviewOpen(false)} /> */}
 
 
 

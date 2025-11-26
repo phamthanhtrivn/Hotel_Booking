@@ -64,7 +64,7 @@ public class LoaiPhongController {
             @RequestParam(defaultValue = "10") int size,
             @RequestBody LoaiPhongSearchRequest requestbody
     ) {
-        Page<LoaiPhong> result = loaiPhongService.findByConditions(page, size, requestbody);
+        Page<LoaiPhongDTO> result = loaiPhongService.findByConditions(page, size, requestbody);
         return ResponseEntity.ok(result);
     }
 
@@ -158,12 +158,18 @@ public class LoaiPhongController {
     }
 
 
-    @DeleteMapping
-    public ResponseEntity<APIResponse<Object>> delete(@RequestParam("id") String id) {
-        APIResponse<Object> result = loaiPhongService.deleteById(id);
-
-        return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<APIResponse<String>> delete(@PathVariable String id) {
+        APIResponse<String> response = new APIResponse<>();
+        try {
+            loaiPhongService.deleteById(id);
+            response.setData(id);
+            response.setSuccess(true);
+            response.setMessage("Xóa loại phòng thành công");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new APIResponse<>(false, "Lỗi khi xóa loại phòng", ""));
+        }
+        return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 
     @GetMapping("/search")

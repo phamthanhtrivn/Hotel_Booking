@@ -25,7 +25,11 @@ export const loaiPhongService = {
     return result.data;
   },
   getForDropdown: async () => {
-    const result = api.get(`/api/loaiphong/get-dropdown`);
-    return (await result).data;
+    const result = await api.get(`/api/loaiphong/get-dropdown`);
+    return result.data;
   },
+  delete: async (id) => {
+    const result = await api.delete(`http://localhost:8080/api/loaiphong/${id}`);
+    return result.data;
+  }
 };

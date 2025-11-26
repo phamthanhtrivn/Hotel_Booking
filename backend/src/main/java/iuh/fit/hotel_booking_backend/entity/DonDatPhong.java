@@ -27,7 +27,7 @@ public class DonDatPhong {
     @Column(name = "email")
     private String email;
     @ManyToOne
-    @JoinColumn(name = "ma_khach_hang", nullable = false)
+    @JoinColumn(name = "ma_khach_hang")
     @JsonIgnore
     private KhachHang khachHang;
     @ManyToOne

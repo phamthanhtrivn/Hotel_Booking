@@ -20,6 +20,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.Console;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -174,7 +175,15 @@ public class DonDatPhongController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable("id") String id) {
-        return ResponseEntity.ok(donDatPhongService.findById(id));
+    public ResponseEntity<APIResponse<DonDatPhong>> getById(@PathVariable String id) {
+        APIResponse<DonDatPhong> response;
+        try {
+            DonDatPhong data = donDatPhongService.getById(id);
+            response = new APIResponse<>(true, "Lấy đơn đặt phòng thành công", data);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new APIResponse<>(false, e.getMessage(), null));
+        }
     }
 }

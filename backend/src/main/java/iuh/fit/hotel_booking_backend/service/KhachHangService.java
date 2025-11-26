@@ -56,23 +56,6 @@ public class KhachHangService {
         return repo.save(khachHang);
     }
 
-    public KhachHang getOrCreateCustomer(DatPhongRequest req) {
-        KhachHang khachHang = null;
-
-        if (req.maKhachHang != null && !req.maKhachHang.trim().isEmpty()) {
-            khachHang = repo.findById(req.maKhachHang).orElse(null);
-        }
-
-        if (khachHang == null) {
-            khachHang = new KhachHang();
-            khachHang.setMaKhachHang(idUtil.generateUniqueCodeForCustomer());
-            khachHang.setHoTenKH(req.hoTenKhachHang);
-            khachHang.setSoDienThoai(req.soDienThoai);
-            repo.save(khachHang);
-        }
-        return khachHang;
-    }
-
     public boolean deleteById(String id) {
         List<DonDatPhong> listKH = donDatPhongRepo.findByKhachHang_MaKhachHang(id);
         if (!listKH.isEmpty()) {

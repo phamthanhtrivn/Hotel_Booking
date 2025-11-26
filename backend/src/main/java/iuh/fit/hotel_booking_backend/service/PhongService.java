@@ -5,10 +5,8 @@ import iuh.fit.hotel_booking_backend.dto.PhongFilter;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.entity.Phong;
 import iuh.fit.hotel_booking_backend.helper.PhongSpecification;
-import iuh.fit.hotel_booking_backend.projections.LoaiPhongDropdownProjection;
 import iuh.fit.hotel_booking_backend.repository.PhongRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
