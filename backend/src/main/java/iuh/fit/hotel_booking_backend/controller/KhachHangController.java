@@ -27,7 +27,7 @@ public class KhachHangController {
     @GetMapping
     public ResponseEntity<Page<TaiKhoan>> getAllKhachHang(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Boolean trangThai,
             @RequestParam(defaultValue = "khachHang.diemTichLuy") String sortField,

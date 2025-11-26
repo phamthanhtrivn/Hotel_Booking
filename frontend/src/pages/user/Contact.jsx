@@ -1,9 +1,8 @@
-import { MapPin, Phone, Clock, Mail, Send } from 'lucide-react';
+import { MapPin, Phone, Clock, Mail, Send } from "lucide-react";
 
 export default function Contact() {
   return (
     <div className="min-h-screen  px-4 md:px-10 lg:px-20 py-16">
-
       {/* Header Section */}
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
@@ -15,7 +14,6 @@ export default function Contact() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch max-w-7xl mx-auto mb-16">
-
         {/* Map */}
         <div className="hidden md:block w-full h-full rounded-2xl overflow-hidden shadow-xl border-4 border-white hover:shadow-2xl transition-shadow duration-300">
           <iframe
@@ -85,14 +83,9 @@ export default function Contact() {
         </div>
       </div>
 
-
-
-
-
       {/* Contact Info Cards */}
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-
           {/* Address Card */}
           <div className="bg-white rounded-2xl shadow-lg p-8 text-center hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-t-4 border-[#1E2A38] group">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#1E2A38] to-[#1E2A38] rounded-full mb-5 group-hover:scale-110 transition-transform duration-300">
@@ -100,7 +93,9 @@ export default function Contact() {
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-3">Địa chỉ</h3>
             <p className="text-gray-600 leading-relaxed">
-              12 Nguyễn Văn Bảo, P.4,<br />Q. Gò Vấp, TP.HCM
+              12 Nguyễn Văn Bảo, P.4,
+              <br />
+              Q. Gò Vấp, TP.HCM
             </p>
           </div>
 
@@ -111,10 +106,10 @@ export default function Contact() {
             </div>
             <h3 className="text-xl font-bold text-gray-800 mb-3">Liên hệ</h3>
             <p className="text-gray-600 mb-2 hover:text-[#1E2A38] transition-colors cursor-pointer">
-              (+84) 28 7300 1234
+              (+84) 398 694 435
             </p>
             <p className="text-gray-600 hover:text-[#1E2A38] transition-colors cursor-pointer">
-              support@winkhotels.com
+              twanhotel@gmail.com
             </p>
           </div>
 
@@ -123,13 +118,11 @@ export default function Contact() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#1E2A38] to-[#1E2A38] rounded-full mb-5 group-hover:scale-110 transition-transform duration-300">
               <Clock className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-3">Giờ làm việc</h3>
-            <p className="text-gray-600 mb-2">
-              Thứ 2 – Chủ Nhật
-            </p>
-            <p className="text-gray-600 font-semibold">
-              07:00 – 22:00
-            </p>
+            <h3 className="text-xl font-bold text-gray-800 mb-3">
+              Giờ làm việc
+            </h3>
+            <p className="text-gray-600 mb-2">Thứ 2 - Chủ Nhật</p>
+            <p className="text-gray-600 font-semibold">07:00 - 22:00</p>
           </div>
         </div>
       </div>
