@@ -68,9 +68,7 @@ const RoomTypes = () => {
         maxDienTich: null,
         maGiuong: null,
       };
-      
-      console.log(body)
-      
+            
       const response = await fetch(
         `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong/search`,
         {

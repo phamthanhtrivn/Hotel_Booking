@@ -6,7 +6,7 @@ import {Input} from "@/components/ui/input";
 
 export default function ReviewModel({ booking, isOpen, onClose }) {
 
-    const [danhGia, setDanhGia] = useState({ diemSachSe: 10, diemDichVu: 10, diemCoSoVatChat: 10, binhLuan: '', maLoaiPhong: booking.phong.loaiPhong.maLoaiPhong, maDatPhong: booking.maDatPhong });
+    const [danhGia, setDanhGia] = useState({ diemSachSe: 10, diemDichVu: 10, diemCoSoVatChat: 10, binhLuan: '', maLoaiPhong: booking.maLoaiPhong, maDatPhong: booking.maDatPhong });
     const { post } = useFetch(import.meta.env.VITE_BASE_API_URL + '/api/');
 
 

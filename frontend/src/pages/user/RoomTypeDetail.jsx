@@ -163,8 +163,8 @@ const RoomTypeDetail = () => {
         const dataAll = await resAll.json();
 
         const others = dataAll
-          .filter((r) => r.loaiPhong.maLoaiPhong !== id)
-          .map((r) => r.loaiPhong);
+          .filter((r) => r.maLoaiPhong !== id)
+          .map((r) => r);
         setOtherRooms(others);
 
         await fetchLoaiGiuong();
