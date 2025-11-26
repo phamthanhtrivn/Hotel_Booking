@@ -7,6 +7,9 @@ import iuh.fit.hotel_booking_backend.dto.DonDatPhongSearchRequest;
 import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
 import iuh.fit.hotel_booking_backend.service.DonDatPhongService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,10 +44,12 @@ public class DonDatPhongController {
         this.mailSender = mailSender;
     }
 
-    //Lấy tất cả đơn đặt phòng
     @GetMapping
-    public List<DonDatPhong> getAll() {
-        return donDatPhongService.getAll();
+    public ResponseEntity<Page<DonDatPhong>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        Page<DonDatPhong> donDatPhongs = donDatPhongService.getAll(page, size);
+        return ResponseEntity.ok(donDatPhongs);
     }
 
     //Lấy lịch sử đặt phòng theo mã khách hàng
