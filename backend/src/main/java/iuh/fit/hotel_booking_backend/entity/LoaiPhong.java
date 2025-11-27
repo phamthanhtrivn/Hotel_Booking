@@ -41,11 +41,11 @@ public class LoaiPhong {
     @Column(name = "mo_ta", columnDefinition = "TEXT")
     private String moTa;
 
-    @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "loaiPhong", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<ChiTietLoaiGiuong> chiTietLoaiGiuongList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "loaiPhong", fetch = FetchType.LAZY)
     @JsonIgnore
     private List<ChiTietTienNghi> chiTietTienNghiList = new ArrayList<>();
 
