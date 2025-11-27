@@ -21,6 +21,18 @@ import { Trash2, Upload } from "lucide-react";
 import DetailDialog from "@/components/common/DetailDialog";
 import { toast } from "react-toastify";
 import ConfirmDeleteDialog from "@/components/common/ConfirmDeleteDialog";
+import {
+  MultiSelect,
+  MultiSelectContent,
+  MultiSelectGroup,
+  MultiSelectItem,
+  MultiSelectTrigger,
+  MultiSelectValue,
+} from "@/components/ui/multi-select";
+import { tienNghiService } from "@/services/tienNghiService";
+import { loaiGiuongService } from "@/services/loaiGiuongService";
+import BedSelector from "@/components/admin/room-type/BedSelector";
+import { chiTietLoaiGiuongService } from "@/services/chiTietLoaiGiuongService";
 
 const defaultForm = {
   maLoaiPhong: "",
@@ -46,7 +58,7 @@ const RoomTypeManagement = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [loaiPhongs, setLoaiPhongs] = useState([]);
-  const [loading, setLoading] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [filters, setFilters] = useState(defaultFilters);
   const [formData, setFormData] = useState(defaultForm);
@@ -58,8 +70,52 @@ const RoomTypeManagement = () => {
   const [isDetailModal, setShowDetailModal] = useState(false);
   const [currentRoomType, setCurrentRoomType] = useState({});
   const [openDelete, setOpenDelete] = useState(false);
+  const [tienNghis, setTienNghis] = useState([]);
   const [idDelete, setIdDelete] = useState("");
+  const [selectedTienNghis, setSelectedTienNghis] = useState([]);
+  const [beds, setBeds] = useState([]);
+  const [selectedBeds, setSelectedBeds] = useState([]);
   // ============================ FETCH ===============================
+  const fetchTienNghi = async () => {
+    try {
+      const result = await tienNghiService.findAll();
+      setTienNghis(result.data);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const fetchBeds = async () => {
+    const res = await loaiGiuongService.getAll();
+    setBeds(res.data || []);
+  };
+
+  const fetchSelectedBeds = async (id) => {
+    try {
+      const res = await chiTietLoaiGiuongService.findByLoaiPhong(id);
+      console.log("Chi tiết giường nhận được:", res);
+
+      const mappedBeds = res.map((item) => ({
+        maGiuong: item.maGiuong,
+        soGiuong: item.soGiuong || 1,
+      }));
+
+      setSelectedBeds(mappedBeds);
+    } catch (e) {
+      console.error("Lỗi fetch giường:", e);
+      setSelectedBeds([]);
+    }
+  };
+
+  const fetchSelectedTienNghi = async (id) => {
+    try {
+      const result = await tienNghiService.findTienNghiByLoaiPhong(id);
+      setSelectedTienNghis(result.data.map((t) => t.maTienNghi));
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const fetchLoaiPhong = async () => {
     try {
       const payload = {
@@ -68,7 +124,6 @@ const RoomTypeManagement = () => {
       };
 
       const result = await loaiPhongService.search(currentPage, 10, payload);
-      console.log(result.content);
       setLoaiPhongs(result.content);
       setTotalPages(result.totalPages);
     } catch (err) {
@@ -78,6 +133,8 @@ const RoomTypeManagement = () => {
 
   useEffect(() => {
     fetchLoaiPhong();
+    fetchTienNghi();
+    fetchBeds();
   }, [currentPage]);
 
   // ============================ FILTER ================================
@@ -91,6 +148,8 @@ const RoomTypeManagement = () => {
     setOldImages([]);
     setFiles([]);
     setEdit(false);
+    setSelectedBeds([]);
+    setSelectedTienNghis([]);
   };
 
   const onOpenAdd = () => {
@@ -103,7 +162,7 @@ const RoomTypeManagement = () => {
     setCurrentRoomType(roomType);
   };
 
-  const onOpenEdit = (item) => {
+  const onOpenEdit = async (item) => {
     resetFormData();
     setEdit(true);
     setFormData({
@@ -115,6 +174,8 @@ const RoomTypeManagement = () => {
       moTa: item.moTa,
       tinhTrang: item.tinhTrang,
     });
+    await fetchSelectedTienNghi(item.maLoaiPhong);
+    await fetchSelectedBeds(item.maLoaiPhong);
     setOldImages(item.hinhAnh || []);
     setShowEditModal(true);
   };
@@ -189,30 +250,32 @@ const RoomTypeManagement = () => {
       const fd = new FormData();
 
       fd.append(
+        "tienNghiIds",
+        new Blob([JSON.stringify(selectedTienNghis)], {
+          type: "application/json",
+        })
+      );
+
+      fd.append(
         "loaiPhong",
         new Blob([JSON.stringify(formData)], { type: "application/json" })
       );
+
+      fd.append(
+        "chiTietGiuongs",
+        new Blob([JSON.stringify(selectedBeds)], { type: "application/json" })
+      );
+
       fd.append(
         "oldImages",
         new Blob([JSON.stringify(oldImages)], { type: "application/json" })
       );
 
-      files.forEach((f) => fd.append("photos", f.file));
+      files.forEach((f) => fd.append("images", f.file));
 
-      let result = edit
-        ? await loaiPhongService.update(fd)
-        : await loaiPhongService.add(fd);
+      edit ? await loaiPhongService.update(fd) : await loaiPhongService.add(fd);
 
-      const updatedItem = result.data;
-
-      // update lại danh sách
-      setLoaiPhongs((prev) => {
-        if (edit)
-          return prev.map((i) =>
-            i.maLoaiPhong === updatedItem.maLoaiPhong ? updatedItem : i
-          );
-        return [updatedItem, ...prev];
-      });
+      fetchLoaiPhong();
       setLoading(false);
       onClose();
     } catch (err) {
@@ -220,7 +283,6 @@ const RoomTypeManagement = () => {
       console.error("Save error:", err);
     }
   };
-
   // ============================ RENDER ===============================
 
   const columns = [
@@ -445,6 +507,39 @@ const RoomTypeManagement = () => {
                 </SelectGroup>
               </SelectContent>
             </Select>
+          </div>
+          <div className="col-span-2">
+            <label className="block text-sm font-medium mb-2">
+              Loại giường
+            </label>
+            <BedSelector
+              allBeds={beds}
+              value={selectedBeds}
+              onChange={(list) => setSelectedBeds(list)}
+            />
+          </div>
+          <div className="col-span-2">
+            <label className="block text-sm font-medium mb-2">Tiện nghi</label>
+            <MultiSelect
+              values={selectedTienNghis}
+              onValuesChange={(newValues) => setSelectedTienNghis(newValues)}
+            >
+              <MultiSelectTrigger className="w-full">
+                <MultiSelectValue placeholder="Chọn tiện nghi" />
+              </MultiSelectTrigger>
+              <MultiSelectContent>
+                <MultiSelectGroup>
+                  {tienNghis.map((item) => (
+                    <MultiSelectItem
+                      key={item.maTienNghi}
+                      value={item.maTienNghi}
+                    >
+                      {item.tenTienNghi}
+                    </MultiSelectItem>
+                  ))}
+                </MultiSelectGroup>
+              </MultiSelectContent>
+            </MultiSelect>
           </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-2">Mô tả</label>

@@ -1,7 +1,10 @@
 package iuh.fit.hotel_booking_backend.service;
 
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
+import iuh.fit.hotel_booking_backend.dto.ChiTietLoaiGiuongRequest;
 import iuh.fit.hotel_booking_backend.dto.LoaiPhongSearchRequest;
+import iuh.fit.hotel_booking_backend.entity.ChiTietLoaiGiuong;
+import iuh.fit.hotel_booking_backend.entity.ChiTietTienNghi;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.helper.DTOMapper;
 import iuh.fit.hotel_booking_backend.helper.QuyDoiKhachHelper;
@@ -12,6 +15,7 @@ import iuh.fit.hotel_booking_backend.repository.PhongRepository;
 import iuh.fit.hotel_booking_backend.util.IdUtil;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import iuh.fit.hotel_booking_backend.dto.LoaiPhongDTO;
 import iuh.fit.hotel_booking_backend.entity.TrangThaiPhong;
@@ -28,15 +32,21 @@ public class LoaiPhongService {
     private final LoaiPhongRepository loaiPhongRepository;
     private final PhongRepository phongRepository;
     private final DonDatPhongRepository donDatPhongRepository;
+    private final ChiTietTienNghiService chiTietTienNghiService;
+    private final ChiTietLoaiGiuongService chiTietLoaiGiuongService;
     private final CloudinaryService cloudinaryService;
     private final IdUtil idUtil;
 
     public LoaiPhongService(LoaiPhongRepository loaiPhongRepository,
                             PhongRepository phongRepository,
                             DonDatPhongRepository donDatPhongRepository,
+                            ChiTietTienNghiService chiTietTienNghiService,
+                            ChiTietLoaiGiuongService chiTietLoaiGiuongService,
                             CloudinaryService cloudinaryService,
                             IdUtil IdUtil) {
         this.loaiPhongRepository = loaiPhongRepository;
+        this.chiTietLoaiGiuongService = chiTietLoaiGiuongService;
+        this.chiTietTienNghiService = chiTietTienNghiService;
         this.donDatPhongRepository = donDatPhongRepository;
         this.phongRepository = phongRepository;
         this.cloudinaryService = cloudinaryService;
@@ -73,9 +83,12 @@ public class LoaiPhongService {
         return loaiPhongRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public APIResponse<LoaiPhong> update(LoaiPhong loaiPhong,
                                          List<String> existingImages,
-                                         List<MultipartFile> newPhotos) {
+                                         List<MultipartFile> newPhotos,
+                                         List<String> tienNghiIds,
+                                         List<ChiTietLoaiGiuongRequest> chiTietGiuongs) {
         APIResponse<LoaiPhong> response = new APIResponse<>();
 
         try {
@@ -90,16 +103,19 @@ public class LoaiPhongService {
             }
             finalImages.addAll(newImageUrls);
 
-
             loaiPhong.setHinhAnh(finalImages);
 
             loaiPhongRepository.save(loaiPhong);
 
+            chiTietTienNghiService.updateChiTietTienNghi(loaiPhong.getMaLoaiPhong(), tienNghiIds);
+
+            chiTietLoaiGiuongService.updateChiTietLoaiGiuong(loaiPhong.getMaLoaiPhong(), chiTietGiuongs);
+
             response.setSuccess(true);
             response.setMessage("Cập nhật loại phòng thành công");
             response.setData(loaiPhong);
-
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             response.setSuccess(false);
             response.setMessage("Cập nhật thất bại: " + e.getMessage());
         }
@@ -127,10 +143,11 @@ public class LoaiPhongService {
         return loaiPhongRepository.findAllProjectedBy();
     }
 
-    ;
-
+    @Transactional
     public APIResponse<LoaiPhong> save(LoaiPhong loaiPhong,
-                                       List<MultipartFile> images) {
+                                       List<MultipartFile> images,
+                                       List<String> tienNghiIds,
+                                       List<ChiTietLoaiGiuongRequest> chiTietGiuongs) {
         APIResponse<LoaiPhong> response = new APIResponse<>();
         try {
             List<String> urls = cloudinaryService.uploadFiles(images, "loai_phong");
@@ -139,11 +156,21 @@ public class LoaiPhongService {
             loaiPhong.setHinhAnh(urls);
             loaiPhongRepository.save(loaiPhong);
 
+            if (tienNghiIds != null && !tienNghiIds.isEmpty()) {
+                chiTietTienNghiService.saveChiTietTienNghi(loaiPhong.getMaLoaiPhong(), tienNghiIds);
+            }
+
+            // Lưu thông tin giường
+            if (chiTietGiuongs != null && !chiTietGiuongs.isEmpty()) {
+                chiTietLoaiGiuongService.saveChiTietLoaiGiuong(loaiPhong.getMaLoaiPhong(), chiTietGiuongs);
+            }
+
             response.setSuccess(true);
             response.setMessage("Thêm loại phòng thành công");
             response.setData(loaiPhong);
             return response;
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             response.setMessage("Thêm loại phòng thất bại. " + e.getMessage());
             response.setSuccess(false);
             return response;
@@ -153,7 +180,7 @@ public class LoaiPhongService {
     public void deleteById(String id) {
         boolean hasPhong = phongRepository.existsByLoaiPhongMaLoaiPhong(id);
         boolean hasDon = donDatPhongRepository.existsByLoaiPhongDaDuocDat(id);
-        if(!hasDon && !hasPhong) loaiPhongRepository.deleteById(id);
+        if (!hasDon && !hasPhong) loaiPhongRepository.deleteById(id);
         else throw new RuntimeException("Không thể xóa loại phòng này");
     }
 

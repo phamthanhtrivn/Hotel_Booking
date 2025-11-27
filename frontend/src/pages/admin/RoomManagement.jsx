@@ -277,36 +277,6 @@ const RoomManagement = () => {
             />
           </div>
 
-          {/* Vị trí */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Vị trí</label>
-            <Select
-              value={formData.viTri}
-              onValueChange={(v) => handleChange("viTri", v)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Chọn vị trí"/>
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectGroup>
-                  {[
-                    { label: "Tầng 1", value: "Tầng 1" },
-                    { label: "Tầng 2", value: "Tầng 2" },
-                    { label: "Tầng 3", value: "Tầng 3" },
-                    { label: "Tầng 4", value: "Tầng 4" },
-                    { label: "Tầng 5", value: "Tầng 5" },
-                    { label: "Tầng 6", value: "Tầng 6" },
-                    { label: "Tầng 7", value: "Tầng 7" },
-                    { label: "Tầng 8", value: "Tầng 8" },
-                  ].map((item) => (
-                    <SelectItem value={item.value}>{item.label}</SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-
           {/* Trạng thái hoạt động */}
           <div>
             <label className="block text-sm font-medium mb-2">Tình trạng</label>

@@ -29,7 +29,7 @@ export const loaiPhongService = {
     return result.data;
   },
   delete: async (id) => {
-    const result = await api.delete(`http://localhost:8080/api/loaiphong/${id}`);
+    const result = await api.delete(`/api/loaiphong/${id}`);
     return result.data;
   }
 };

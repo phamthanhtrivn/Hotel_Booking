@@ -47,6 +47,10 @@ public class LoaiPhong {
 
     @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
+    private List<ChiTietTienNghi> chiTietTienNghiList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Phong> phongList = new ArrayList<>();
     @Column(name = "tinh_trang")
     private boolean tinhTrang;

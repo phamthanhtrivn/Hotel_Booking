@@ -23,14 +23,14 @@ public class TienNghiController {
     }
 
     @GetMapping("/findbyloaiphong/{id}")
-    public ResponseEntity<APIResponse<List<TienNghi>>> findByLoaiPhong(@PathVariable String id){
+    public ResponseEntity<APIResponse<List<TienNghi>>> findByLoaiPhong(@PathVariable String id) {
         APIResponse<List<TienNghi>> response = new APIResponse<>();
-        try{
+        try {
             List<TienNghi> tienNghis = tienNghiService.getByLoaiPhong(id);
             response.setData(tienNghis);
             response.setMessage("Lấy tiện nghi thành công!");
             response.setSuccess(true);
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setSuccess(false);
             response.setMessage("Lỗi trong khi lấy tiện nghi!");
         }

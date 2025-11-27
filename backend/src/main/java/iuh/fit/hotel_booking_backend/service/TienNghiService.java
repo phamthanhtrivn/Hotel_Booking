@@ -1,6 +1,7 @@
 package iuh.fit.hotel_booking_backend.service;
 
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
+import iuh.fit.hotel_booking_backend.entity.ChiTietTienNghi;
 import iuh.fit.hotel_booking_backend.entity.ChiTietTienNghiId;
 import iuh.fit.hotel_booking_backend.entity.TienNghi;
 import iuh.fit.hotel_booking_backend.repository.ChiTietTienNghiRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -109,7 +111,6 @@ public class TienNghiService {
 
     public List<TienNghi> getByLoaiPhong(String id){
         List<TienNghi> tienNghis = repo.findByLoaiPhong(id);
-
         return tienNghis;
     }
 }

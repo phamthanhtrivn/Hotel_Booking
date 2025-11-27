@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -14,7 +15,6 @@ import java.io.Serializable;
 @Entity
 @Table(name = "chi_tiet_loai_giuong")
 public class ChiTietLoaiGiuong {
-
     @EmbeddedId
     private ChiTietLoaiGiuongId id;
 
@@ -30,13 +30,4 @@ public class ChiTietLoaiGiuong {
 
     @Column(name = "so_giuong")
     private int soGiuong;
-
-    @Embeddable
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class ChiTietLoaiGiuongId implements Serializable {
-        private String loaiPhong;
-        private String loaiGiuong;
-    }
 }

@@ -16,12 +16,12 @@ public class ChiTietTienNghi {
     @EmbeddedId
     private ChiTietTienNghiId id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("tienNghi")
     @JoinColumn(name = "ma_tien_nghi", nullable = false)
     private TienNghi tienNghi;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("loaiPhong")
     @JoinColumn(name = "ma_loai_phong", nullable = false)
     private LoaiPhong loaiPhong;

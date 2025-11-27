@@ -3,6 +3,7 @@ package iuh.fit.hotel_booking_backend.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
+import iuh.fit.hotel_booking_backend.dto.ChiTietLoaiGiuongRequest;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.projections.LoaiPhongDropdownProjection;
 import iuh.fit.hotel_booking_backend.service.LoaiPhongService;
@@ -43,14 +44,14 @@ public class LoaiPhongController {
     }
 
     @GetMapping("/get-dropdown")
-    public ResponseEntity<APIResponse<List<LoaiPhongDropdownProjection>>> findForDropdown(){
+    public ResponseEntity<APIResponse<List<LoaiPhongDropdownProjection>>> findForDropdown() {
         APIResponse<List<LoaiPhongDropdownProjection>> response = new APIResponse<>();
-        try{
+        try {
             List<LoaiPhongDropdownProjection> projections = loaiPhongService.getForDropdown();
             response.setMessage("Lấy dropdown thành công!");
             response.setSuccess(true);
             response.setData(projections);
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setMessage("Lỗi khi lấy dropdown!");
             response.setSuccess(false);
             return ResponseEntity.status(500).body(response);
@@ -67,7 +68,6 @@ public class LoaiPhongController {
         Page<LoaiPhongDTO> result = loaiPhongService.findByConditions(page, size, requestbody);
         return ResponseEntity.ok(result);
     }
-
 
 
     @GetMapping()
@@ -126,22 +126,24 @@ public class LoaiPhongController {
 
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<APIResponse<LoaiPhong>> save(
-            @RequestPart("loaiPhong") @Valid LoaiPhong loaiPhong,
-            @RequestPart(value = "photos", required = false) List<MultipartFile> photos) {
+    public ResponseEntity<APIResponse<LoaiPhong>> create(
+            @RequestPart("loaiPhong") LoaiPhong loaiPhong,
+            @RequestPart(value = "images", required = false) List<MultipartFile> images,
+            @RequestPart(value = "tienNghiIds", required = false) List<String> tienNghiIds,
+            @RequestPart(value = "chiTietGiuongs", required = false) List<ChiTietLoaiGiuongRequest> chiTietGiuongs) {
 
-        APIResponse<LoaiPhong> result = loaiPhongService.save(loaiPhong, photos);
-
-        return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
+        APIResponse<LoaiPhong> response = loaiPhongService.save(loaiPhong, images, tienNghiIds, chiTietGiuongs);
+        return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<APIResponse<LoaiPhong>> update(
             @RequestPart("loaiPhong") @Valid LoaiPhong loaiPhong,
             @RequestPart(value = "oldImages", required = false) String oldImagesJson,
-            @RequestPart(value = "photos", required = false) List<MultipartFile> newPhotos
+            @RequestPart(value = "images", required = false) List<MultipartFile> newPhotos,
+            @RequestPart(value = "tienNghiIds", required = false) List<String> tienNghiIds,
+            @RequestPart(value = "chiTietGiuongs", required = false) List<ChiTietLoaiGiuongRequest> chiTietGiuongs
     ) throws Exception {
-
         List<String> existingImages = new ArrayList<>();
 
         if (oldImagesJson != null && !oldImagesJson.isEmpty()) {
@@ -153,7 +155,7 @@ public class LoaiPhongController {
             );
         }
 
-        APIResponse<LoaiPhong> result = loaiPhongService.update(loaiPhong, existingImages, newPhotos);
+        APIResponse<LoaiPhong> result = loaiPhongService.update(loaiPhong, existingImages, newPhotos, tienNghiIds, chiTietGiuongs);
         return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
     }
 
