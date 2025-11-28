@@ -1,26 +1,23 @@
 package iuh.fit.hotel_booking_backend.controller;
 
-import com.cloudinary.api.ApiResponse;
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.dto.DatPhongRequest;
 import iuh.fit.hotel_booking_backend.dto.DonDatPhongSearchRequest;
 import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
 import iuh.fit.hotel_booking_backend.service.DonDatPhongService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
 import iuh.fit.hotel_booking_backend.entity.TrangThaiDon;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.Console;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,10 +38,12 @@ public class DonDatPhongController {
         this.mailSender = mailSender;
     }
 
-    //Lấy tất cả đơn đặt phòng
     @GetMapping
-    public List<DonDatPhong> getAll() {
-        return donDatPhongService.getAll();
+    public ResponseEntity<Page<DonDatPhong>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size) {
+        Page<DonDatPhong> donDatPhongs = donDatPhongService.getAll(page, size);
+        return ResponseEntity.ok(donDatPhongs);
     }
 
     //Lấy lịch sử đặt phòng theo mã khách hàng
@@ -122,8 +121,6 @@ public class DonDatPhongController {
         } catch (Exception e) {
             System.err.println("Không gửi được email thông báo hủy: " + e.getMessage());
         }
-
-
         return ResponseEntity.ok("Hủy đơn đặt phòng thành công! Hệ thống sẽ hoàn tiền trong vòng 24h.");
     }
 

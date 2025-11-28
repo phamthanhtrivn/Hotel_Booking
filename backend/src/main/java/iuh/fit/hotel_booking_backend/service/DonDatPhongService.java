@@ -12,6 +12,9 @@ import iuh.fit.hotel_booking_backend.repository.DonDatPhongRepository;
 import iuh.fit.hotel_booking_backend.repository.KhachHangRepository;
 import iuh.fit.hotel_booking_backend.repository.PhongRepository;
 import iuh.fit.hotel_booking_backend.util.IdUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,8 +49,9 @@ public class DonDatPhongService {
         this.idUtil = idUtil;
     }
 
-    public List<DonDatPhong> getAll() {
-        return repo.findAll();
+    public Page<DonDatPhong> getAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return repo.findAll(pageable);
     }
 
     public DonDatPhong getById(String id) {

@@ -73,10 +73,9 @@ const BookingItem = ({ booking, onViewDetail }) => {
           </button>
         )}
 
-        {new Date(booking.checkOut).getTime() < Date.now() && (
+        {new Date(booking.checkOut).getTime() < Date.now() && booking.trangThai !== 'DA_HUY' && (
           booking.danhGia ? (
             <button
-              onClick={() => setIsReviewOpen(true)}
               className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-blue-700 hover:bg-blue-100 transition"
             >
               Đã đánh giá
@@ -94,7 +93,7 @@ const BookingItem = ({ booking, onViewDetail }) => {
       </div>
 
 
-      {/* <ReviewModel booking={booking} isOpen={isReviewOpen} onClose={() => setIsReviewOpen(false)} /> */}
+      <ReviewModel booking={booking} isOpen={isReviewOpen} onClose={() => setIsReviewOpen(false)} />
 
 
 
