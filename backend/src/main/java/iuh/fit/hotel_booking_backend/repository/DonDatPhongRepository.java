@@ -74,4 +74,10 @@ public interface DonDatPhongRepository extends JpaRepository<DonDatPhong, String
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
+
+    @Query(value = "SELECT DATEDIFF(check_out, check_in) " +
+            "FROM don_dat_phong " +
+            "WHERE ma_dat_phong = :maDatPhong",
+            nativeQuery = true)
+    Integer getSoDem(@Param("maDatPhong") String maDatPhong);
 }

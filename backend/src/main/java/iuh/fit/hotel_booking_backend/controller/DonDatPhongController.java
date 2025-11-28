@@ -157,6 +157,7 @@ public class DonDatPhongController {
     @PostMapping("/create")
     public ResponseEntity<APIResponse<DonDatPhong>> createBooking(@Valid @RequestBody DatPhongRequest request) {
         APIResponse<DonDatPhong> response = new APIResponse<>();
+        System.out.println(request);
         try {
             DonDatPhong don = donDatPhongService.createBooking(request);
             response.setData(don);

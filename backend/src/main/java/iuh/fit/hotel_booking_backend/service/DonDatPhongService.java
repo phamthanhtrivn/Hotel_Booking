@@ -119,8 +119,27 @@ public class DonDatPhongService {
             DonDatPhong don = donOpt.get();
             if (don.getTrangThai().name().equals("CHUA_THANH_TOAN")) {
                 don.setTrangThai(TrangThaiDon.valueOf("DA_THANH_TOAN"));
+                emailService.sendBookingPaidEmail(don.getEmail(), don.getMaDatPhong());
                 repo.save(don);
             }
+        }
+    }
+
+    public void updateDiemTichLuy(String maDatPhong) {
+        Optional<DonDatPhong> donOpt = repo.findById(maDatPhong);
+        if (donOpt.isPresent()) {
+            DonDatPhong don = donOpt.get();
+            KhachHang khachHang = don.getKhachHang();
+            int diem = khachHang.getDiemTichLuy();
+            if (diem >= 10) {
+                diem %= 10;
+            }
+            else {
+                int soDem = repo.getSoDem(maDatPhong);
+                diem += soDem;
+            }
+            khachHang.setDiemTichLuy(diem);
+            khachHangService.save(khachHang);
         }
     }
 

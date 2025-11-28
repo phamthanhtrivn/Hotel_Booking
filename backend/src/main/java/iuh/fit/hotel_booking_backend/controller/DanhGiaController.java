@@ -76,8 +76,6 @@ public class DanhGiaController {
             request.setNam(nam);
         }
 
-        System.out.println("Search Request: " + request.toString());
-
         try{
             Page<DanhGiaRespone> listDanhGia = danhGiaService.getAllByDanhGia(page, size, request);
             response.setData(listDanhGia);
@@ -96,12 +94,11 @@ public class DanhGiaController {
     @PostMapping("/create")
     public APIResponse<DanhGia> createDanhGia(@RequestBody DanhGiaRequest danhGiaRequest){
         APIResponse<DanhGia> response = new APIResponse<>();
-        System.out.println("Received danh gia: " + danhGiaRequest.toString());
         try {
             DanhGia newDanhGia = danhGiaService.save(danhGiaRequest);
             response.setData(newDanhGia);
             response.setSuccess(true);
-            response.setMessage("Create danh gia successfully");
+            response.setMessage("Đánh giá thành công!");
             return response;
         } catch (Exception e) {
             System.out.println(e);
@@ -110,8 +107,6 @@ public class DanhGiaController {
             return response;
         }
     }
-
-
 
     @PutMapping("/update/{maDanhGia}")
     public APIResponse<DanhGia> updateDanhGia(

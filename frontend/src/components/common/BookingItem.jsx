@@ -1,10 +1,11 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect } from "react";
 import { BedDoubleIcon, UsersIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import ReviewModel from "./ReviewModel";
-import { useState } from 'react';
+import { useState } from "react";
 
-const BookingItem = ({ booking, onViewDetail }) => {
+const BookingItem = ({ booking, onViewDetail, onPay }) => {
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const statusMap = {
     CHUA_THANH_TOAN: { text: "Chưa thanh toán", color: "text-yellow-600" },
@@ -12,14 +13,17 @@ const BookingItem = ({ booking, onViewDetail }) => {
     DA_HUY: { text: "Đã hủy", color: "text-red-600" },
   };
 
-  useEffect(()=>{console.log(booking)}, []);
+  useEffect(() => {
+    console.log(booking);
+  }, []);
 
-  const currentStatus =
-    statusMap[booking.trangThai] || { text: booking.trangThai, color: "text-gray-500" };
+  const currentStatus = statusMap[booking.trangThai] || {
+    text: booking.trangThai,
+    color: "text-gray-500",
+  };
 
   return (
     <div className="grid grid-cols-12 items-center gap-4 py-6 px-4 hover:bg-foreground/5 transition-colors duration-200">
-
       {/* Phòng */}
       <div className="col-span-12 md:col-span-5 flex items-start gap-4">
         <img
@@ -28,7 +32,9 @@ const BookingItem = ({ booking, onViewDetail }) => {
           className="w-32 h-24 object-cover rounded-md"
         />
         <div>
-          <h3 className="text-lg font-medium text-foreground">{booking.tenLoaiPhong}</h3>
+          <h3 className="text-lg font-medium text-foreground">
+            {booking.tenLoaiPhong}
+          </h3>
 
           <div className="text-sm text-foreground/60 flex items-center mt-1">
             <BedDoubleIcon className="w-4 h-4 mr-1" /> {booking.loaiGiuong}
@@ -55,7 +61,6 @@ const BookingItem = ({ booking, onViewDetail }) => {
 
       {/* Hành động */}
       <div className="col-span-12 md:col-span-2 flex flex-col items-end gap-3">
-
         {/* Nút Chi tiết */}
         <button
           onClick={onViewDetail}
@@ -67,17 +72,17 @@ const BookingItem = ({ booking, onViewDetail }) => {
         {/* Nút Thanh toán */}
         {booking.trangThai === "CHUA_THANH_TOAN" && (
           <button
+            onClick={onPay}
             className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-yellow-700 hover:bg-yellow-100 transition"
           >
             Thanh toán
           </button>
         )}
 
-        {new Date(booking.checkOut).getTime() < Date.now() && booking.trangThai !== 'DA_HUY' && (
-          booking.danhGia ? (
-            <button
-              className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-blue-700 hover:bg-blue-100 transition"
-            >
+        {new Date(booking.checkOut).getTime() < Date.now() &&
+          booking.trangThai !== "DA_HUY" &&
+          (booking.danhGia ? (
+            <button className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-blue-700 hover:bg-blue-100 transition">
               Đã đánh giá
             </button>
           ) : (
@@ -87,22 +92,16 @@ const BookingItem = ({ booking, onViewDetail }) => {
             >
               Đánh giá
             </button>
-          )
-        )}
-
+          ))}
       </div>
 
-
-      <ReviewModel booking={booking} isOpen={isReviewOpen} onClose={() => setIsReviewOpen(false)} />
-
-
-
-
+      <ReviewModel
+        booking={booking}
+        isOpen={isReviewOpen}
+        onClose={() => setIsReviewOpen(false)}
+      />
     </div>
-
-
   );
 };
 
 export default BookingItem;
-

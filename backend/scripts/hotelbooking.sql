@@ -19,6 +19,10 @@
 CREATE DATABASE IF NOT EXISTS `hotelbooking` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
 USE `hotelbooking`;
 
+ALTER DATABASE hotelbooking
+    CHARACTER SET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci;
+
 -- Dumping structure for table hotelbooking.chi_tiet_loai_giuong
 CREATE TABLE IF NOT EXISTS `chi_tiet_loai_giuong` (
   `so_giuong` int(11) DEFAULT NULL,
@@ -299,11 +303,11 @@ CREATE TABLE IF NOT EXISTS `khach_hang` (
 -- Dumping data for table hotelbooking.khach_hang: ~9 rows (approximately)
 INSERT INTO `khach_hang` (`ma_khach_hang`, `diem_tich_luy`, `ho_ten_khach_hang`, `so_dien_thoai`) VALUES
 	('KH0X07NXEF7G', 0, 'Hà Thanh Tuấn', '0367155132'),
-	('KH1', 500, 'Nguyễn Văn A', '0901234567'),
-	('KH2', 300, 'Hà Thanh Tuấn', '0367155132'),
-	('KH3', 800, 'Nguyễn Văn B', '0912345678'),
+	('KH1', 5, 'Nguyễn Văn A', '0901234567'),
+	('KH2', 3, 'Hà Thanh Tuấn', '0367155132'),
+	('KH3', 8, 'Nguyễn Văn B', '0912345678'),
 	('KH308EUY9C2F', 0, 'Hà Thanh Tuấn', '0367155132'),
-	('KH4', 600, 'Nguyễn Văn C', '0923456789'),
+	('KH4', 6, 'Nguyễn Văn C', '0923456789'),
 	('KH5B58BRLYL3', 0, 'Hà Thanh Tuấn', '0367155132'),
 	('KHT4ZJ524GG2', 0, 'Hà Thanh Tuấn', '0367155132'),
 	('KHXN768S7ZH5', 0, 'Hà Thanh Tuấn', '0367155132');

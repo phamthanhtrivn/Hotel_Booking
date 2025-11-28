@@ -264,7 +264,7 @@ const Payment = () => {
                           {checkInFormated.dayName}
                         </p>
                         <p className="text-sm text-gray-500 mt-1">
-                          Check-in: 14:00
+                          Check-in: 13:00
                         </p>
                       </div>
                       <div className="bg-white rounded-lg p-3 shadow-sm">
@@ -275,7 +275,7 @@ const Payment = () => {
                           {checkOutFormated.dayName}
                         </p>
                         <p className="text-sm text-gray-500 mt-1">
-                          Check-out: 12:00
+                          Check-out: 12:30
                         </p>
                       </div>
                     </div>

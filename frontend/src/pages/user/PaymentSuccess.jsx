@@ -61,10 +61,10 @@ const PaymentSuccess = () => {
           Khách hàng: <span className="font-semibold">{booking.hoTenKhachHang}</span>
         </div>
         <Button
-          onClick={() => navigate("/room-types")}
+          onClick={() => navigate("/account/booking-history")}
           className="w-full bg-[#1E2A38] hover:bg-[#2B3B4E] cursor-pointer"
         >
-          Quay lại đặt phòng
+          Xem lịch sử đơn đặt phòng
         </Button>
       </Card>
     </div>

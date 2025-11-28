@@ -56,6 +56,7 @@ public class PaymentService {
         String bookingId = request.getParameter("vnp_TxnRef");
         try {
             if (responseCode.equals("00")) {
+                donDatPhongService.updateDiemTichLuy(bookingId);
                 donDatPhongService.updateStatusPaymentSuccess(bookingId);
                 response.sendRedirect(frontendUrl + "/payment/success?bookingId=" + bookingId);
             } else {
@@ -109,6 +110,7 @@ public class PaymentService {
         String bookingId = request.getParameter("orderId");
         try {
             if (resultCode.equals("0")) {
+                donDatPhongService.updateDiemTichLuy(bookingId);
                 donDatPhongService.updateStatusPaymentSuccess(bookingId);
                 response.sendRedirect(frontendUrl + "/payment/success?bookingId=" + bookingId);
             } else {

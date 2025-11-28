@@ -13,7 +13,11 @@ import HotelLogo from "@/assets/hotelLogo/HotelLogo.jpg";
 import { Button } from "@/components/ui/button";
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { calculateNights, formatVietnameseDate } from "@/helpers/dateHelpers";
+import {
+  calculateNights,
+  formatVietnameseDate,
+  toLocalDate,
+} from "@/helpers/dateHelpers";
 import { formatVND } from "@/helpers/currencyFormatter";
 import { AuthContext } from "@/context/AuthContext";
 import { donDatPhongService } from "@/services/donDatPhongService";
@@ -91,14 +95,15 @@ const Booking = () => {
         soDienThoai: phone,
         maLoaiPhong: maLoaiPhong,
         email: email,
-        checkIn: checkIn,
-        checkOut: checkOut,
+        checkIn: toLocalDate(checkIn),
+        checkOut: toLocalDate(checkOut),
         tongTien: stayPrice,
         vat: vat,
         tongTienThanhToan: totalPrice,
         ghiChu: additionalInformation,
         agreed: agreed,
       };
+      console.log(bookingRequest);
       const result = await donDatPhongService.datPhong(bookingRequest);
       console.log(result.data);
       setLoading(false);
@@ -124,7 +129,11 @@ const Booking = () => {
           </div>
           <form className="grid gap-4 p-4">
             <div>
-              <InputGroup className={`py-2 ${errors.hoTenKhachHang && 'border-destructive'}`}>
+              <InputGroup
+                className={`py-2 ${
+                  errors.hoTenKhachHang && "border-destructive"
+                }`}
+              >
                 <InputGroupInput
                   value={customerName}
                   onChange={onCustomerNameChange}
@@ -143,7 +152,9 @@ const Booking = () => {
             </div>
 
             <div>
-              <InputGroup className={`py-2 ${errors.email && 'border-destructive'}`}>
+              <InputGroup
+                className={`py-2 ${errors.email && "border-destructive"}`}
+              >
                 <InputGroupInput
                   placeholder="Email"
                   name="email"
@@ -160,7 +171,9 @@ const Booking = () => {
             </div>
 
             <div>
-              <InputGroup className={`py-2 ${errors.soDienThoai && 'border-destructive'}`}>
+              <InputGroup
+                className={`py-2 ${errors.soDienThoai && "border-destructive"}`}
+              >
                 <InputGroupInput
                   placeholder="Số điện thoại"
                   name="phone"
