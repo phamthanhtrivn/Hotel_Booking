@@ -333,3 +333,55 @@ export const roomTypeOptionDummyData = [
   "King Bed",
   "Twin Bed",
 ];
+
+export const quyDinhDieuKhoan = [
+  {
+    title: "Đặt phòng",
+    content: [
+      "Khách hàng cần cung cấp thông tin cá nhân chính xác (họ tên, số điện thoại, email).",
+      "Thanh toán đầy đủ để giữ phòng.",
+    ]
+  },
+  {
+    title: "Hủy đặt phòng phòng",
+    content: [
+      "Thời gian hủy phải trước thời gian checkin tối thiểu 24h, sau thời gian đó mọi yêu cầu không được giải quyết.",
+      "Khách hàng không đến vì một lý do nào đó phải chịu mất tiền cọc."
+    ]
+  },
+  {
+    title: "Thời gian nhận – trả phòng",
+    content: [
+      "Nhận phòng (check-in) từ 13:00.",
+      "Trả phòng (check-out) trước 12:30.",
+    ]
+  },
+  {
+    title: "Chính sách thanh toán",
+    content: [
+      "Chấp nhận thanh toán bằng thẻ hoặc các hình thức điện tử (Momo, VNPay,...).",
+      "Được bao gồm 8 % Thuế GTGT được bao gồm 5 % Phí dịch vụ ",
+    ]
+  },
+  {
+    title: "Giấy tờ khi nhận phòng",
+    content: [
+      "Xuất trình CMND/CCCD hoặc hộ chiếu khi nhận phòng.",
+      "Khách nước ngoài cần khai báo tạm trú theo quy định."
+    ]
+  },
+  {
+    title: "Quy định về an toàn",
+    content: [
+      "Cấm mang chất cấm, vũ khí, vật dễ cháy nổ vào khách sạn.",
+      "Tuân thủ hướng dẫn an toàn trong các trường hợp khẩn cấp."
+    ]
+  },
+  {
+    title: "Chính sách bảo mật thông tin",
+    content: [
+      "Khách sạn cam kết bảo mật thông tin cá nhân của khách hàng.",
+      "Thông tin chỉ được chia sẻ khi có sự đồng ý của khách hoặc theo yêu cầu pháp lý."
+    ]
+  }
+];

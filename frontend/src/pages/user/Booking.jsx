@@ -18,6 +18,8 @@ import { formatVND } from "@/helpers/currencyFormatter";
 import { AuthContext } from "@/context/AuthContext";
 import { donDatPhongService } from "@/services/donDatPhongService";
 import { toast } from "react-toastify";
+import InformationDialog from "@/components/common/InformationDialog";
+import { quyDinhDieuKhoan } from "@/assets/assets";
 
 const Booking = () => {
   const { user } = useContext(AuthContext);
@@ -46,6 +48,7 @@ const Booking = () => {
   const [agreed, setAgreed] = useState(false);
   const [errors, setErrors] = useState([]);
   const [isLoading, setLoading] = useState(false);
+  const [openQuyDinh, setOpenQuyDinh] = useState(false);
   const vat = 8;
 
   useEffect(() => {
@@ -79,45 +82,8 @@ const Booking = () => {
     setAgreed(checked);
   };
 
-  const bookingValidation = () => {
-    const errors = {};
-
-    if (!customerName.trim()) {
-      errors.customerName = "Họ và tên không được để trống";
-    } else if (customerName.trim().length < 2) {
-      errors.customerName = "Họ và tên phải có ít nhất 2 ký tự";
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.trim()) {
-      errors.email = "Email không được để trống";
-    } else if (!emailRegex.test(email)) {
-      errors.email = "Email không đúng định dạng";
-    }
-
-    const phoneRegex = /^(0|\+84)(\d{9})$/;
-    if (!phone.trim()) {
-      errors.phone = "Số điện thoại không được để trống";
-    } else if (!phoneRegex.test(phone)) {
-      errors.phone = "Số điện thoại không hợp lệ";
-    }
-
-    if (!agreed) {
-      errors.agreed = "Bạn phải đồng ý với điều khoản";
-    }
-
-    return errors;
-  };
-
   const handleOnBook = async () => {
     setLoading(true);
-    const validationErrors = bookingValidation();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      setLoading(false);
-      return;
-    }
-    setErrors({});
     try {
       const bookingRequest = {
         maKhachHang: user != null ? user.khachHang.maKhachHang : "",
@@ -131,16 +97,18 @@ const Booking = () => {
         vat: vat,
         tongTienThanhToan: totalPrice,
         ghiChu: additionalInformation,
+        agreed: agreed,
       };
       const result = await donDatPhongService.datPhong(bookingRequest);
+      console.log(result.data);
       setLoading(false);
       toast.success(
         "Đặt phòng thành công. Mã đơn đặt phòng: " + result.data.maDatPhong
       );
       navigate("/payment", { state: { maDatPhong: result.data.maDatPhong } });
     } catch (error) {
-      console.error("Lỗi khi đặt phòng:", error);
-      toast.error("Có lỗi xảy ra khi đặt phòng. Vui lòng thử lại.");
+      console.log(error.response.data.data);
+      setErrors(error.response.data.data);
       setLoading(false);
     }
   };
@@ -155,48 +123,60 @@ const Booking = () => {
             <h2 className="text-3xl p-4">Thông tin khách hàng</h2>
           </div>
           <form className="grid gap-4 p-4">
-            <InputGroup className="py-2">
-              <InputGroupInput
-                value={customerName}
-                onChange={onCustomerNameChange}
-                placeholder="Họ và tên khách hàng"
-                name="fullName"
-              />
-              <InputGroupAddon>
-                <User />
-              </InputGroupAddon>
-            </InputGroup>
-            {errors.customerName && (
-              <p className="text-red-500 text-sm">{errors.customerName}</p>
-            )}
-            <InputGroup className="py-2">
-              <InputGroupInput
-                placeholder="Email"
-                name="email"
-                value={email}
-                onChange={onEmailChange}
-              />
-              <InputGroupAddon>
-                <Mail />
-              </InputGroupAddon>
-            </InputGroup>
-            {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email}</p>
-            )}
-            <InputGroup>
-              <InputGroupInput
-                placeholder="Số điện thoại"
-                name="phone"
-                value={phone}
-                onChange={onPhoneChange}
-              />
-              <InputGroupAddon>
-                <Phone />
-              </InputGroupAddon>
-            </InputGroup>
-            {errors.phone && (
-              <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
-            )}
+            <div>
+              <InputGroup className={`py-2 ${errors.hoTenKhachHang && 'border-destructive'}`}>
+                <InputGroupInput
+                  value={customerName}
+                  onChange={onCustomerNameChange}
+                  placeholder="Họ và tên khách hàng"
+                  name="fullName"
+                />
+                <InputGroupAddon>
+                  <User />
+                </InputGroupAddon>
+              </InputGroup>
+              {errors.hoTenKhachHang && (
+                <p className="text-red-500 text-[13px] pt-1">
+                  {errors.hoTenKhachHang}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <InputGroup className={`py-2 ${errors.email && 'border-destructive'}`}>
+                <InputGroupInput
+                  placeholder="Email"
+                  name="email"
+                  value={email}
+                  onChange={onEmailChange}
+                />
+                <InputGroupAddon>
+                  <Mail />
+                </InputGroupAddon>
+              </InputGroup>
+              {errors.email && (
+                <p className="text-red-500 text-[13px] pt-1">{errors.email}</p>
+              )}
+            </div>
+
+            <div>
+              <InputGroup className={`py-2 ${errors.soDienThoai && 'border-destructive'}`}>
+                <InputGroupInput
+                  placeholder="Số điện thoại"
+                  name="phone"
+                  value={phone}
+                  onChange={onPhoneChange}
+                />
+                <InputGroupAddon>
+                  <Phone />
+                </InputGroupAddon>
+              </InputGroup>
+              {errors.soDienThoai && (
+                <p className="text-red-500 text-[13px] pt-1">
+                  {errors.soDienThoai}
+                </p>
+              )}
+            </div>
           </form>
         </div>
 
@@ -216,8 +196,8 @@ const Booking = () => {
         </div>
 
         {/* Payment */}
-        <div className="border-[1px] rounded-md">
-          <div className="w-full border-b-[2px]">
+        <div className="border rounded-md">
+          <div className="w-full border-b-2">
             <h2 className="text-3xl m-4">Thanh toán</h2>
           </div>
           <div className="p-4 space-y-5">
@@ -227,13 +207,22 @@ const Booking = () => {
                 checked={agreed}
                 onCheckedChange={onCustomerAgree}
               />
-              <Label>Tôi đồng ý với những điều khoản và quy định.</Label>
-              {errors.agreed && (
-                <p className="text-red-500 text-sm">{errors.agreed}</p>
-              )}
+              <Label>
+                Tôi đồng ý với những{" "}
+                <a
+                  onClick={() => setOpenQuyDinh(true)}
+                  className="text-blue-700 hover:cursor-pointer"
+                >
+                  điều khoản và quy định
+                </a>
+                .
+              </Label>
             </div>
+            {errors.agreed && (
+              <p className="text-red-500 text-sm">{errors.agreed}</p>
+            )}
 
-            <hr className="border-1" />
+            <hr className="border" />
 
             <div className="flex justify-between items-center">
               <Label className="text-lg">Pay with</Label>
@@ -276,7 +265,7 @@ const Booking = () => {
       <div
         className="
           w-full md:w-1/4
-          bg-background border-[1px] rounded-md pb-3
+          bg-background border rounded-md pb-3
           md:sticky md:top-8
           h-fit
         "
@@ -354,7 +343,7 @@ const Booking = () => {
           <div className="px-3 py-2">
             <p>Taxes</p>
             <div className="flex justify-between ml-2">
-              <p className="text-gray-500 text-[14px]">VAT</p>
+              <p className="text-gray-500 text-[14px]">VAT 8%</p>
               <p className="text-gray-500 text-[14px]">
                 {formatVND(stayPrice * (vat / 100))}
               </p>
@@ -367,6 +356,26 @@ const Booking = () => {
           </div>
         </div>
       </div>
+      <InformationDialog
+        onClose={() => setOpenQuyDinh(false)}
+        className="min-w-xl"
+        open={openQuyDinh}
+        title="Điều khoản và quy định của chúng tôi"
+        children={
+          <div className="space-y-1">
+            {quyDinhDieuKhoan.map((item) => (
+              <div>
+                <p className="font-semibold my-3">{item.title}</p>
+                <div className="space-y-1">
+                  {item.content.map((item) => (
+                    <p className="text-[14px]">{item}</p>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        }
+      />
     </div>
   );
 };

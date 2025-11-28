@@ -445,7 +445,7 @@ const RoomTypeManagement = () => {
       <EditCreateDialog
         loading={loading}
         onSubmit={handleSubmit}
-        className="max-h-[100vh] overflow-y-auto hide-scrollbar"
+        className="max-h-screen overflow-y-auto hide-scrollbar"
         title="Cập nhật loại phòng"
         open={isEditModal}
         onClose={onClose}
