@@ -124,7 +124,8 @@ public class LoaiPhongController {
 
         return ResponseEntity.ok(result);
     }
-    
+
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<APIResponse<LoaiPhong>> create(
             @Valid @RequestPart("loaiPhong") LoaiPhong loaiPhong,
