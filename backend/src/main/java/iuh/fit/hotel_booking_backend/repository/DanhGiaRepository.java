@@ -1,4 +1,5 @@
 package iuh.fit.hotel_booking_backend.repository;
+import iuh.fit.hotel_booking_backend.dto.FeedbackDTO;
 import iuh.fit.hotel_booking_backend.entity.DanhGia;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -61,4 +62,11 @@ public interface DanhGiaRepository extends JpaRepository<DanhGia, String> {
 
     @Query("select distinct YEAR(d.thoiGianDanhGia) from DanhGia d order by YEAR(d.thoiGianDanhGia) desc")
     List<Integer> findDistinctYears();
+
+    @Query("SELECT new iuh.fit.hotel_booking_backend.dto.FeedbackDTO(" +
+            "dg.maDanhGia, dg.diemSachSe, dg.diemDichVu, dg.diemCoSoVatChat, " +
+            "dg.binhLuan, dg.loaiPhong.tenLoaiPhong, dg.thoiGianDanhGia) " +
+            "FROM DanhGia dg ORDER BY dg.thoiGianDanhGia DESC")
+    List<FeedbackDTO> findRecentFeedbacks(Pageable pageable);
+
 }

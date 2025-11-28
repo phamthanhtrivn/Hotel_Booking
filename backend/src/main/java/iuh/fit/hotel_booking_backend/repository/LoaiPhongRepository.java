@@ -37,4 +37,9 @@ public interface LoaiPhongRepository extends JpaRepository<LoaiPhong, String>, J
 
     List<LoaiPhongDropdownProjection> findAllProjectedBy();
 
+    // Lấy tổng số phòng theo từng loại phòng
+    @Query("SELECT p.loaiPhong.maLoaiPhong, COUNT(p) FROM Phong p GROUP BY p.loaiPhong.maLoaiPhong")
+    List<Object[]> countTotalByRoomType();
+
+
 }

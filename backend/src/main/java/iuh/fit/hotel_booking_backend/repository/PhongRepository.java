@@ -37,5 +37,10 @@ public interface PhongRepository extends JpaRepository<Phong, String>, JpaSpecif
             Pageable pageable
     );
 
+    @Query("SELECT COUNT(p) FROM Phong p")
+    long countTotalRooms();
+
+
+
     boolean existsByLoaiPhongMaLoaiPhong(String maLoaiPhong);
 }
