@@ -5,16 +5,25 @@ import { formatVND } from "@/helpers/currencyFormatter";
 const RoomTypeCard = ({ room, onDetail }) => {
   return (
     <section className="w-full bg-foreground text-background font-sans overflow-x-hidden">
-      <div className="flex flex-col lg:flex-row w-full max-w-none mx-auto h-[500px] shadow-xl overflow-hidden">
+      <div className=" flex flex-col lg:flex-row w-full max-w-none mx-auto h-[500px] shadow-xl overflow-hidden">
         {/* Cột trái - thông tin phòng */}
-        <div className="w-full lg:w-1/3 bg-[var(--color-background)] text-background p-8 sm:p-12 lg:p-16 flex flex-col justify-center space-y-6">
+        <div className="relative w-full lg:w-1/3 bg-(--color-background) text-background p-8 sm:p-12 lg:p-16 flex flex-col justify-center space-y-6">
+          <div className="absolute w-full top-0 left-0 bg-(--color-primary)">
+            <p className="ml-5 text-xl ">
+              {room.soPhongTrong == 0
+                ? "Đã hết phòng"
+                : room.soPhongTrong <= 3
+                ? `Chỉ còn ${room.soPhongTrong} phòng`
+                : ""}
+            </p>
+          </div>
           <div>
             <h2 className="text-3xl sm:text-4xl tracking-tight mb-2">
               {room.tenLoaiPhong}
             </h2>
             <p className="text-background/60 text-xl uppercase">GIÁ</p>
             <p className="text-background text-3xl font-light mt-1">
-              {formatVND(room.gia)} 
+              {formatVND(room.gia)}
             </p>
           </div>
 

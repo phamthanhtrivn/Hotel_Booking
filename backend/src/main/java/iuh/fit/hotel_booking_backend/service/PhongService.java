@@ -7,9 +7,11 @@ import iuh.fit.hotel_booking_backend.entity.Phong;
 import iuh.fit.hotel_booking_backend.helper.PhongSpecification;
 import iuh.fit.hotel_booking_backend.repository.PhongRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -20,9 +22,17 @@ public class PhongService {
         this.repo = repo;
     }
 
-    public Phong getAvailableRoomByRoomType(String idLoaiPhong) {
-        return repo.findFirstAvailableRoomNative(idLoaiPhong)
-                .orElse(null);
+    public Phong getAvailableRoomByRoomType(String idLoaiPhong, LocalDateTime checkIn, LocalDateTime checkOut) throws Exception {
+        List<Phong> rooms = repo.findAvailableRoomsForUpdate(
+                idLoaiPhong,
+                checkIn,
+                checkOut,
+                PageRequest.of(0, 1)
+        );
+        if (rooms.isEmpty()) {
+            throw new Exception("Phòng không còn trống");
+        }
+        return rooms.get(0);
     }
 
     public Page<Phong> searchPhong(PhongFilter filter, Pageable pageable) {

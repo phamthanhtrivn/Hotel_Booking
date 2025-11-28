@@ -38,6 +38,9 @@ import {
 
 import { PiHairDryer } from "react-icons/pi";
 
+import { CgSmartHomeRefrigerator } from "react-icons/cg";
+
+
 import { 
   BiCabinet,
   BiFridge,
@@ -55,7 +58,7 @@ export const iconMap = {
   // Đồ điện tử
   'snowflake': LucideAirVent,
   'wind': FaWind,
-  'fridge': BiFridge,
+  'fridge': CgSmartHomeRefrigerator,
   'hair-dryer': PiHairDryer,
   'ac-unit': MdAcUnit,
   

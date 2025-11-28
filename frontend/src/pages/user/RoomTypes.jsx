@@ -68,7 +68,7 @@ const RoomTypes = () => {
         maxDienTich: null,
         maGiuong: null,
       };
-            
+      
       const response = await fetch(
         `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong/search`,
         {
@@ -81,6 +81,8 @@ const RoomTypes = () => {
       if (!response.ok) throw new Error("Search failed");
       const data = await response.json();
       setRoomTypes(data);
+
+      console.log(data)
 
       if (roomSectionRef.current) {
         roomSectionRef.current.scrollIntoView({ behavior: "smooth" });

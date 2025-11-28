@@ -60,10 +60,10 @@ export default function SearchBar({ filters, setFilters, handleSearch }) {
           className="border rounded-md px-3.5 py-1 cursor-pointer flex items-center justify-between"
         >
           <div>
-            <label className="font-[500] text-xs text-gray-500">
+            <label className="font-medium text-xs text-gray-500">
               Check-in / Check-out
             </label>
-            <p className="font-[500]">
+            <p className="font-medium">
               {range.startDate.toLocaleDateString("vi-VN")} –{" "}
               {range.endDate.toLocaleDateString("vi-VN")}
             </p>
@@ -106,10 +106,10 @@ export default function SearchBar({ filters, setFilters, handleSearch }) {
         >
           <RoomSelectTrigger className="h-[59px] cursor-pointer">
             <div className="w-full flex flex-col items-start">
-              <label className="font-[500] text-xs text-gray-500">
+              <label className="font-medium text-xs text-gray-500">
                 Loại phòng
               </label>
-              <p className="font-[500]">{selectedRoomType != "ALL" ? selectedRoomType : "Tất cả loại phòng"}</p>
+              <p className="font-medium">{selectedRoomType != "ALL" ? selectedRoomType : "Tất cả loại phòng"}</p>
             </div>
           </RoomSelectTrigger>
 
@@ -127,7 +127,7 @@ export default function SearchBar({ filters, setFilters, handleSearch }) {
 
       {/* Search button */}
       <Button
-        className="h-[59px] font-semibold hover:font-bold hover:bg-[var(--color-accent)] bg-[var(--color-primary)] sm:w-full md:w-[200px] hover:cursor-pointer"
+        className="h-[59px] font-semibold hover:font-bold hover:bg-(--color-accent) bg-(--color-primary) sm:w-full md:w-[200px] hover:cursor-pointer"
         onClick={() =>
           handleSearch({
             ...filters,

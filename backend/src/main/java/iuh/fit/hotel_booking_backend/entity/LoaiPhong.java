@@ -2,8 +2,7 @@ package iuh.fit.hotel_booking_backend.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,24 +19,38 @@ public class LoaiPhong {
     @Id
     @Column(name = "ma_loai_phong")
     private String maLoaiPhong;
-    @NotBlank
+
+    @NotBlank(message = "Hãy nhập tên phòng")
+    @Pattern(regexp = "^(Standard|Delux|Family|Suite)\\s+\\w+(?:\\s+\\w+)*$", message = "Phải bắt đầu là Standard, Delux, Family hoặc Suite và có 2 từ trở lên")
     @Column(name = "ten_loai_phong", nullable = false, unique = true)
     private String tenLoaiPhong;
 
-    @Min(value = 25, message = "Diên tích phải lớn hơn 25 m2")
+    @NotNull(message = "Hãy nhập diện tích")
+    @Min(value = 20, message = "Diên tích tối thiểu là 20 \\(m^{2}\\)")
     @Column(name = "dien_tich")
     private double dienTich;
+
+    @NotNull(message = "Hãy nhập số khách")
+    @Min(value = 1, message = "Mỗi phòng phục vụ 1 - 6 khách")
+    @Max(value = 6, message = "Mỗi phòng phục vụ 1 - 6 khách")
     @Column(name = "so_khach")
     private int soKhach;
+
+    @NotNull(message = "Hãy nhập giá")
+    @Min(value = 100000, message = "Giá tổi thiểu là 100000")
     @Column(name = "gia")
     private double gia;
+
     @ElementCollection
     @CollectionTable(
             name = "hinh_anh",
             joinColumns = @JoinColumn(name = "ma_loai_phong")
     )
+
+    @NotEmpty(message = "Vui lòng thêm hình")
     @Column(name = "url")
     private List<String> hinhAnh;
+
     @Column(name = "mo_ta", columnDefinition = "TEXT")
     private String moTa;
 
@@ -52,6 +65,7 @@ public class LoaiPhong {
     @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Phong> phongList = new ArrayList<>();
+
     @Column(name = "tinh_trang")
     private boolean tinhTrang;
 }

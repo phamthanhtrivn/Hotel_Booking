@@ -13,6 +13,7 @@ import iuh.fit.hotel_booking_backend.repository.KhachHangRepository;
 import iuh.fit.hotel_booking_backend.repository.PhongRepository;
 import iuh.fit.hotel_booking_backend.util.IdUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -73,7 +74,13 @@ public class DonDatPhongService {
         return repo.findAll(DonDatPhongSpecification.build(req));
     }
 
+    @Transactional
     public DonDatPhong createBooking(DatPhongRequest req) throws Exception {
+        LocalDateTime checkInTime = req.checkIn.atTime(13, 0);
+        LocalDateTime checkOutTime = req.checkOut.atTime(12, 30);
+        Phong phong = phongService.getAvailableRoomByRoomType(
+                req.maLoaiPhong, checkInTime, checkOutTime
+        );
         DonDatPhong don = new DonDatPhong();
         don.setMaDatPhong(idUtil.generateUniqueCodeForDonDatPhong());
 
@@ -83,15 +90,13 @@ public class DonDatPhongService {
         don.setEmail(req.email);
         don.setKhachHang(khachHang);
 
-        Phong phong = phongService.getAvailableRoomByRoomType(req.maLoaiPhong);
-        if (phong == null) throw new Exception("Phòng không tồn tại");
         don.setPhong(phong);
 
         if (req.checkIn.isAfter(req.checkOut)) {
             throw new Exception("Ngày check-in/check-out không hợp lệ");
         }
-        don.setCheckIn(req.checkIn.atTime(12, 30));
-        don.setCheckOut(req.checkOut.atTime(13, 0));
+        don.setCheckIn(checkInTime);
+        don.setCheckOut(checkOutTime);
 
         don.setTongTien(req.tongTien);
         don.setVAT(req.vat);

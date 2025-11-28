@@ -29,14 +29,13 @@ const AmenityManagement = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [openDetail, setOpenDetail] = useState(false);
   const [currentAmenity, setCurrentAmenity] = useState(null);
-  const [formData, setFormData] = useState({ name: "", status: true });
+  const [formData, setFormData] = useState({ name: "", type: "", icon: "",status: true });
   const rowsPerPage = 10;
   const [nameError, setNameError] = useState("");
 
   const fetchAmenities = async () => {
     try {
       const res = await axios.get(baseUrl + "/api/tiennghi");
-
       if (res.data.success) {
         setAmenities(res.data.data);
       } else {
@@ -68,6 +67,8 @@ const AmenityManagement = () => {
           {
             tenTienNghi: formData.name,
             tinhTrang: formData.status,
+            icon: formData.icon,
+            loaiTienNghi: formData.type
           }
         );
         if (res.data.success) {
@@ -129,6 +130,8 @@ const AmenityManagement = () => {
     setFormData({
       name: item.tenTienNghi || "",
       status: item.tinhTrang ?? true,
+      icon: item.icon || "",
+      type: item.loaiTienNghi || ""
     });
     setOpenModal(true);
   };
@@ -286,7 +289,28 @@ const AmenityManagement = () => {
           {nameError && (
             <div className="text-red-600 text-sm mt-1">{nameError}</div>
           )}
-
+          <div className="mt-3">
+            <label>Loại tiện nghi</label>
+            <Select
+              value={String(formData.type)}
+              onValueChange={(v) =>
+                setFormData({ ...formData, type: v })
+              }
+            >
+              <SelectTrigger className="mt-2">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Mạng Internet và điện thoại">Mạng Internet và điện thoại</SelectItem>
+                <SelectItem value="Nhà tắm">Nhà tắm</SelectItem>
+                <SelectItem value="Đồ nội thất">Đồ nội thấtĐồ nội thất</SelectItem>
+                <SelectItem value="Đồ điện tử">Đồ điện tử</SelectItem>
+                <SelectItem value="Hình ảnh/âm thanh">Hình ảnh/âm thanh</SelectItem>
+                <SelectItem value="Khu vực ngoài trời">Khu vực ngoài trời</SelectItem>
+                <SelectItem value="Khác">Khác</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           {currentAmenity && (
             <div className="mt-3">
               <label>Trạng thái</label>

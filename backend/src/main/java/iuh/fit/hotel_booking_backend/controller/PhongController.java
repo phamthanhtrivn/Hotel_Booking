@@ -25,29 +25,6 @@ public class PhongController {
         this.phongService = phongService;
     }
 
-    @GetMapping("/get-available-room-by-room-type/{id}")
-    public ResponseEntity<APIResponse<Phong>> getAvailableRoomByRoomType(@PathVariable String id) {
-        APIResponse<Phong> response = new APIResponse<>();
-        try {
-            Phong phong = phongService.getAvailableRoomByRoomType(id);
-            if (phong == null) {
-                response.setMessage("Không tìm thấy phòng trống cho loại phòng này");
-                response.setSuccess(false);
-            } else {
-                response.setData(phong);
-                response.setMessage("Tìm thấy phòng!");
-                response.setSuccess(true);
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            response.setMessage("Lỗi khi tìm phòng phù hợp.");
-            response.setSuccess(false);
-            return ResponseEntity.status(500).body(response);
-        }
-
-        return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
-    }
-
     @PostMapping("/search")
     public ResponseEntity<APIResponse<Page<Phong>>> search(
             @RequestBody PhongFilter filter,

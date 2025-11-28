@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,11 +124,10 @@ public class LoaiPhongController {
 
         return ResponseEntity.ok(result);
     }
-
-
+    
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<APIResponse<LoaiPhong>> create(
-            @RequestPart("loaiPhong") LoaiPhong loaiPhong,
+            @Valid @RequestPart("loaiPhong") LoaiPhong loaiPhong,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @RequestPart(value = "tienNghiIds", required = false) List<String> tienNghiIds,
             @RequestPart(value = "chiTietGiuongs", required = false) List<ChiTietLoaiGiuongRequest> chiTietGiuongs) {
@@ -176,8 +176,8 @@ public class LoaiPhongController {
 
     @GetMapping("/search")
     public ResponseEntity<List<LoaiPhongDTO>> searchAdvancedGet(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime checkIn,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime checkOut,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate checkIn,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate checkOut,
             @RequestParam(required = false) String tenLoaiPhong,
             @RequestParam(required = false) Integer soKhach,
             @RequestParam(required = false) Double minGia,
@@ -194,8 +194,11 @@ public class LoaiPhongController {
             }
         }
 
+        LocalDateTime checkInDateTime = checkIn != null ? checkIn.atTime(13, 0) : null;
+        LocalDateTime checkOutDateTime = checkOut != null ? checkOut.atTime(12, 30) : null;
+
         List<LoaiPhongDTO> result = loaiPhongService.searchAdvancedDTO(
-                checkIn, checkOut,
+                checkInDateTime, checkOutDateTime,
                 tenLoaiPhong, soKhach, treEm,
                 minGia, maxGia,
                 minDienTich, maxDienTich,
