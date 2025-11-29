@@ -33,10 +33,14 @@ const BookingHistory = () => {
             import.meta.env.VITE_BASE_API_URL
           }/api/dondatphong/lichsu/${maKhachHang}`
         );
+
+       
+      
         if (!response.ok) {
           throw new Error("Không thể tải dữ liệu đặt phòng");
         }
         const data = await response.json();
+
         const sortedData = data.sort(
           (a, b) => new Date(b.ngayTao) - new Date(a.ngayTao)
         );

@@ -93,6 +93,10 @@ public class DanhGiaController {
 
     @PostMapping("/create")
     public APIResponse<DanhGia> createDanhGia(@RequestBody DanhGiaRequest danhGiaRequest){
+
+
+        System.out.println(danhGiaRequest.toString());
+
         APIResponse<DanhGia> response = new APIResponse<>();
         try {
             DanhGia newDanhGia = danhGiaService.save(danhGiaRequest);

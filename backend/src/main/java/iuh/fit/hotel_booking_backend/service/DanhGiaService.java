@@ -45,7 +45,7 @@ public class DanhGiaService {
         if(dg != null){
             cnt = Integer.parseInt(dg.getMaDanhGia().substring(dg.getMaDanhGia().length() - 3));
         }
-        String maDG = "DG" + String.format("%04d", cnt + 1);
+        String maDG = "DG" + String.format("%03d", cnt + 1);
 
         newDanhGia.setMaDanhGia(maDG);
         newDanhGia.setThoiGianDanhGia(LocalDateTime.now());

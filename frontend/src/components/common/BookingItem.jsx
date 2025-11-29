@@ -13,10 +13,6 @@ const BookingItem = ({ booking, onViewDetail, onPay }) => {
     DA_HUY: { text: "Đã hủy", color: "text-red-600" },
   };
 
-  useEffect(() => {
-    console.log(booking);
-  }, []);
-
   const currentStatus = statusMap[booking.trangThai] || {
     text: booking.trangThai,
     color: "text-gray-500",
@@ -81,7 +77,7 @@ const BookingItem = ({ booking, onViewDetail, onPay }) => {
 
         {new Date(booking.checkOut).getTime() < Date.now() &&
           booking.trangThai !== "DA_HUY" &&
-          (booking.danhGia ? (
+          (booking.danhGia && Object.keys(booking.danhGia).length > 0 ? (
             <button className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-blue-700 hover:bg-blue-100 transition">
               Đã đánh giá
             </button>

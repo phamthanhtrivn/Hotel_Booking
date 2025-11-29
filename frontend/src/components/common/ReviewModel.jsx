@@ -10,7 +10,7 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
     diemDichVu: 10,
     diemCoSoVatChat: 10,
     binhLuan: "",
-    maLoaiPhong: booking.maLoaiPhong,
+    maLoaiPhong: booking.phong.loaiPhong.maLoaiPhong,
     maDatPhong: booking.maDatPhong,
   });
   const baseUrl = import.meta.env.VITE_BASE_API_URL;
