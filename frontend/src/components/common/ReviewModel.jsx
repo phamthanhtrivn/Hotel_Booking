@@ -5,19 +5,24 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 
 export default function ReviewModel({ booking, isOpen, onClose }) {
+  const hasReview = booking.danhGia && Object.keys(booking.danhGia).length > 0;
   const [danhGia, setDanhGia] = useState({
-    diemSachSe: 10,
-    diemDichVu: 10,
-    diemCoSoVatChat: 10,
-    binhLuan: "",
+    diemSachSe: hasReview ? booking.danhGia.diemSachSe : 10,
+    diemDichVu: hasReview ? booking.danhGia.diemDichVu : 10,
+    diemCoSoVatChat: hasReview ? booking.danhGia.diemCoSoVatChat : 10,
+    binhLuan: hasReview ? booking.danhGia.binhLuan : "",
     maLoaiPhong: booking.phong.loaiPhong.maLoaiPhong,
     maDatPhong: booking.maDatPhong,
   });
   const baseUrl = import.meta.env.VITE_BASE_API_URL;
 
   const handleSubmit = () => {
+    if (hasReview) return;
     const submitDanhGia = async () => {
-      const response = await axios.post(`${baseUrl}/api/danhgia/create`, danhGia);
+      const response = await axios.post(
+        `${baseUrl}/api/danhgia/create`,
+        danhGia
+      );
       if (response.data.success) {
         toast.success("Đánh giá thành công!");
         onClose();
@@ -25,7 +30,6 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
         toast.error(response.data.message || "Đánh giá thất bại!");
       }
       console.log(response.data);
-      
     };
     submitDanhGia();
   };
@@ -59,6 +63,7 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
               max={10}
               type="number"
               placeholder="Điểm Sạch Sẽ"
+              disabled={hasReview}
             />
           </div>
 
@@ -75,6 +80,7 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
               max={10}
               type="number"
               placeholder="Điểm Dịch Vụ"
+              disabled={hasReview}
             />
           </div>
 
@@ -91,6 +97,7 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
               max={10}
               type="number"
               placeholder="Điểm Cơ Sở Vật Chất"
+              disabled={hasReview}
             />
           </div>
 
@@ -106,6 +113,7 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               placeholder="Nhập bình luận của bạn..."
+              disabled={hasReview}
             />
           </div>
 
@@ -113,16 +121,18 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
             <button
               type="button"
               onClick={() => onClose()}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium cursor-pointer"
             >
               Hủy
             </button>
-            <button
-              onClick={handleSubmit}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              Gửi Đánh Giá
-            </button>
+            {!hasReview && (
+              <button
+                onClick={handleSubmit}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium cursor-pointer"
+              >
+                Gửi Đánh Giá
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -60,7 +60,7 @@ const BookingItem = ({ booking, onViewDetail, onPay }) => {
         {/* Nút Chi tiết */}
         <button
           onClick={onViewDetail}
-          className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm hover:bg-gray-100 transition"
+          className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm hover:bg-gray-100 transition cursor-pointer"
         >
           Chi tiết
         </button>
@@ -69,7 +69,7 @@ const BookingItem = ({ booking, onViewDetail, onPay }) => {
         {booking.trangThai === "CHUA_THANH_TOAN" && (
           <button
             onClick={onPay}
-            className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-yellow-700 hover:bg-yellow-100 transition"
+            className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-yellow-700 hover:bg-yellow-100 transition cursor-pointer"
           >
             Thanh toán
           </button>
@@ -78,13 +78,16 @@ const BookingItem = ({ booking, onViewDetail, onPay }) => {
         {new Date(booking.checkOut).getTime() < Date.now() &&
           booking.trangThai !== "DA_HUY" &&
           (booking.danhGia && Object.keys(booking.danhGia).length > 0 ? (
-            <button className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-blue-700 hover:bg-blue-100 transition">
+            <button
+              onClick={() => setIsReviewOpen(true)}
+              className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-blue-700 hover:bg-blue-100 transition cursor-pointer"
+            >
               Đã đánh giá
             </button>
           ) : (
             <button
               onClick={() => setIsReviewOpen(true)}
-              className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-blue-700 hover:bg-blue-100 transition"
+              className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-blue-700 hover:bg-blue-100 transition cursor-pointer"
             >
               Đánh giá
             </button>

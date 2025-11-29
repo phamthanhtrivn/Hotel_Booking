@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 
@@ -11,7 +12,6 @@ const BookingDetailModal = ({ booking, onClose }) => {
     DA_THANH_TOAN: "Đã thanh toán",
     DA_HUY: "Đã hủy",
   };
-
 
   const checkInTime = new Date(booking.checkIn);
   const now = new Date();
@@ -39,7 +39,8 @@ const BookingDetailModal = ({ booking, onClose }) => {
 
   const handleUpdateNote = async () => {
     if (!canModify) return;
-    if (!window.confirm("Bạn có chắc chắn muốn cập nhật ghi chú không?")) return;
+    if (!window.confirm("Bạn có chắc chắn muốn cập nhật ghi chú không?"))
+      return;
 
     try {
       const response = await fetch(
@@ -64,7 +65,8 @@ const BookingDetailModal = ({ booking, onClose }) => {
 
   const handleCancelBooking = async () => {
     if (!canModify) return;
-    if (!window.confirm("Bạn có chắc chắn muốn hủy đơn đặt phòng không?")) return;
+    if (!window.confirm("Bạn có chắc chắn muốn hủy đơn đặt phòng không?"))
+      return;
 
     try {
       const response = await fetch(
@@ -100,26 +102,60 @@ const BookingDetailModal = ({ booking, onClose }) => {
           </h2>
 
           <div className="space-y-2 text-base">
-            <p><strong className="text-[#1E2A38]">Khách hàng:</strong> {booking.hoTenKhachHang}</p>
-            <p><strong className="text-[#1E2A38]">Email:</strong> {booking.email}</p>
-            <p><strong className="text-[#1E2A38]">Số điện thoại:</strong> {booking.soDienThoai}</p>
-            <p><strong className="text-[#1E2A38]">Check-in:</strong> {new Date(booking.checkIn).toLocaleString()}</p>
-            <p><strong className="text-[#1E2A38]">Check-out:</strong> {new Date(booking.checkOut).toLocaleString()}</p>
+            <p>
+              <strong className="text-[#1E2A38]">Khách hàng:</strong>{" "}
+              {booking.hoTenKhachHang}
+            </p>
+            <p>
+              <strong className="text-[#1E2A38]">Email:</strong> {booking.email}
+            </p>
+            <p>
+              <strong className="text-[#1E2A38]">Số điện thoại:</strong>{" "}
+              {booking.soDienThoai}
+            </p>
+            <p>
+              <strong className="text-[#1E2A38]">Check-in:</strong>{" "}
+              {new Date(booking.checkIn).toLocaleString()}
+            </p>
+            <p>
+              <strong className="text-[#1E2A38]">Check-out:</strong>{" "}
+              {new Date(booking.checkOut).toLocaleString()}
+            </p>
             <p>
               <strong className="text-[#1E2A38]">Trạng thái:</strong>{" "}
               {statusLabels[booking.trangThai] || booking.trangThai}
             </p>
 
-
             <hr className="my-2 border-gray-300" />
 
-            <p><strong className="text-[#1E2A38]">Phòng:</strong> {booking.phong?.loaiPhong?.tenLoaiPhong || "Chưa xác định"}</p>
-            <p><strong className="text-[#1E2A38]">Số khách:</strong> {booking.phong?.loaiPhong?.soKhach || 1}</p>
-            <p><strong className="text-[#1E2A38]">Tổng tiền:</strong> {booking.tongTien?.toLocaleString()} VND</p>
-            <p><strong className="text-[#1E2A38]">Tổng thanh toán:</strong> {booking.tongTienTT?.toLocaleString()} VND</p>
-            <p><strong className="text-[#1E2A38]">VAT:</strong> {booking.VAT || 0}%</p>
-            <p><strong className="text-[#1E2A38]">Giảm điểm tích lũy:</strong> {booking.giamGiaDiemTichLuy?.toLocaleString() || 0} VND</p>
-            <p><strong className="text-[#1E2A38]">Đánh giá:</strong> {booking.danhGia?.noiDung || "Chưa đánh giá"}</p>
+            <p>
+              <strong className="text-[#1E2A38]">Phòng:</strong>{" "}
+              {booking.phong?.loaiPhong?.tenLoaiPhong || "Chưa xác định"}
+            </p>
+            <p>
+              <strong className="text-[#1E2A38]">Số khách:</strong>{" "}
+              {booking.phong?.loaiPhong?.soKhach || 1}
+            </p>
+            <p>
+              <strong className="text-[#1E2A38]">Tổng tiền:</strong>{" "}
+              {booking.tongTien?.toLocaleString()} VND
+            </p>
+            <p>
+              <strong className="text-[#1E2A38]">Tổng thanh toán:</strong>{" "}
+              {booking.tongTienTT?.toLocaleString()} VND
+            </p>
+            <p>
+              <strong className="text-[#1E2A38]">VAT:</strong>{" "}
+              {booking.VAT || 0}%
+            </p>
+            <p>
+              <strong className="text-[#1E2A38]">Giảm điểm tích lũy:</strong>{" "}
+              {booking.giamGiaDiemTichLuy?.toLocaleString() || 0} VND
+            </p>
+            <p>
+              <strong className="text-[#1E2A38]">Đánh giá:</strong>{" "}
+              {booking.danhGia?.noiDung || "Chưa đánh giá"}
+            </p>
 
             <label className="block mt-4 text-lg font-medium text-[#1E2A38]">
               Ghi chú:
@@ -149,7 +185,7 @@ const BookingDetailModal = ({ booking, onClose }) => {
             <button
               onClick={handleUpdateNote}
               disabled={!canModify}
-              className={`px-5 py-2.5 rounded-lg font-semibold transition-colors ${
+              className={`px-5 py-2.5 rounded-lg font-semibold transition-colors cursor-pointer ${
                 canModify
                   ? "bg-[#1E2A38] text-[#CBA75E] hover:bg-[#16212A]"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"
@@ -161,7 +197,7 @@ const BookingDetailModal = ({ booking, onClose }) => {
             <button
               onClick={handleCancelBooking}
               disabled={!canModify}
-              className={`px-5 py-2.5 rounded-lg font-semibold transition-colors ${
+              className={`px-5 py-2.5 rounded-lg font-semibold transition-colors cursor-pointer ${
                 canModify
                   ? "bg-[#1E2A38] text-[#CBA75E] hover:bg-[#16212A]"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"
@@ -172,7 +208,7 @@ const BookingDetailModal = ({ booking, onClose }) => {
 
             <button
               onClick={onClose}
-              className="px-5 py-2.5 rounded-lg bg-gray-100 text-gray-800 hover:bg-gray-200 font-semibold transition-colors"
+              className="px-5 py-2.5 rounded-lg bg-gray-100 text-gray-800 hover:bg-gray-200 font-semibold transition-colors cursor-pointer"
             >
               Thoát
             </button>
