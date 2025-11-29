@@ -260,6 +260,7 @@ const BedTypeManagement = () => {
                 onView={() => handleDetail(item)}
                 onEdit={() => handleEdit(item)}
                 onDelete={() => handleDelete(item)}
+                canDelete={true}
               />
             )}
           />
