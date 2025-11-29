@@ -29,7 +29,12 @@ const AmenityManagement = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [openDetail, setOpenDetail] = useState(false);
   const [currentAmenity, setCurrentAmenity] = useState(null);
-  const [formData, setFormData] = useState({ name: "", type: "", icon: "",status: true });
+  const [formData, setFormData] = useState({
+    name: "",
+    type: "",
+    icon: "",
+    status: true,
+  });
   const rowsPerPage = 10;
   const [nameError, setNameError] = useState("");
 
@@ -68,7 +73,7 @@ const AmenityManagement = () => {
             tenTienNghi: formData.name,
             tinhTrang: formData.status,
             icon: formData.icon,
-            loaiTienNghi: formData.type
+            loaiTienNghi: formData.type,
           }
         );
         if (res.data.success) {
@@ -85,6 +90,8 @@ const AmenityManagement = () => {
         const res = await axios.post(`${baseUrl}/api/tiennghi`, {
           tenTienNghi: formData.name,
           tinhTrang: formData.status,
+          icon: formData.icon,
+          loaiTienNghi: formData.type,
         });
         if (res.data.success) {
           setAmenities((prev) => [...prev, res.data.data]);
@@ -121,7 +128,7 @@ const AmenityManagement = () => {
 
   const handleAdd = () => {
     setCurrentAmenity(null);
-    setFormData({ name: "", status: true });
+    setFormData({ name: "", type: "", icon: "", status: true });
     setOpenModal(true);
   };
 
@@ -131,7 +138,7 @@ const AmenityManagement = () => {
       name: item.tenTienNghi || "",
       status: item.tinhTrang ?? true,
       icon: item.icon || "",
-      type: item.loaiTienNghi || ""
+      type: item.loaiTienNghi || "",
     });
     setOpenModal(true);
   };
@@ -163,6 +170,7 @@ const AmenityManagement = () => {
   const columns = [
     { key: "maTienNghi", label: "ID" },
     { key: "tenTienNghi", label: "Tên tiện nghi" },
+    { key: "loaiTienNghi", label: "Loại tiện nghi" },
     {
       key: "tinhTrang",
       label: "Tình trạng",
@@ -234,6 +242,7 @@ const AmenityManagement = () => {
                 onView={() => handleDetail(item)}
                 onEdit={() => handleEdit(item)}
                 onDelete={() => handleDelete(item)}
+                canDelete={true}
               />
             )}
           />
@@ -293,20 +302,24 @@ const AmenityManagement = () => {
             <label>Loại tiện nghi</label>
             <Select
               value={String(formData.type)}
-              onValueChange={(v) =>
-                setFormData({ ...formData, type: v })
-              }
+              onValueChange={(v) => setFormData({ ...formData, type: v })}
             >
               <SelectTrigger className="mt-2">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Mạng Internet và điện thoại">Mạng Internet và điện thoại</SelectItem>
+                <SelectItem value="Mạng Internet và điện thoại">
+                  Mạng Internet và điện thoại
+                </SelectItem>
                 <SelectItem value="Nhà tắm">Nhà tắm</SelectItem>
-                <SelectItem value="Đồ nội thất">Đồ nội thấtĐồ nội thất</SelectItem>
+                <SelectItem value="Đồ nội thất">Đồ nội thất</SelectItem>
                 <SelectItem value="Đồ điện tử">Đồ điện tử</SelectItem>
-                <SelectItem value="Hình ảnh/âm thanh">Hình ảnh/âm thanh</SelectItem>
-                <SelectItem value="Khu vực ngoài trời">Khu vực ngoài trời</SelectItem>
+                <SelectItem value="Hình ảnh/âm thanh">
+                  Hình ảnh/âm thanh
+                </SelectItem>
+                <SelectItem value="Khu vực ngoài trời">
+                  Khu vực ngoài trời
+                </SelectItem>
                 <SelectItem value="Khác">Khác</SelectItem>
               </SelectContent>
             </Select>
