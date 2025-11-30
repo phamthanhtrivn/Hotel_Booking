@@ -15,6 +15,8 @@ import iuh.fit.hotel_booking_backend.util.IdUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,8 +76,10 @@ public class DonDatPhongService {
         return repo.countByKhachHangId(maKhachHang);
     }
 
-    public List<DonDatPhong> search(DonDatPhongSearchRequest req) {
-        return repo.findAll(DonDatPhongSpecification.build(req));
+    public Page<DonDatPhong> search(DonDatPhongSearchRequest req, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "checkIn"));
+        Specification<DonDatPhong> spec = DonDatPhongSpecification.build(req);
+        return repo.findAll(spec, pageable);
     }
 
     @Transactional
