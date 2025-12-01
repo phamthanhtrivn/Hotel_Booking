@@ -80,14 +80,14 @@ const BookingItem = ({ booking, onViewDetail, onPay }) => {
           (booking.danhGia && Object.keys(booking.danhGia).length > 0 ? (
             <button
               onClick={() => setIsReviewOpen(true)}
-              className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-blue-700 hover:bg-blue-100 transition cursor-pointer"
+              className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-white bg-[#1E2A38] hover:bg-[#162029] transition cursor-pointer"
             >
               Đã đánh giá
             </button>
           ) : (
             <button
               onClick={() => setIsReviewOpen(true)}
-              className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-blue-700 hover:bg-blue-100 transition cursor-pointer"
+              className="min-w-[110px] text-center border border-gray-400 px-4 py-1.5 rounded-full text-sm text-white bg-[#1E2A38] hover:bg-[#162029]  transition cursor-pointer"
             >
               Đánh giá
             </button>

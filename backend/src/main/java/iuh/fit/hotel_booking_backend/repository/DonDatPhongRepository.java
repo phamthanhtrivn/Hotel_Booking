@@ -80,4 +80,6 @@ public interface DonDatPhongRepository extends JpaRepository<DonDatPhong, String
             "WHERE ma_dat_phong = :maDatPhong",
             nativeQuery = true)
     Integer getSoDem(@Param("maDatPhong") String maDatPhong);
+
+    Integer countDonDatPhongByKhachHang_MaKhachHangAndTrangThaiNot(String khachHangMaKhachHang, TrangThaiDon trangThai);
 }

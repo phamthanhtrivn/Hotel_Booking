@@ -210,7 +210,7 @@ CREATE TABLE IF NOT EXISTS `don_dat_phong` (
   `ghi_chu` varchar(255) DEFAULT NULL,
   `giam_gia_diem_tich_luy` double DEFAULT NULL,
   `ho_ten_khach_hang` varchar(255) DEFAULT NULL,
-  `lan_dau` bit(1) DEFAULT NULL,
+  `giam_gia_lan_dau` double DEFAULT NULL,
   `so_dien_thoai` varchar(255) DEFAULT NULL,
   `tong_tien` double DEFAULT NULL,
   `tong_tien_tt` double DEFAULT NULL,

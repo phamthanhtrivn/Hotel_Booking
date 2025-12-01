@@ -70,7 +70,7 @@ const AccountInfo = () => {
                 className="block text-base font-semibold text-gray-700 flex items-center gap-2"
               >
                 <User size={18} />
-                Tên đăng nhập
+                Họ và Tên
               </label>
               <Input
                 id="username"

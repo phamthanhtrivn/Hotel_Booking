@@ -88,15 +88,13 @@ const Payment = () => {
         const res = await axios.post(`${baseUrl}/api/payments/momo`, {
           amount: booking.tongTienTT,
           bookingId: booking.maDatPhong,
-        })
+        });
 
         if (res.data.resultCode == 0) {
           window.location.href = res.data.payUrl;
-        } 
-        else {
+        } else {
           toast.error(res.data.message);
         }
-        
       }
     } catch (error) {
       toast.error("Lỗi khi tạo giao dịch.");
@@ -283,40 +281,6 @@ const Payment = () => {
 
                   <Separator />
 
-                  {/* Room Details */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Ruler className="w-4 h-4 text-gray-600" />
-                        <span className="text-gray-600">Diện tích</span>
-                      </div>
-                      <span className="font-semibold">{room?.dienTich} m²</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-gray-600" />
-                        <span className="text-gray-600">Số khách tối đa</span>
-                      </div>
-                      <span className="font-semibold">
-                        {room?.soKhach} người
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Bed className="w-4 h-4 text-gray-600" />
-                        <span className="text-gray-600">Số giường</span>
-                      </div>
-                      <span className="font-semibold">
-                        {room?.chiTietLoaiGiuongList?.reduce(
-                          (total, g) => total + g.soGiuong,
-                          0
-                        ) || 0}
-                      </span>
-                    </div>
-                  </div>
-
-                  <Separator />
-
                   {/* Price Breakdown */}
                   <div className="space-y-3">
                     <div className="flex justify-between">
@@ -327,12 +291,30 @@ const Payment = () => {
                         {formatVND(booking.tongTien)}
                       </span>
                     </div>
+                    {booking.giamGiaLanDau > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">
+                          Giảm giá lần đầu (10%)
+                        </span>
+                        <span className="font-semibold">
+                          - {formatVND(booking.giamGiaLanDau)}
+                        </span>
+                      </div>
+                    )}
+                    {booking.giamGiaDiemTichLuy > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">
+                          Giảm giá điểm tích lũy
+                        </span>
+                        <span className="font-semibold">
+                          - {formatVND(booking.giamGiaDiemTichLuy)}
+                        </span>
+                      </div>
+                    )}
                     <div className="flex justify-between">
-                      <span className="text-gray-600">
-                        VAT ({booking.vat}%)
-                      </span>
+                      <span className="text-gray-600">VAT (8%)</span>
                       <span className="font-semibold">
-                        {formatVND(booking.tongTienTT - booking.tongTien)}
+                        {formatVND(booking.vat)}
                       </span>
                     </div>
                     <Separator />

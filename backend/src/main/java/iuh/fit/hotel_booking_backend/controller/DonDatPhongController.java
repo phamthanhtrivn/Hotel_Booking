@@ -4,6 +4,7 @@ import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.dto.DatPhongRequest;
 import iuh.fit.hotel_booking_backend.dto.DonDatPhongSearchRequest;
 import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
+import iuh.fit.hotel_booking_backend.entity.KhachHang;
 import iuh.fit.hotel_booking_backend.service.DonDatPhongService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -67,6 +68,8 @@ public class DonDatPhongController {
             return ResponseEntity.badRequest().body("Không thể hủy đơn, vì còn ít hơn 24h trước check-in!");
         }
 
+        donDatPhongService.updateDTLChoDonHuy(maDatPhong);
+
         don.setTrangThai(TrangThaiDon.DA_HUY);
         donDatPhongService.save(don);
 
@@ -106,7 +109,7 @@ public class DonDatPhongController {
                             Hệ thống sẽ tiến hành hoàn tiền (nếu có) trong vòng 24h.
                         </p>
                         <p style="font-size: 14px; color: #555;">
-                            Nếu bạn không thực hiện hủy đơn, vui lòng liên hệ TWAN HOTEL ngay lập tức.
+                            Nếu bạn không được hoàn tiền trong thời gian quy định, vui lòng liên hệ TWAN HOTEL ngay lập tức.
                         </p>
                         <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
                         <p style="font-size: 12px; color: #999; text-align: center;">
@@ -157,7 +160,6 @@ public class DonDatPhongController {
     @PostMapping("/create")
     public ResponseEntity<APIResponse<DonDatPhong>> createBooking(@Valid @RequestBody DatPhongRequest request) {
         APIResponse<DonDatPhong> response = new APIResponse<>();
-        System.out.println(request);
         try {
             DonDatPhong don = donDatPhongService.createBooking(request);
             response.setData(don);
@@ -183,5 +185,10 @@ public class DonDatPhongController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new APIResponse<>(false, e.getMessage(), null));
         }
+    }
+
+    @GetMapping("/count/{maKH}")
+    public ResponseEntity<?> getTotalBookings(@PathVariable String maKH) {
+        return ResponseEntity.ok(donDatPhongService.getTotalBookings(maKH));
     }
 }

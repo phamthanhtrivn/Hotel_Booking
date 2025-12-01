@@ -42,7 +42,6 @@ public class DonDatPhong {
 
     @ManyToOne
     @JoinColumn(name = "ma_khach_hang")
-    @JsonIgnore
     private KhachHang khachHang;
 
     @ManyToOne
@@ -81,8 +80,8 @@ public class DonDatPhong {
     @Column(name = "vat")
     private int VAT;
 
-    @Column(name = "lan_dau")
-    private boolean lanDau;
+    @Column(name = "giam_gia_lan_dau")
+    private double giamGiaLanDau;
 
     @Column(name = "giam_gia_diem_tich_luy")
     private double giamGiaDiemTichLuy;

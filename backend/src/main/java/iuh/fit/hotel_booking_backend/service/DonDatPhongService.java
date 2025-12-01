@@ -94,6 +94,9 @@ public class DonDatPhongService {
         don.setEmail(req.email);
         don.setKhachHang(khachHang);
 
+        don.setGiamGiaLanDau(req.giamGiaLanDau);
+        don.setGiamGiaDiemTichLuy(req.giamGiaDiemTichLuy);
+
         don.setPhong(phong);
 
         if (req.checkIn.isAfter(req.checkOut)) {
@@ -106,10 +109,19 @@ public class DonDatPhongService {
         don.setVAT(req.vat);
         don.setTongTienTT(req.tongTienThanhToan);
         don.setGhiChu(req.ghiChu);
-        don.setTrangThai(TrangThaiDon.CHUA_THANH_TOAN);
+        don.setTrangThai(
+                req.trangThaiDon.equals("DA_THANH_TOAN")
+                        ? TrangThaiDon.DA_THANH_TOAN
+                        : TrangThaiDon.CHUA_THANH_TOAN
+        );
 
         repo.save(don);
-        emailService.sendBookingConfirmationWithPaymentInfo(don.getEmail(), don.getMaDatPhong(), req.tongTienThanhToan);
+        if (req.trangThaiDon.equals("DA_THANH_TOAN")) {
+            emailService.sendBookingPaidEmail(don.getEmail(), don.getMaDatPhong());
+        }
+        else {
+            emailService.sendBookingConfirmationWithPaymentInfo(don.getEmail(), don.getMaDatPhong(), req.tongTienThanhToan);
+        }
         return don;
     }
 
@@ -131,12 +143,43 @@ public class DonDatPhongService {
             DonDatPhong don = donOpt.get();
             KhachHang khachHang = don.getKhachHang();
             int diem = khachHang.getDiemTichLuy();
+            int soDem = repo.getSoDem(maDatPhong);
             if (diem >= 10) {
-                diem %= 10;
+                diem = (diem + soDem) % 10;
             }
             else {
-                int soDem = repo.getSoDem(maDatPhong);
                 diem += soDem;
+            }
+            khachHang.setDiemTichLuy(diem);
+            khachHangService.save(khachHang);
+        }
+    }
+
+    public APIResponse<Integer> getTotalBookings(String maKhachHang) {
+        APIResponse<Integer> response = new APIResponse<>();
+
+        int total = repo.countDonDatPhongByKhachHang_MaKhachHangAndTrangThaiNot(maKhachHang, TrangThaiDon.DA_HUY);
+        response.setSuccess(true);
+        response.setMessage("Lấy tổng số đơn đặt phòng thành công!");
+        response.setData(total);
+        return response;
+    }
+
+    public void updateDTLChoDonHuy(String maDatPhong) {
+        Optional<DonDatPhong> donOpt = repo.findById(maDatPhong);
+        if (donOpt.isPresent()) {
+            DonDatPhong don = donOpt.get();
+            KhachHang khachHang = don.getKhachHang();
+
+            int diem = khachHang.getDiemTichLuy();
+            int soDem = repo.getSoDem(maDatPhong);
+
+            boolean daSuDungDiem = don.getGiamGiaDiemTichLuy() > 0;
+
+            if (daSuDungDiem) {
+                diem = diem - soDem + 10;
+            } else {
+                diem = diem - soDem;
             }
             khachHang.setDiemTichLuy(diem);
             khachHangService.save(khachHang);
