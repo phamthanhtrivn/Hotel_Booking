@@ -49,7 +49,7 @@ public class DanhGiaController {
     @GetMapping
     public APIResponse<Page<DanhGiaRespone>> getAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String maLoaiPhong,
             @RequestParam(required = false) String loaiMucDo,
             @RequestParam(required = false) Integer diemMucDo,

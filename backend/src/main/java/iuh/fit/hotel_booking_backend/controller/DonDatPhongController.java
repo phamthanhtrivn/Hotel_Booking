@@ -42,7 +42,7 @@ public class DonDatPhongController {
     @GetMapping
     public ResponseEntity<Page<DonDatPhong>> getAll(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "2") int size) {
+            @RequestParam(defaultValue = "10") int size) {
         Page<DonDatPhong> donDatPhongs = donDatPhongService.getAll(page, size);
         return ResponseEntity.ok(donDatPhongs);
     }
