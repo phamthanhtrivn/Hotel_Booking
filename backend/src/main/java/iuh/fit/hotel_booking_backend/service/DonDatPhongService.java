@@ -115,13 +115,14 @@ public class DonDatPhongService {
                         : TrangThaiDon.CHUA_THANH_TOAN
         );
 
-        repo.save(don);
         if (req.trangThaiDon.equals("DA_THANH_TOAN")) {
             emailService.sendBookingPaidEmail(don.getEmail(), don.getMaDatPhong());
         }
         else {
             emailService.sendBookingConfirmationWithPaymentInfo(don.getEmail(), don.getMaDatPhong(), req.tongTienThanhToan);
         }
+        repo.save(don);
+
         return don;
     }
 

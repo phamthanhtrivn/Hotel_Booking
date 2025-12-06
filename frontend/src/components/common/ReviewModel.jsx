@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X } from "lucide-react";
+import { X, Star, Sparkles, Handshake, Building2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
@@ -41,28 +41,30 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="sticky top-0 bg-white px-6 py-4 border-b flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-900">Đánh giá phòng</h2>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-gray-200">
+        
+        {/* HEADER */}
+        <div className="sticky top-0 bg-white px-6 py-4 border-b shadow-sm flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Star className="text-yellow-500" size={26} />
+            <h2 className="text-2xl font-bold text-gray-900">Đánh giá phòng</h2>
+          </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-500 hover:text-gray-700 transition"
           >
-            <X size={24} />
+            <X size={26} />
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-7">
           {/* Cleanliness */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-800">
+          <div className="space-y-1">
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+              <Sparkles size={18} className="text-blue-500" />
               Điểm Sạch Sẽ
             </label>
-            <p className="text-xs text-gray-500 mb-1">
-              Độ sạch sẽ, vệ sinh, gọn gàng của phòng.
-            </p>
             <Input
               type="number"
               min={0}
@@ -72,17 +74,16 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
                 setDanhGia({ ...danhGia, diemSachSe: e.target.value })
               }
               disabled={hasReview}
+              className="rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-600"
             />
           </div>
 
           {/* Service */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-800">
+          <div className="space-y-1">
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+              <Handshake size={18} className="text-green-600" />
               Điểm Dịch Vụ
             </label>
-            <p className="text-xs text-gray-500 mb-1">
-              Thái độ nhân viên, tốc độ phục vụ, hỗ trợ khách hàng.
-            </p>
             <Input
               type="number"
               min={0}
@@ -92,17 +93,16 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
                 setDanhGia({ ...danhGia, diemDichVu: e.target.value })
               }
               disabled={hasReview}
+              className="rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-600"
             />
           </div>
 
           {/* Facilities */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-800">
+          <div className="space-y-1">
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-800">
+              <Building2 size={18} className="text-purple-600" />
               Điểm Cơ Sở Vật Chất
             </label>
-            <p className="text-xs text-gray-500 mb-1">
-              Trang thiết bị, nội thất, giường, điều hòa, wifi,...
-            </p>
             <Input
               type="number"
               min={0}
@@ -112,12 +112,13 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
                 setDanhGia({ ...danhGia, diemCoSoVatChat: e.target.value })
               }
               disabled={hasReview}
+              className="rounded-lg border-gray-300 focus:ring-2 focus:ring-blue-600"
             />
           </div>
 
           {/* Comment */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-800">
+          <div className="space-y-1">
+            <label className="text-sm font-semibold text-gray-800">
               Bình Luận
             </label>
             <textarea
@@ -127,16 +128,16 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
                 setDanhGia({ ...danhGia, binhLuan: e.target.value })
               }
               disabled={hasReview}
-              className="w-full border border-gray-300 px-3 py-2 rounded-lg focus:ring-2 focus:ring-[#1E2A38] focus:outline-none resize-none mt-2"
-              placeholder="Viết cảm nhận của bạn..."
+              className="w-full border border-gray-300 px-3 py-2 rounded-xl focus:ring-2 focus:ring-blue-600 focus:outline-none resize-none"
+              placeholder="Hãy chia sẻ trải nghiệm của bạn..."
             ></textarea>
           </div>
 
           {/* Buttons */}
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-3">
             <button
               onClick={onClose}
-              className="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium cursor-pointer"
+              className="flex-1 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-medium transition cursor-pointer"
             >
               Hủy
             </button>
@@ -144,7 +145,7 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
             {!hasReview && (
               <button
                 onClick={handleSubmit}
-                className="flex-1 py-2 bg-[#1E2A38] text-white rounded-lg hover:bg-[#162029] font-medium cursor-pointer"
+                className="flex-1 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 font-medium transition cursor-pointer"
               >
                 Gửi đánh giá
               </button>

@@ -19,7 +19,7 @@ const BookingItem = ({ booking, onViewDetail, onPay }) => {
   };
 
   return (
-    <div className="grid grid-cols-12 items-center gap-4 py-6 px-4 hover:bg-foreground/5 transition-colors duration-200">
+    <div className="bg-gray-50 grid grid-cols-12 items-center gap-4 py-6 px-4 hover:bg-foreground/5 transition-colors duration-200">
       {/* Phòng */}
       <div className="col-span-12 md:col-span-5 flex items-start gap-4">
         <img

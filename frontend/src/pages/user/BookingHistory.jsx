@@ -15,8 +15,17 @@ const BookingHistory = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [filterStatus, setFilterStatus] = useState("TAT_CA");
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5;
 
-  const maKhachHang = user.khachHang.maKhachHang; // Giả sử mã khách hàng
+  const totalPages = Math.ceil(filteredHistory.length / rowsPerPage);
+
+  const paginatedData = filteredHistory.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const maKhachHang = user.khachHang.maKhachHang;
 
   const statusOptions = [
     { value: "TAT_CA", label: "Tất cả" },
@@ -34,8 +43,6 @@ const BookingHistory = () => {
           }/api/dondatphong/lichsu/${maKhachHang}`
         );
 
-       
-      
         if (!response.ok) {
           throw new Error("Không thể tải dữ liệu đặt phòng");
         }
@@ -67,6 +74,10 @@ const BookingHistory = () => {
     }
   }, [filterStatus, bookingHistory]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterStatus]);
+
   if (loading)
     return (
       <div className="text-center py-20 text-gray-500">
@@ -85,7 +96,7 @@ const BookingHistory = () => {
     );
 
   return (
-    <div className="bg-gray-50 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header + Filter */}
       <div className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         {/* Title */}
@@ -151,7 +162,7 @@ const BookingHistory = () => {
 
       {/* List items */}
       <div className="divide-y divide-gray-200">
-        {filteredHistory.map((booking) => {
+        {paginatedData.map((booking) => {
           const loaiPhong = booking.phong?.loaiPhong;
 
           return (
@@ -181,6 +192,36 @@ const BookingHistory = () => {
             />
           );
         })}
+      </div>
+
+      <div className="flex justify-center items-center mt-8 gap-3">
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+          disabled={currentPage === 1}
+          className={`px-4 py-2 rounded-lg border text-sm transition ${
+            currentPage === 1
+              ? "text-gray-400 border-gray-300 cursor-not-allowed"
+              : "text-gray-700 border-gray-400 hover:bg-gray-100"
+          }`}
+        >
+          &lt;
+        </button>
+
+        <div className="text-gray-700 font-medium">
+          {currentPage} / {totalPages}
+        </div>
+
+        <button
+          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+          disabled={currentPage === totalPages}
+          className={`px-4 py-2 rounded-lg border text-sm transition ${
+            currentPage === totalPages
+              ? "text-gray-400 border-gray-300 cursor-not-allowed"
+              : "text-gray-700 border-gray-400 hover:bg-gray-100"
+          }`}
+        >
+          &gt;
+        </button>
       </div>
 
       {/* Modal */}
