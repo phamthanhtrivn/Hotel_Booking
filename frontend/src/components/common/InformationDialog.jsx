@@ -18,7 +18,7 @@ export default function InformationDialog({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
-        className={`h-screen overflow-y-auto hide-scrollbar ${className}`}
+        className={`overflow-y-auto hide-scrollbar ${className}`}
       >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>

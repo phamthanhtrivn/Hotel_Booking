@@ -57,6 +57,10 @@ public class LoaiPhongService {
         return loaiPhongRepository.findAll();
     }
 
+    public List<LoaiPhong> findByName(String name){
+        return loaiPhongRepository.findByTenLoaiPhong(name);
+    }
+
     public Page<LoaiPhongDTO> findByConditions(int page, int size, LoaiPhongSearchRequest dto) {
         Pageable pageable = PageRequest.of(page, size);
 

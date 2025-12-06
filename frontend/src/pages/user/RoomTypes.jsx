@@ -82,8 +82,6 @@ const RoomTypes = () => {
       const data = await response.json();
       setRoomTypes(data);
 
-      console.log(data)
-
       if (roomSectionRef.current) {
         roomSectionRef.current.scrollIntoView({ behavior: "smooth" });
       }

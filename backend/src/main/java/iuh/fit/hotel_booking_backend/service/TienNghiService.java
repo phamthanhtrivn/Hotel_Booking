@@ -20,6 +20,10 @@ public class TienNghiService {
     private final ChiTietTienNghiRepository chiTietTienNghiRepository;
     private final IdUtil idUtil;
 
+    public List<TienNghi> findAll(){
+        return repo.findAll();
+    }
+
     public APIResponse<List<TienNghi>> getAll() {
         APIResponse<List<TienNghi>> response = new APIResponse<>();
         List<TienNghi> list = repo.findAll();

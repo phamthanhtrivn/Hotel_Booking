@@ -41,5 +41,6 @@ public interface LoaiPhongRepository extends JpaRepository<LoaiPhong, String>, J
     @Query("SELECT p.loaiPhong.maLoaiPhong, COUNT(p) FROM Phong p GROUP BY p.loaiPhong.maLoaiPhong")
     List<Object[]> countTotalByRoomType();
 
+    List<LoaiPhong> findByTenLoaiPhong(String tenLoaiPhong);
 
 }
