@@ -1,9 +1,6 @@
 package iuh.fit.hotel_booking_backend.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -11,7 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.time.LocalDateTime;
 
@@ -78,7 +74,7 @@ public class DonDatPhong {
     private DanhGia danhGia;
 
     @Column(name = "vat")
-    private int VAT;
+    private double VAT;
 
     @Column(name = "giam_gia_lan_dau")
     private double giamGiaLanDau;
