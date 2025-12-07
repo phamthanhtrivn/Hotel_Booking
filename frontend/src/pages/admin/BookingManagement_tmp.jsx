@@ -7,6 +7,7 @@ import ActionButtons from "@/components/common/ActionButtons";
 import DetailDialog from "@/components/common/DetailDialog";
 import AdminInput from "@/components/admin/AdminInput";
 import AdminSelect from "@/components/admin/AdminSelect";
+import AdminPagination from "@/components/common/AdminPagination"
 import { Button } from "@/components/ui/button";
 
 export default function BookingManagement() {
@@ -186,7 +187,7 @@ export default function BookingManagement() {
                 className="rounded-2xl bg-gray-400 h-10"
                 onClick={resetSearch}
               >
-                X
+                Làm mới
               </Button>
             </div>
           </div>
