@@ -1,6 +1,5 @@
 package iuh.fit.hotel_booking_backend.controller;
 
-import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.dto.MoMoResponse;
 import iuh.fit.hotel_booking_backend.dto.PaymentRequest;
 import iuh.fit.hotel_booking_backend.service.PaymentService;
@@ -9,6 +8,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,9 +33,8 @@ public class PaymentController {
         return paymentService.createMoMoPayment(paymentRequest);
     }
 
-    @GetMapping("/momo-pay-callback")
-    public void momoPayCallbackHandler(HttpServletRequest request, HttpServletResponse response) {
-        paymentService.momoPayCallbackHandler(request, response);
+    @GetMapping("/momo-return")
+    public void momoReturnHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        paymentService.handleMoMoReturn(request, response);
     }
-
 }

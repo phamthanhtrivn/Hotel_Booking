@@ -5,9 +5,10 @@ import BookingDetailModal from "@/components/common/BookingDetailModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const BookingHistory = () => {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const [bookingHistory, setBookingHistory] = useState([]);
   const [filteredHistory, setFilteredHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,16 +38,18 @@ const BookingHistory = () => {
   useEffect(() => {
     const fetchBookingHistory = async () => {
       try {
-        const response = await fetch(
+        const response = await axios.get(
           `${
             import.meta.env.VITE_BASE_API_URL
-          }/api/dondatphong/lichsu/${maKhachHang}`
+          }/api/member/dondatphong/lichsu/${maKhachHang}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+          }
         );
 
-        if (!response.ok) {
-          throw new Error("Không thể tải dữ liệu đặt phòng");
-        }
-        const data = await response.json();
+        const data = response.data;
 
         const sortedData = data.sort(
           (a, b) => new Date(b.ngayTao) - new Date(a.ngayTao)

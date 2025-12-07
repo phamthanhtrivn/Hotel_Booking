@@ -28,7 +28,7 @@ import { quyDinhDieuKhoan } from "@/assets/assets";
 import axios from "axios";
 
 const Booking = () => {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const baseUrl = import.meta.env.VITE_BASE_API_URL;
   const location = useLocation();
   const navigate = useNavigate();
@@ -66,7 +66,10 @@ const Booking = () => {
   const fetchTotalBookingNumber = async () => {
     try {
       const res = await axios.get(
-        `${baseUrl}/api/dondatphong/count/${user.khachHang.maKhachHang}`
+        `${baseUrl}/api/member/dondatphong/count/${user.khachHang.maKhachHang}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       if (res.data.success) {
         setTotalBookingNumber(res.data.data);
@@ -93,7 +96,7 @@ const Booking = () => {
     if (!user) {
       const basePrice = gia * nights;
       const vatM = basePrice * (vat / 100);
-      const total = basePrice * vatM;
+      const total = basePrice + vatM;
 
       setStayNights(nights);
       setStayPrice(basePrice);
@@ -175,7 +178,6 @@ const Booking = () => {
         giamGiaDiemTichLuy: discountPointsMoney,
         trangThaiDon: totalPrice > 0 ? "CHUA_THANH_TOAN" : "DA_THANH_TOAN",
       };
-      console.log(bookingRequest);
       const result = await donDatPhongService.datPhong(bookingRequest);
       setLoading(false);
       toast.success(
@@ -446,7 +448,7 @@ const Booking = () => {
               </div>
             </>
           )}
-          {user.khachHang.diemTichLuy >= 10 && (
+          {user?.khachHang.diemTichLuy >= 10 && (
             <>
               <hr />
               <div className="px-3 py-2">

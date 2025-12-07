@@ -116,14 +116,15 @@ public class DonDatPhongService {
                         ? TrangThaiDon.DA_THANH_TOAN
                         : TrangThaiDon.CHUA_THANH_TOAN
         );
+        repo.save(don);
 
         if (req.trangThaiDon.equals("DA_THANH_TOAN")) {
             emailService.sendBookingPaidEmail(don.getEmail(), don.getMaDatPhong());
+            updateDiemTichLuy(don.getMaDatPhong());
         }
         else {
             emailService.sendBookingConfirmationWithPaymentInfo(don.getEmail(), don.getMaDatPhong(), req.tongTienThanhToan);
         }
-        repo.save(don);
 
         return don;
     }
@@ -147,6 +148,7 @@ public class DonDatPhongService {
             KhachHang khachHang = don.getKhachHang();
             int diem = khachHang.getDiemTichLuy();
             int soDem = repo.getSoDem(maDatPhong);
+
             if (diem >= 10) {
                 diem = (diem + soDem) % 10;
             }

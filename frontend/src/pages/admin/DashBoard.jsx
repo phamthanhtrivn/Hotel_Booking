@@ -20,6 +20,7 @@ const DashBoard = () => {
         setDashboardData(data);
       } catch (err) {
         setError("Không thể tải dữ liệu từ máy chủ");
+        console.log(err);
       } finally {
         setLoading(false);
       }
@@ -73,7 +74,6 @@ const DashBoard = () => {
         <RoomStatus roomStatic={roomStaticData} />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-
           <div className="lg:col-span-2 flex flex-col gap-8">
             <FloorStatus floorStatus={floorStatus} />
             {occupancyStatistic && (
@@ -81,7 +81,6 @@ const DashBoard = () => {
             )}
             {revenueData && <RevenueStatistics revenueData={revenueData} />}
           </div>
-
 
           <div className="lg:col-span-1 sticky top-6">
             <CustomerFeedback feedbackData={feedbackData} />

@@ -70,7 +70,7 @@ const RoomTypes = () => {
       };
       
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong/search`,
+        `${import.meta.env.VITE_BASE_API_URL}/api/public/loaiphong/search`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

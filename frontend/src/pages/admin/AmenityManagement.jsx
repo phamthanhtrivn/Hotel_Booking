@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import DetailDialog from "@/components/common/DetailDialog";
 import EditCreateDialog from "@/components/common/EditCreateDialog";
 import ConfirmDeleteDialog from "@/components/common/ConfirmDeleteDialog";
 import ActionButtons from "@/components/common/ActionButtons";
+import { AuthContext } from "@/context/AuthContext";
 
 const AmenityManagement = () => {
   const baseUrl = import.meta.env.VITE_BASE_API_URL;
@@ -37,10 +38,12 @@ const AmenityManagement = () => {
   });
   const rowsPerPage = 10;
   const [nameError, setNameError] = useState("");
+  const { token } = useContext(AuthContext);
 
   const fetchAmenities = async () => {
     try {
-      const res = await axios.get(baseUrl + "/api/tiennghi");
+      const res = await axios.get(baseUrl + "/api/public/tiennghi");
+      
       if (res.data.success) {
         setAmenities(res.data.data);
       } else {
@@ -68,12 +71,17 @@ const AmenityManagement = () => {
     try {
       if (currentAmenity) {
         const res = await axios.put(
-          `${baseUrl}/api/tiennghi/${currentAmenity.maTienNghi}`,
+          `${baseUrl}/api/admin/tiennghi/${currentAmenity.maTienNghi}`,
           {
             tenTienNghi: formData.name,
             tinhTrang: formData.status,
             icon: formData.icon,
             loaiTienNghi: formData.type,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
         if (res.data.success) {
@@ -87,12 +95,20 @@ const AmenityManagement = () => {
           toast.info(res.data.message);
         }
       } else {
-        const res = await axios.post(`${baseUrl}/api/tiennghi`, {
-          tenTienNghi: formData.name,
-          tinhTrang: formData.status,
-          icon: formData.icon,
-          loaiTienNghi: formData.type,
-        });
+        const res = await axios.post(
+          `${baseUrl}/api/admin/tiennghi`,
+          {
+            tenTienNghi: formData.name,
+            tinhTrang: formData.status,
+            icon: formData.icon,
+            loaiTienNghi: formData.type,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         if (res.data.success) {
           setAmenities((prev) => [...prev, res.data.data]);
           toast.success("Thêm tiện nghi thành công");
@@ -102,6 +118,7 @@ const AmenityManagement = () => {
       }
       setOpenModal(false);
     } catch (error) {
+      toast.error("Lưu tiện nghi thất bại");
       console.error("Lỗi khi lưu tiện nghi:", error);
     }
   };
@@ -109,7 +126,12 @@ const AmenityManagement = () => {
   const handleConfirmDelete = async () => {
     try {
       const res = await axios.delete(
-        `${baseUrl}/api/tiennghi/${currentAmenity.maTienNghi}`
+        `${baseUrl}/api/admin/tiennghi/${currentAmenity.maTienNghi}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (res.data.success) {
         toast.success("Xóa tiện nghi thành công");
@@ -122,6 +144,7 @@ const AmenityManagement = () => {
 
       setOpenDelete(false);
     } catch (error) {
+      toast.error("Xóa tiện nghi thất bại");
       console.error("Lỗi khi xóa tiện nghi:", error);
     }
   };

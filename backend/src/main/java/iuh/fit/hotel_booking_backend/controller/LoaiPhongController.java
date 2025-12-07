@@ -1,35 +1,22 @@
 package iuh.fit.hotel_booking_backend.controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
-import iuh.fit.hotel_booking_backend.dto.ChiTietLoaiGiuongRequest;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.projections.LoaiPhongDropdownProjection;
 import iuh.fit.hotel_booking_backend.service.LoaiPhongService;
-import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import iuh.fit.hotel_booking_backend.dto.LoaiPhongDTO;
 import iuh.fit.hotel_booking_backend.dto.LoaiPhongSearchRequest;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import java.time.LocalDateTime;
 import java.util.Collections;
 
 
 @RestController
-@RequestMapping("/api/loaiphong")
+@RequestMapping("/api/public/loaiphong")
 public class LoaiPhongController {
     private final LoaiPhongService loaiPhongService;
 
@@ -60,38 +47,6 @@ public class LoaiPhongController {
         return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 
-    @PostMapping("/find-conditions")
-    public ResponseEntity<?> findAllPaged(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestBody LoaiPhongSearchRequest requestbody
-    ) {
-        Page<LoaiPhongDTO> result = loaiPhongService.findByConditions(page, size, requestbody);
-        return ResponseEntity.ok(result);
-    }
-
-
-    @GetMapping()
-    public ResponseEntity<List<LoaiPhongDTO>> getAll() {
-        List<LoaiPhongDTO> result = loaiPhongService.getAllLoaiPhongDTO();
-        return ResponseEntity.ok(result);
-    }
-
-    @GetMapping("/loaiPhong")
-    public APIResponse<List<LoaiPhong>> getAllLoaiPhong() {
-        APIResponse<List<LoaiPhong>> response = new APIResponse<>();
-        try {
-            List<LoaiPhong> listLoaiPhong = loaiPhongService.getAll();
-            response.setData(listLoaiPhong);
-            response.setSuccess(true);
-            response.setMessage("Get all loai phong successfully");
-            return response;
-        } catch (Exception e) {
-            response.setSuccess(false);
-            response.setMessage("Failed to get all loai phong: " + e.getMessage());
-            return response;
-        }
-    }
 
     @PostMapping("/search")
     public ResponseEntity<List<LoaiPhongDTO>> searchAdvanced(
@@ -125,89 +80,25 @@ public class LoaiPhongController {
         return ResponseEntity.ok(result);
     }
 
-
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<APIResponse<LoaiPhong>> create(
-            @Valid @RequestPart("loaiPhong") LoaiPhong loaiPhong,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images,
-            @RequestPart(value = "tienNghiIds", required = false) List<String> tienNghiIds,
-            @RequestPart(value = "chiTietGiuongs", required = false) List<ChiTietLoaiGiuongRequest> chiTietGiuongs) {
-
-        APIResponse<LoaiPhong> response = loaiPhongService.save(loaiPhong, images, tienNghiIds, chiTietGiuongs);
-        return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
-    }
-
-    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<APIResponse<LoaiPhong>> update(
-            @RequestPart("loaiPhong") @Valid LoaiPhong loaiPhong,
-            @RequestPart(value = "oldImages", required = false) String oldImagesJson,
-            @RequestPart(value = "images", required = false) List<MultipartFile> newPhotos,
-            @RequestPart(value = "tienNghiIds", required = false) List<String> tienNghiIds,
-            @RequestPart(value = "chiTietGiuongs", required = false) List<ChiTietLoaiGiuongRequest> chiTietGiuongs
-    ) throws Exception {
-        List<String> existingImages = new ArrayList<>();
-
-        if (oldImagesJson != null && !oldImagesJson.isEmpty()) {
-            ObjectMapper mapper = new ObjectMapper();
-            existingImages = mapper.readValue(
-                    oldImagesJson,
-                    new TypeReference<List<String>>() {
-                    }
-            );
-        }
-
-        APIResponse<LoaiPhong> result = loaiPhongService.update(loaiPhong, existingImages, newPhotos, tienNghiIds, chiTietGiuongs);
-        return ResponseEntity.status(result.isSuccess() ? 200 : 400).body(result);
-    }
-
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<APIResponse<String>> delete(@PathVariable String id) {
-        APIResponse<String> response = new APIResponse<>();
-        try {
-            loaiPhongService.deleteById(id);
-            response.setData(id);
-            response.setSuccess(true);
-            response.setMessage("Xóa loại phòng thành công");
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new APIResponse<>(false, "Lỗi khi xóa loại phòng", ""));
-        }
-        return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<LoaiPhongDTO>> searchAdvancedGet(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate checkIn,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate checkOut,
-            @RequestParam(required = false) String tenLoaiPhong,
-            @RequestParam(required = false) Integer soKhach,
-            @RequestParam(required = false) Double minGia,
-            @RequestParam(required = false) Double maxGia,
-            @RequestParam(required = false) Double minDienTich,
-            @RequestParam(required = false) Double maxDienTich,
-            @RequestParam(required = false) String maGiuong,
-            @RequestParam(required = false) Integer[] treEm
-    ) {
-
-        if (checkIn != null && checkOut != null) {
-            if (checkOut.isBefore(checkIn)) {
-                return ResponseEntity.badRequest().body(null);
-            }
-        }
-
-        LocalDateTime checkInDateTime = checkIn != null ? checkIn.atTime(13, 0) : null;
-        LocalDateTime checkOutDateTime = checkOut != null ? checkOut.atTime(12, 30) : null;
-
-        List<LoaiPhongDTO> result = loaiPhongService.searchAdvancedDTO(
-                checkInDateTime, checkOutDateTime,
-                tenLoaiPhong, soKhach, treEm,
-                minGia, maxGia,
-                minDienTich, maxDienTich,
-                maGiuong
-        );
-
+    @GetMapping()
+    public ResponseEntity<List<LoaiPhongDTO>> getAll() {
+        List<LoaiPhongDTO> result = loaiPhongService.getAllLoaiPhongDTO();
         return ResponseEntity.ok(result);
-
     }
 
+    @GetMapping("/loaiPhong")
+    public APIResponse<List<LoaiPhong>> getAllLoaiPhong() {
+        APIResponse<List<LoaiPhong>> response = new APIResponse<>();
+        try {
+            List<LoaiPhong> listLoaiPhong = loaiPhongService.getAll();
+            response.setData(listLoaiPhong);
+            response.setSuccess(true);
+            response.setMessage("Get all loai phong successfully");
+            return response;
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setMessage("Failed to get all loai phong: " + e.getMessage());
+            return response;
+        }
+    }
 }

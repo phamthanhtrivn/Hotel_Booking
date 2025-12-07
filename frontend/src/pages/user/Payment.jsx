@@ -46,7 +46,7 @@ const Payment = () => {
     const fetchBooking = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${baseUrl}/api/dondatphong/${maDatPhong}`);
+        const res = await axios.get(`${baseUrl}/api/public/dondatphong/${maDatPhong}`);
         if (res.data.success) {
           setBooking(res.data.data);
         } else {

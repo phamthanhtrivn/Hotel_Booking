@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { X, Star, Sparkles, Handshake, Building2 } from "lucide-react";
 import { toast } from "react-toastify";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
+import { AuthContext } from "@/context/AuthContext";
 
 export default function ReviewModel({ booking, isOpen, onClose }) {
   const hasReview = booking.danhGia && Object.keys(booking.danhGia).length > 0;
+  const { token } = useContext(AuthContext);
 
   const [danhGia, setDanhGia] = useState({
     diemSachSe: hasReview ? booking.danhGia.diemSachSe : 10,
@@ -23,8 +25,11 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
 
     try {
       const response = await axios.post(
-        `${baseUrl}/api/danhgia/create`,
-        danhGia
+        `${baseUrl}/api/member/danhgia/create`,
+        danhGia,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
       if (response.data.success) {
         toast.success("Đánh giá thành công!");
@@ -43,7 +48,6 @@ export default function ReviewModel({ booking, isOpen, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-gray-200">
-        
         {/* HEADER */}
         <div className="sticky top-0 bg-white px-6 py-4 border-b shadow-sm flex justify-between items-center">
           <div className="flex items-center gap-2">

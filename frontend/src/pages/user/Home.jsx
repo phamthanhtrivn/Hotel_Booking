@@ -52,7 +52,7 @@ export default function Home() {
     const fetchRatings = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/api/danhgia/top-three-rating`
+          `${baseUrl}/api/public/danhgia/top-three-rating`
         );
         const data = response.data;
         if (data.success && data.data) {

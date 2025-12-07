@@ -21,13 +21,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -48,9 +43,25 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/member/**").hasRole("MEMBER")
-                        .requestMatchers("/**", "/oauth2/**").permitAll()
+                        .requestMatchers(
+                                "/auth/**",
+                                "/oauth2/**",
+                                "/api/public/**",
+                                "/api/chat/**",
+                                "/api/payments/**"
+                        )
+                        .permitAll()
+
+                        .requestMatchers(
+                                "/api/member/**"
+                        )
+                        .hasRole("MEMBER")
+
+                        .requestMatchers(
+                                "/api/admin/**"
+                        )
+                        .hasAnyRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
@@ -58,7 +69,7 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .loginPage("/oauth2/authorization/google")
                         .redirectionEndpoint(redir -> redir
-                                .baseUri("/hotelbooking/oauth2/callback/*")
+                                .baseUri("/hotelbooking/oauth2/callback/google")
                         )
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService) // xử lý lấy user info

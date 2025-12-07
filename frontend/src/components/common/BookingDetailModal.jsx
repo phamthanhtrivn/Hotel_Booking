@@ -1,19 +1,18 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
+import { AuthContext } from "@/context/AuthContext";
 
 const BookingDetailModal = ({ booking, onClose }) => {
   const baseUrl = import.meta.env.VITE_BASE_API_URL;
   const [note, setNote] = useState(booking.ghiChu || "");
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-
   const statusLabels = {
     CHUA_THANH_TOAN: "Chưa thanh toán",
     DA_THANH_TOAN: "Đã thanh toán",
     DA_HUY: "Đã hủy",
   };
+  const { token } = useContext(AuthContext)
 
   const checkInTime = new Date(booking.checkIn);
   const now = new Date();
@@ -32,10 +31,10 @@ const BookingDetailModal = ({ booking, onClose }) => {
   const fetchCapNhatGhiChu = async () => {
     try {
       const response = await fetch(
-        `${baseUrl}/api/dondatphong/capnhat-ghichu/${booking.maDatPhong}`,
+        `${baseUrl}/api/member/dondatphong/capnhat-ghichu/${booking.maDatPhong}`,
         {
           method: "POST",
-          headers: { "Content-Type": "text/plain" },
+          headers: { "Content-Type": "text/plain", "Authorization": `Bearer ${token}` },
           body: note,
         }
       );
@@ -53,8 +52,8 @@ const BookingDetailModal = ({ booking, onClose }) => {
   const fetchHuyDatPhong = async () => {
     try {
       const response = await fetch(
-        `${baseUrl}/api/dondatphong/huy/${booking.maDatPhong}`,
-        { method: "POST" }
+        `${baseUrl}/api/member/dondatphong/huy/${booking.maDatPhong}`,
+        { method: "POST", headers: { "Authorization": `Bearer ${token}` } }
       );
       if (!response.ok) {
         const errorMsg = await response.text();

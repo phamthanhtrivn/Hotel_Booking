@@ -36,7 +36,7 @@ public class TienNghiService {
             response.setMessage("Lấy danh sách tiện nghi thành công.");
             response.setData(list);
         }
-        return response;
+        return response;    
     }
 
     public APIResponse<TienNghi> getById(String id) {

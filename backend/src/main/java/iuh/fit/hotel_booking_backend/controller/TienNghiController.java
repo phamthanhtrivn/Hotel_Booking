@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tiennghi")
+@RequestMapping("/api/public/tiennghi")
 public class TienNghiController {
     private TienNghiService tienNghiService;
 
@@ -42,19 +42,4 @@ public class TienNghiController {
         return ResponseEntity.ok(tienNghiService.getById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<?> createTienNghi(@RequestBody TienNghi tienNghi) {
-        return ResponseEntity.ok(tienNghiService.save(tienNghi));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateTienNghi(@PathVariable String id, @RequestBody TienNghi tienNghi) {
-        tienNghi.setMaTienNghi(id);
-        return ResponseEntity.ok(tienNghiService.update(tienNghi));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTienNghi(@PathVariable String id) {
-        return ResponseEntity.ok(tienNghiService.deleteById(id));
-    }
 }

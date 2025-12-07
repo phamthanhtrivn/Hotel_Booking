@@ -18,7 +18,7 @@ import DashBoard from "./pages/admin/DashBoard";
 import RoomManagement from "./pages/admin/RoomManagement";
 import RoomTypeManagement from "./pages/admin/RoomTypeManagement";
 import CustomerManagement from "./pages/admin/CustomerManagement";
-import BookingManagement from "./pages/admin/BookingManagement_tmp";
+import BookingManagement from "./pages/admin/BookingManagement";
 import ReviewManagement from "./pages/admin/ReviewManagement";
 import NotFound from "./pages/NotFound";
 import Contact from "./pages/user/Contact";
