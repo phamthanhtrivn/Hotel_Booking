@@ -1,6 +1,6 @@
 -- --------------------------------------------------------
 -- Host:                         127.0.0.1
--- Server version:               11.4.4-MariaDB - mariadb.org binary distribution
+-- Server version:               11.6.2-MariaDB - mariadb.org binary distribution
 -- Server OS:                    Win64
 -- HeidiSQL Version:             12.8.0.6908
 -- --------------------------------------------------------
@@ -198,12 +198,13 @@ INSERT INTO `danh_gia` (`ma_danh_gia`, `binh_luan`, `diem_co_so_vat_chat`, `diem
 	('DG002', 'View ban công tuyệt vời, không gian yên tĩnh', 8, 9, 9, '2024-11-26 14:30:00.000000', 'LP2', b'1'),
 	('DG003', 'Phòng suite rộng rãi, đầy đủ tiện nghi cao cấp', 10, 9, 10, '2024-11-27 16:45:00.000000', 'LP6', b'1'),
 	('DG004', 'Phòng family rất tiện lợi cho gia đình có trẻ nhỏ', 8, 8, 9, '2024-11-28 11:20:00.000000', 'LP7', b'1'),
-	('DG005', 'Giá cả hợp lý, dịch vụ tốt, sẽ quay lại', 7, 8, 8, '2024-11-29 09:15:00.000000', 'LP3', b'1');
+	('DG005', 'Giá cả hợp lý, dịch vụ tốt, sẽ quay lại', 7, 8, 8, '2024-11-29 09:15:00.000000', 'LP3', b'1'),
+	('DG006', 'Sạch sẽ, gọn gàng', 9, 9, 9, '2025-12-01 20:58:34.688893', 'LP2', b'0');
 
 -- Dumping structure for table hotelbooking.don_dat_phong
 CREATE TABLE IF NOT EXISTS `don_dat_phong` (
   `ma_dat_phong` varchar(255) NOT NULL,
-  `vat` int(11) NOT NULL,
+  `vat` double NOT NULL,
   `check_in` datetime(6) DEFAULT NULL,
   `check_out` datetime(6) DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
@@ -228,20 +229,24 @@ CREATE TABLE IF NOT EXISTS `don_dat_phong` (
   CONSTRAINT `FKoofpaiwyvbalhesqbxlfsp2gq` FOREIGN KEY (`ma_danh_gia`) REFERENCES `danh_gia` (`ma_danh_gia`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.don_dat_phong: ~11 rows (approximately)
-INSERT INTO `don_dat_phong` (`ma_dat_phong`, `vat`, `check_in`, `check_out`, `email`, `ghi_chu`, `giam_gia_diem_tich_luy`, `ho_ten_khach_hang`, `lan_dau`, `so_dien_thoai`, `tong_tien`, `tong_tien_tt`, `trang_thai`, `ma_danh_gia`, `ma_khach_hang`, `ma_phong`, `ngay_tao`) VALUES
-	('DP_PENDING_001', 8, '2024-12-15 14:00:00.000000', '2024-12-17 12:00:00.000000', 'vana@gmail.com', 'Chưa có yêu cầu đặc biệt', 0, 'Nguyễn Văn A', b'0', '0901234567', 900000, 972000, 'DA_HUY', NULL, 'KH1', 'P102', '2024-11-29 11:00:00.000000'),
-	('DP_PENDING_002', 8, '2024-12-20 14:00:00.000000', '2024-12-22 12:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Tổ chức sinh nhật', 20000, 'Hà Thanh Tuấn', b'0', '0367155132', 1800000, 1926400, 'DA_HUY', NULL, 'KH2', 'P501', '2024-11-30 14:20:00.000000'),
-	('DP_SUCCESS_001', 8, '2024-11-20 14:00:00.000000', '2024-11-22 12:00:00.000000', 'vana@gmail.com', 'Yêu cầu phòng tầng cao, view đẹp', 0, 'Nguyễn Văn A', b'1', '0901234567', 1000000, 1080000, 'DA_THANH_TOAN', 'DG001', 'KH1', 'P101', '2024-11-15 10:30:00.000000'),
-	('DP_SUCCESS_002', 8, '2024-11-25 14:00:00.000000', '2024-11-27 12:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Kỷ niệm 1 năm ngày cưới', 50000, 'Hà Thanh Tuấn', b'0', '0367155132', 1200000, 1246000, 'DA_THANH_TOAN', 'DG002', 'KH2', 'P201', '2024-11-18 15:45:00.000000'),
-	('DP_SUCCESS_003', 8, '2024-12-01 14:00:00.000000', '2024-12-03 12:00:00.000000', 'vanb@gmail.com', 'Công tác kết hợp nghỉ dưỡng', 0, 'Nguyễn Văn B', b'1', '0912345678', 4400000, 4752000, 'DA_THANH_TOAN', 'DG003', 'KH3', 'P701', '2024-11-22 09:20:00.000000'),
-	('DP_SUCCESS_004', 8, '2024-12-05 14:00:00.000000', '2024-12-07 12:00:00.000000', 'vanc@gmail.com', 'Du lịch gia đình cuối tuần', 100000, 'Nguyễn Văn C', b'0', '0923456789', 3800000, 4004000, 'DA_THANH_TOAN', 'DG004', 'KH4', 'P601', '2024-11-25 14:15:00.000000'),
-	('DP_SUCCESS_005', 8, '2024-12-10 14:00:00.000000', '2024-12-12 12:00:00.000000', 'vana@gmail.com', 'Đi công tác', 0, 'Nguyễn Văn A', b'0', '0901234567', 1400000, 1512000, 'DA_THANH_TOAN', 'DG005', 'KH1', 'P301', '2024-11-28 16:30:00.000000'),
-	('DP0XDTV1D3ZO', 8, '2025-11-25 12:30:00.000000', '2025-11-28 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', b'0', '0367155132', 1800000, 1944000.0000000002, 'DA_HUY', NULL, 'KHXN768S7ZH5', 'P110', '2025-11-25 22:32:55.252920'),
-	('DP2TKQTH8JF6', 8, '2025-11-25 12:30:00.000000', '2025-11-28 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', b'0', '0367155132', 1800000, 1944000.0000000002, 'DA_THANH_TOAN', NULL, 'KH0X07NXEF7G', 'P110', '2025-11-25 22:32:58.686746'),
-	('DP4V72X2JKG1', 8, '2025-11-24 12:30:00.000000', '2025-11-25 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', b'0', '0367155132', 1100000, 1188000, 'DA_HUY', NULL, 'KHT4ZJ524GG2', 'P502', '2025-11-24 15:34:20.883010'),
-	('DP4WEQ6C206E', 8, '2025-11-26 12:30:00.000000', '2025-11-28 13:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Không cần gì hết', 0, 'Hà Thanh Tuấn', b'0', '0367155132', 1200000, 1296000, 'DA_HUY', NULL, 'KH5B58BRLYL3', 'P110', '2025-11-24 15:25:34.088575'),
-	('DPT1M90YGSN4', 8, '2025-11-24 12:30:00.000000', '2025-11-25 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', b'0', '0367155132', 1100000, 1188000, 'DA_HUY', NULL, 'KH308EUY9C2F', 'P502', '2025-11-24 15:40:10.674430');
+-- Dumping data for table hotelbooking.don_dat_phong: ~16 rows (approximately)
+INSERT INTO `don_dat_phong` (`ma_dat_phong`, `vat`, `check_in`, `check_out`, `email`, `ghi_chu`, `giam_gia_diem_tich_luy`, `ho_ten_khach_hang`, `giam_gia_lan_dau`, `so_dien_thoai`, `tong_tien`, `tong_tien_tt`, `trang_thai`, `ma_danh_gia`, `ma_khach_hang`, `ma_phong`, `ngay_tao`) VALUES
+	('DP_PENDING_001', 8, '2024-12-15 14:00:00.000000', '2024-12-17 12:00:00.000000', 'vana@gmail.com', 'Chưa có yêu cầu đặc biệt', 0, 'Nguyễn Văn A', 0, '0901234567', 900000, 972000, 'DA_HUY', NULL, 'KH1', 'P102', '2024-11-29 11:00:00.000000'),
+	('DP_PENDING_002', 8, '2024-12-20 14:00:00.000000', '2024-12-22 12:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Tổ chức sinh nhật', 20000, 'Hà Thanh Tuấn', 0, '0367155132', 1800000, 1926400, 'DA_HUY', NULL, 'KH2', 'P501', '2024-11-30 14:20:00.000000'),
+	('DP_SUCCESS_001', 8, '2024-11-20 14:00:00.000000', '2024-11-22 12:00:00.000000', 'vana@gmail.com', 'Yêu cầu phòng tầng cao, view đẹp', 0, 'Nguyễn Văn A', 1, '0901234567', 1000000, 1080000, 'DA_THANH_TOAN', 'DG001', 'KH1', 'P101', '2024-11-15 10:30:00.000000'),
+	('DP_SUCCESS_002', 8, '2024-11-25 14:00:00.000000', '2024-11-27 12:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Kỷ niệm 1 năm ngày cưới', 50000, 'Hà Thanh Tuấn', 0, '0367155132', 1200000, 1246000, 'DA_THANH_TOAN', 'DG002', 'KH2', 'P201', '2024-11-18 15:45:00.000000'),
+	('DP_SUCCESS_003', 8, '2024-12-01 14:00:00.000000', '2024-12-03 12:00:00.000000', 'vanb@gmail.com', 'Công tác kết hợp nghỉ dưỡng', 0, 'Nguyễn Văn B', 1, '0912345678', 4400000, 4752000, 'DA_THANH_TOAN', 'DG003', 'KH3', 'P701', '2024-11-22 09:20:00.000000'),
+	('DP_SUCCESS_004', 8, '2024-12-05 14:00:00.000000', '2024-12-07 12:00:00.000000', 'vanc@gmail.com', 'Du lịch gia đình cuối tuần', 100000, 'Nguyễn Văn C', 0, '0923456789', 3800000, 4004000, 'DA_THANH_TOAN', 'DG004', 'KH4', 'P601', '2024-11-25 14:15:00.000000'),
+	('DP_SUCCESS_005', 8, '2024-12-10 14:00:00.000000', '2024-12-12 12:00:00.000000', 'vana@gmail.com', 'Đi công tác', 0, 'Nguyễn Văn A', 0, '0901234567', 1400000, 1512000, 'DA_THANH_TOAN', 'DG005', 'KH1', 'P301', '2024-11-28 16:30:00.000000'),
+	('DP0XDTV1D3ZO', 8, '2025-11-25 12:30:00.000000', '2025-11-28 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1800000, 1944000.0000000002, 'DA_HUY', NULL, 'KHXN768S7ZH5', 'P110', '2025-11-25 22:32:55.252920'),
+	('DP2TKQTH8JF6', 8, '2025-11-25 12:30:00.000000', '2025-11-28 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1800000, 1944000.0000000002, 'DA_THANH_TOAN', NULL, 'KH0X07NXEF7G', 'P110', '2025-11-25 22:32:58.686746'),
+	('DP49U2BVQZRE', 0, '2025-12-10 13:00:00.000000', '2025-12-11 12:30:00.000000', 'phamthanhtri0712@gmail.com', '', 600000, 'Phạm Thành Trí', 0, '0398694435', 600000, 0, 'DA_HUY', NULL, 'KHFTE2LNJ7SW', 'P203', '2025-12-01 20:45:28.570871'),
+	('DP4V72X2JKG1', 8, '2025-11-24 12:30:00.000000', '2025-11-25 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1100000, 1188000, 'DA_HUY', NULL, 'KHT4ZJ524GG2', 'P502', '2025-11-24 15:34:20.883010'),
+	('DP4WEQ6C206E', 8, '2025-11-26 12:30:00.000000', '2025-11-28 13:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Không cần gì hết', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1200000, 1296000, 'DA_HUY', NULL, 'KH5B58BRLYL3', 'P110', '2025-11-24 15:25:34.088575'),
+	('DP76E9GWCRUQ', 48000, '2025-12-10 13:00:00.000000', '2025-12-12 12:30:00.000000', 'phamthanhtri0712@gmail.com', '', 600000, 'Phạm Thành Trí', 0, '0398694435', 1200000, 648000, 'DA_THANH_TOAN', NULL, 'KHFTE2LNJ7SW', 'P201', '2025-12-01 20:29:04.262545'),
+	('DPJAE7XTY86B', 240000, '2025-12-10 13:00:00.000000', '2025-12-15 12:30:00.000000', 'phamthanhtri0712@gmail.com', '', 0, 'Phạm Thành Trí', 0, '0398694435', 3000000, 3240000, 'DA_THANH_TOAN', NULL, 'KHFTE2LNJ7SW', 'P202', '2025-12-01 20:38:57.721077'),
+	('DPT1M90YGSN4', 8, '2025-11-24 12:30:00.000000', '2025-11-25 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1100000, 1188000, 'DA_HUY', NULL, 'KH308EUY9C2F', 'P502', '2025-11-24 15:40:10.674430'),
+	('DPU4VTAROQLJ', 561600, '2024-06-20 13:00:00.000000', '2024-06-22 12:30:00.000000', 'phamthanhtri0712@gmail.com', '', 0, 'Phạm Thành Trí', 780000, '0398694435', 7800000, 7581600, 'DA_THANH_TOAN', 'DG006', 'KHFTE2LNJ7SW', 'P110', '2025-12-01 20:26:18.134951');
 
 -- Dumping structure for table hotelbooking.hinh_anh
 CREATE TABLE IF NOT EXISTS `hinh_anh` (
@@ -309,6 +314,7 @@ INSERT INTO `khach_hang` (`ma_khach_hang`, `diem_tich_luy`, `ho_ten_khach_hang`,
 	('KH308EUY9C2F', 0, 'Hà Thanh Tuấn', '0367155132'),
 	('KH4', 6, 'Nguyễn Văn C', '0923456789'),
 	('KH5B58BRLYL3', 0, 'Hà Thanh Tuấn', '0367155132'),
+	('KHFTE2LNJ7SW', 19, 'Phạm Thành Trí', '0398694435'),
 	('KHT4ZJ524GG2', 0, 'Hà Thanh Tuấn', '0367155132'),
 	('KHXN768S7ZH5', 0, 'Hà Thanh Tuấn', '0367155132');
 
@@ -321,7 +327,7 @@ CREATE TABLE IF NOT EXISTS `loai_giuong` (
   PRIMARY KEY (`ma_giuong`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.loai_giuong: ~4 rows (approximately)
+-- Dumping data for table hotelbooking.loai_giuong: ~5 rows (approximately)
 INSERT INTO `loai_giuong` (`ma_giuong`, `mo_ta`, `ten_giuong`, `tinh_trang`) VALUES
 	('G1', 'Giường đơn dành cho 1 khách', 'Single', b'1'),
 	('G2', 'Giường đôi dành cho 2 khách', 'Double', b'1'),
@@ -358,7 +364,7 @@ INSERT INTO `loai_phong` (`ma_loai_phong`, `dien_tich`, `gia`, `mo_ta`, `so_khac
 -- Dumping structure for table hotelbooking.phong
 CREATE TABLE IF NOT EXISTS `phong` (
   `ma_phong` varchar(255) NOT NULL,
-  `ten_phong` VARCHAR(50) NOT NULL,
+  `ten_phong` varchar(255) NOT NULL,
   `trang_thai` enum('TRONG','PHUC_VU','BAO_TRI') DEFAULT 'TRONG',
   `vi_tri` varchar(255) DEFAULT NULL,
   `ma_loai_phong` varchar(255) NOT NULL,
@@ -451,7 +457,8 @@ INSERT INTO `tai_khoan` (`ma_tai_khoan`, `email`, `mat_khau`, `vai_tro`, `ma_kha
 	('TK2', 'hthanhtuan.2307@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH2', b'1'),
 	('TK3', 'vana@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH1', b'1'),
 	('TK4', 'vanb@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH3', b'1'),
-	('TK5', 'vanc@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH4', b'1');
+	('TK5', 'vanc@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH4', b'1'),
+	('TKWT1NUWETK9', 'phamthanhtri0712@gmail.com', '$2a$10$CNOXCKUVs2eTtoNaAuchRuHNZVMcMIH6rveTaLhdJoxsE2hkDN1zC', 'MEMBER', 'KHFTE2LNJ7SW', b'1');
 
 -- Dumping structure for table hotelbooking.tien_nghi
 CREATE TABLE IF NOT EXISTS `tien_nghi` (
@@ -467,7 +474,7 @@ CREATE TABLE IF NOT EXISTS `tien_nghi` (
 INSERT INTO `tien_nghi` (`ma_tien_nghi`, `ten_tien_nghi`, `icon`, `loai_tien_nghi`, `tinh_trang`) VALUES
 	('TN1', 'Wifi miễn phí', 'wifi', 'Mạng Internet và điện thoại', b'1'),
 	('TN10', 'Máy sấy tóc', 'wind', 'Đồ điện tử', b'1'),
-	('TN11', 'Mini bar cao cấp', 'Khác', 'martini', b'1'),
+	('TN11', 'Mini bar cao cấp', 'Khác', 'Khác', b'1'),
 	('TN12', 'Bồn tắm jacuzzi', 'jacuzzi', 'Nhà tắm', b'1'),
 	('TN13', 'Sofa thư giãn', 'sofa', 'Đồ nội thất', b'1'),
 	('TN14', 'Két an toàn', 'shield', 'Đồ nội thất', b'1'),
@@ -475,11 +482,11 @@ INSERT INTO `tien_nghi` (`ma_tien_nghi`, `ten_tien_nghi`, `icon`, `loai_tien_ngh
 	('TN16', 'Phòng tắm vòi sen', 'shower', 'Nhà tắm', b'1'),
 	('TN17', 'Móc quần áo', 'hang', 'Đồ nội thất', b'1'),
 	('TN18', 'Điện thoại', 'phone', 'Mạng Internet và điện thoại', b'1'),
-	('TN19', 'Tủ lạnh', NULL, NULL, b'1'),
+	('TN19', 'Tủ lạnh', '', 'Đồ nội thất', b'1'),
 	('TN2', 'TV màn hình phẳng', 'tv', 'Hình ảnh/âm thanh', b'1'),
 	('TN20', 'Máy sấy tóc', 'hair-dryer', 'Đồ điện tử', b'1'),
 	('TN21', 'Phòng cách âm', 'mute', 'Khác', b'1'),
-	('TN3', 'Minibar', NULL, NULL, b'1'),
+	('TN3', 'Minibar', '', 'Khác', b'1'),
 	('TN4', 'Điều hòa', 'snowflake', 'Đồ điện tử', b'1'),
 	('TN5', 'Bồn tắm', 'bath-tub', 'Nhà tắm', b'1'),
 	('TN6', 'Ban công', 'balcony', 'Khu vực ngoài trời', b'1'),
