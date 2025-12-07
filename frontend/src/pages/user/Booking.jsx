@@ -80,6 +80,9 @@ const Booking = () => {
   useEffect(() => {
     if (user) {
       fetchTotalBookingNumber();
+      setCustomerName(user.khachHang.hoTenKH);
+      setEmail(user.email);
+      setPhone(user.khachHang.soDienThoai);
     }
   }, [user]);
 
@@ -170,8 +173,9 @@ const Booking = () => {
         agreed: agreed,
         giamGiaLanDau: discountFirstTime,
         giamGiaDiemTichLuy: discountPointsMoney,
-        trangThaiDon: totalPrice > 0 ? "CHUA_THANH_TOAN": "DA_THANH_TOAN",
+        trangThaiDon: totalPrice > 0 ? "CHUA_THANH_TOAN" : "DA_THANH_TOAN",
       };
+      console.log(bookingRequest);
       const result = await donDatPhongService.datPhong(bookingRequest);
       setLoading(false);
       toast.success(

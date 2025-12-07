@@ -364,6 +364,21 @@ export const quyDinhDieuKhoan = [
     ]
   },
   {
+    title: "Chính sách ưu đãi",
+    content: [
+      "Khách hàng thành viên sẽ được giảm giá 10% cho lần đặt phòng đầu tiên.",
+      "Khách hàng thành viên được tặng 1 đêm lưu trú miễn phí mỗi khi tích lũy đủ 10 đêm lưu trú tại khách sạn.",
+    ]
+  },
+  {
+    title: "Chính sách dành cho trẻ em",
+    content: [
+      "Trẻ em dưới từ 2 - 6 tuổi sẽ được sẽ được xem là không chiếm chỗ nếu đi cùng cha mẹ, tuy nhiên 2 trẻ sẽ được tính là một người lớn.",
+      "Đối với trẻ em dưới một tuổi thì sẽ tùy theo yêu cầu của từng loại phòng, vui lòng tham khảo chi tiết tại trang web.",
+    ]
+  }
+  ,
+  {
     title: "Giấy tờ khi nhận phòng",
     content: [
       "Xuất trình CMND/CCCD hoặc hộ chiếu khi nhận phòng.",
