@@ -152,8 +152,12 @@ public class DonDatPhongController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<DonDatPhong>> search(@RequestBody DonDatPhongSearchRequest req) {
-        List<DonDatPhong> result = donDatPhongService.search(req);
+    public ResponseEntity<Page<DonDatPhong>> search(
+            @RequestBody DonDatPhongSearchRequest req,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<DonDatPhong> result = donDatPhongService.search(req, page, size);
         return ResponseEntity.ok(result);
     }
 

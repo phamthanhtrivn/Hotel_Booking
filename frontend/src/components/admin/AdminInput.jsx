@@ -6,7 +6,7 @@ export default function AdminInput({
   onChange,
   placeholder,
   label = "",
-  type = "text", // text | number | currency | area
+  type = "text", // text | number | currency | area | datetime-local
   min,
   max,
   validator,
@@ -16,10 +16,8 @@ export default function AdminInput({
 
   // Sync state -> hiển thị
   useEffect(() => {
-    if ((type === "currency" || type === "area") && value != null) {
-      setDisplayValue(String(value));
-    } else if (type === "number" && value != null) {
-      setDisplayValue(String(value));
+    if (type === "number" || type === "currency" || type === "area") {
+      setDisplayValue(value != null ? String(value) : "");
     } else {
       setDisplayValue(value || "");
     }
@@ -43,8 +41,7 @@ export default function AdminInput({
       if (min !== undefined && num < min) num = min;
       if (max !== undefined && num > max) num = max;
 
-
-      onChange(num)
+      onChange(num);
       setDisplayValue(num);
     } else {
       onChange(val);
@@ -64,13 +61,16 @@ export default function AdminInput({
       )}
       <div className="relative">
         <Input
+          type={type}
           value={displayValue}
           onChange={handleChange}
           placeholder={placeholder}
-          className={`pt-[17px] font-[500] ${suffix ? "pr-13" : ""}`} // để chừa chỗ cho suffix
+          className={`pt-[17px] font-[500] ${suffix ? "pr-13" : ""}`}
         />
         {suffix && (
-          <span className="absolute right-3 top-3.5 text-gray-500">{suffix}</span>
+          <span className="absolute right-3 top-3.5 text-gray-500">
+            {suffix}
+          </span>
         )}
       </div>
     </div>

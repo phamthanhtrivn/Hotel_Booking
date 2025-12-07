@@ -9,8 +9,8 @@ import iuh.fit.hotel_booking_backend.entity.Phong;
 import iuh.fit.hotel_booking_backend.entity.TrangThaiDon;
 import iuh.fit.hotel_booking_backend.helper.DonDatPhongSpecification;
 import iuh.fit.hotel_booking_backend.repository.DonDatPhongRepository;
-import iuh.fit.hotel_booking_backend.repository.KhachHangRepository;
-import iuh.fit.hotel_booking_backend.repository.PhongRepository;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import iuh.fit.hotel_booking_backend.util.IdUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -74,8 +74,10 @@ public class DonDatPhongService {
         return repo.countByKhachHangId(maKhachHang);
     }
 
-    public List<DonDatPhong> search(DonDatPhongSearchRequest req) {
-        return repo.findAll(DonDatPhongSpecification.build(req));
+    public Page<DonDatPhong> search(DonDatPhongSearchRequest req, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "checkIn"));
+        Specification<DonDatPhong> spec = DonDatPhongSpecification.build(req);
+        return repo.findAll(spec, pageable);
     }
 
     @Transactional
