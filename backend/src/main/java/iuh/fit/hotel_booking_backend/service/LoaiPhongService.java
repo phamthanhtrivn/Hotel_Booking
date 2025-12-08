@@ -3,8 +3,6 @@ package iuh.fit.hotel_booking_backend.service;
 import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.dto.ChiTietLoaiGiuongRequest;
 import iuh.fit.hotel_booking_backend.dto.LoaiPhongSearchRequest;
-import iuh.fit.hotel_booking_backend.entity.ChiTietLoaiGiuong;
-import iuh.fit.hotel_booking_backend.entity.ChiTietTienNghi;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.helper.DTOMapper;
 import iuh.fit.hotel_booking_backend.helper.QuyDoiKhachHelper;
@@ -22,9 +20,11 @@ import iuh.fit.hotel_booking_backend.entity.TrangThaiPhong;
 import iuh.fit.hotel_booking_backend.helper.LoaiPhongSpecification;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,18 +57,19 @@ public class LoaiPhongService {
         return loaiPhongRepository.findAll();
     }
 
-    public List<LoaiPhong> findByName(String name){
+    public List<LoaiPhong> findByName(String name) {
         return loaiPhongRepository.findByTenLoaiPhong(name);
     }
 
     public Page<LoaiPhongDTO> findByConditions(int page, int size, LoaiPhongSearchRequest dto) {
         Pageable pageable = PageRequest.of(page, size);
-
+        System.out.println(dto);
         Specification<LoaiPhong> spec = Specification.allOf(
                 LoaiPhongSpecification.tenLoaiPhongContains(dto.getTenLoaiPhong()),
                 LoaiPhongSpecification.soKhachGreaterOrEqual(dto.getSoKhach()),
                 LoaiPhongSpecification.giaBetween(dto.getMinGia(), dto.getMaxGia()),
-                LoaiPhongSpecification.dienTichBetween(dto.getMinDienTich(), dto.getMaxDienTich()));
+                LoaiPhongSpecification.dienTichBetween(dto.getMinDienTich(), dto.getMaxDienTich()),
+                LoaiPhongSpecification.tinhTrangEquals(dto.getTinhTrang()));
 
         Page<LoaiPhong> loaiPhongPage = loaiPhongRepository.findAll(spec, pageable);
 
@@ -148,11 +149,36 @@ public class LoaiPhongService {
     }
 
     @Transactional
-    public APIResponse<LoaiPhong> save(LoaiPhong loaiPhong,
-                                       List<MultipartFile> images,
-                                       List<String> tienNghiIds,
-                                       List<ChiTietLoaiGiuongRequest> chiTietGiuongs) {
-        APIResponse<LoaiPhong> response = new APIResponse<>();
+    public APIResponse<Object> save(LoaiPhong loaiPhong,
+                               List<MultipartFile> images,
+                               List<String> tienNghiIds,
+                               List<ChiTietLoaiGiuongRequest> chiTietGiuongs) {
+
+        APIResponse<Object> response = new APIResponse<>();
+        Map<String, String> errors = new HashMap<>();
+
+        if (images == null || images.isEmpty()) {
+            errors.put("hinhAnh", "Vui lòng thêm hình");
+        }
+
+        if (chiTietGiuongs == null || chiTietGiuongs.isEmpty()) {
+            errors.put("loaiGiuong", "Vui lòng thêm giường");
+        }
+
+        if (tienNghiIds == null || tienNghiIds.isEmpty()) {
+            errors.put("tienNghi", "Vui lòng thêm tiện nghi");
+        }
+
+        if (!errors.isEmpty()) {
+            response.setSuccess(false);
+            response.setData(errors);
+            return response;
+        }
+        if (loaiPhongRepository.existsByTenLoaiPhong(loaiPhong.getTenLoaiPhong())) {
+            response.setSuccess(false);
+            response.setData(Map.of("tenLoaiPhong", "Tên loại phòng đã tồn tại"));
+            return response;
+        }
         try {
             List<String> urls = cloudinaryService.uploadFiles(images, "loai_phong");
 
@@ -173,7 +199,7 @@ public class LoaiPhongService {
             response.setMessage("Thêm loại phòng thành công");
             response.setData(loaiPhong);
             return response;
-        } catch (Exception e) {
+        }catch (Exception e) {
             System.out.println(e.getMessage());
             response.setMessage("Thêm loại phòng thất bại. " + e.getMessage());
             response.setSuccess(false);

@@ -59,6 +59,7 @@ const RoomTypeManagement = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [loaiPhongs, setLoaiPhongs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const [filters, setFilters] = useState(defaultFilters);
   const [formData, setFormData] = useState(defaultForm);
@@ -123,6 +124,7 @@ const RoomTypeManagement = () => {
         tinhTrang: filters.tinhTrang === "ALL" ? null : filters.tinhTrang,
       };
 
+      console.log(payload)
       const result = await loaiPhongService.search(currentPage, 10, payload);
       setLoaiPhongs(result.content);
       setTotalPages(result.totalPages);
@@ -144,6 +146,7 @@ const RoomTypeManagement = () => {
 
   // ============================ OPEN / CLOSE MODAL =====================
   const resetFormData = () => {
+    setErrors({});
     setFormData(defaultForm);
     setOldImages([]);
     setFiles([]);
@@ -275,12 +278,14 @@ const RoomTypeManagement = () => {
 
       edit ? await loaiPhongService.update(fd) : await loaiPhongService.add(fd);
 
-      fetchLoaiPhong();
       setLoading(false);
+      toast.success("Thêm loại phòng thành công!")
       onClose();
-    } catch (err) {
+      fetchLoaiPhong();
+    } catch (error) {
+      setErrors(error.response?.data?.data || {});
       setLoading(false);
-      console.error("Save error:", err);
+      console.error("Save error:", error);
     }
   };
   // ============================ RENDER ===============================
@@ -461,6 +466,11 @@ const RoomTypeManagement = () => {
               value={formData.tenLoaiPhong}
               onChange={handleInputChange}
             />
+            {errors.tenLoaiPhong && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.tenLoaiPhong}
+              </span>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Giá</label>
@@ -469,6 +479,11 @@ const RoomTypeManagement = () => {
               value={formData.gia}
               onChange={handleInputChange}
             />
+            {errors.gia && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.gia}
+              </span>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Diện tích</label>
@@ -477,6 +492,11 @@ const RoomTypeManagement = () => {
               value={formData.dienTich}
               onChange={handleInputChange}
             />
+            {errors.dienTich && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.dienTich}
+              </span>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">
@@ -487,6 +507,11 @@ const RoomTypeManagement = () => {
               value={formData.soKhach}
               onChange={handleInputChange}
             />
+            {errors.soKhach && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.soKhach}
+              </span>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Active</label>
@@ -517,6 +542,11 @@ const RoomTypeManagement = () => {
               value={selectedBeds}
               onChange={(list) => setSelectedBeds(list)}
             />
+            {errors.loaiGiuong && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.loaiGiuong}
+              </span>
+            )}
           </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-2">Tiện nghi</label>
@@ -540,6 +570,11 @@ const RoomTypeManagement = () => {
                 </MultiSelectGroup>
               </MultiSelectContent>
             </MultiSelect>
+            {errors.tienNghi && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.tienNghi}
+              </span>
+            )}
           </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-2">Mô tả</label>
@@ -570,7 +605,11 @@ const RoomTypeManagement = () => {
                 onChange={handleFileChange}
               />
             </label>
-
+            {errors.hinhAnh && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.hinhAnh}
+              </span>
+            )}
             <div className="mt-2 flex flex-col gap-1">
               {/* ẢNH CŨ */}
               {oldImages.length > 0 && (

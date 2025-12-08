@@ -189,8 +189,7 @@ const Booking = () => {
         navigate("/account/booking-history");
       }
     } catch (error) {
-      console.log(error.response.data.data);
-      setErrors(error.response.data.data);
+      setErrors(error.response?.data?.data || {});
       setLoading(false);
     }
   };

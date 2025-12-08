@@ -43,4 +43,6 @@ public interface LoaiPhongRepository extends JpaRepository<LoaiPhong, String>, J
 
     List<LoaiPhong> findByTenLoaiPhong(String tenLoaiPhong);
 
+    boolean existsByTenLoaiPhong(String tenLoaiPhong);
+
 }

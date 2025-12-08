@@ -9,11 +9,13 @@ import iuh.fit.hotel_booking_backend.dto.LoaiPhongSearchRequest;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.service.LoaiPhongService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,18 +34,20 @@ public class AdminLoaiPhongController {
             @RequestParam(defaultValue = "10") int size,
             @RequestBody LoaiPhongSearchRequest requestbody
     ) {
+        System.out.println(requestbody);
         Page<LoaiPhongDTO> result = loaiPhongService.findByConditions(page, size, requestbody);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<APIResponse<LoaiPhong>> create(
+    public ResponseEntity<APIResponse<Object>> create(
             @Valid @RequestPart("loaiPhong") LoaiPhong loaiPhong,
-            @RequestPart(value = "images", required = false) List<MultipartFile> images,
+            @RequestPart(value = "images", required = false) List<MultipartFile> hinhAnh,
             @RequestPart(value = "tienNghiIds", required = false) List<String> tienNghiIds,
             @RequestPart(value = "chiTietGiuongs", required = false) List<ChiTietLoaiGiuongRequest> chiTietGiuongs) {
 
-        APIResponse<LoaiPhong> response = loaiPhongService.save(loaiPhong, images, tienNghiIds, chiTietGiuongs);
+        APIResponse<Object> response = loaiPhongService.save(loaiPhong, hinhAnh, tienNghiIds, chiTietGiuongs);
+
         return ResponseEntity.status(response.isSuccess() ? 200 : 400).body(response);
     }
 

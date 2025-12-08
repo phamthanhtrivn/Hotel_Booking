@@ -20,13 +20,13 @@ public class LoaiPhong {
     @Column(name = "ma_loai_phong")
     private String maLoaiPhong;
 
-    @NotBlank(message = "Hãy nhập tên phòng")
+    @NotBlank(message = "Hãy nhập tên loại phòng")
     @Pattern(regexp = "^(Standard|Delux|Family|Suite)\\s+\\w+(?:\\s+\\w+)*$", message = "Phải bắt đầu là Standard, Delux, Family hoặc Suite và có 2 từ trở lên")
     @Column(name = "ten_loai_phong", nullable = false, unique = true)
     private String tenLoaiPhong;
 
     @NotNull(message = "Hãy nhập diện tích")
-    @Min(value = 20, message = "Diên tích tối thiểu là 20 \\(m^{2}\\)")
+    @Min(value = 20, message = "Diên tích tối thiểu là 20 m²")
     @Column(name = "dien_tich")
     private double dienTich;
 
@@ -46,18 +46,17 @@ public class LoaiPhong {
             name = "hinh_anh",
             joinColumns = @JoinColumn(name = "ma_loai_phong")
     )
-    @NotEmpty(message = "Vui lòng thêm hình")
     @Column(name = "url")
     private List<String> hinhAnh;
 
     @Column(name = "mo_ta", columnDefinition = "TEXT")
     private String moTa;
 
-    @OneToMany(mappedBy = "loaiPhong", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<ChiTietLoaiGiuong> chiTietLoaiGiuongList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "loaiPhong", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "loaiPhong", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<ChiTietTienNghi> chiTietTienNghiList = new ArrayList<>();
 
