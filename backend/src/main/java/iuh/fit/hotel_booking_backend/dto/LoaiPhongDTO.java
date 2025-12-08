@@ -21,6 +21,7 @@ public class LoaiPhongDTO {
     private String tenLoaiPhong;
     private double dienTich;
     private int soKhach;
+    private int soTreEm;
     private double gia;
     private List<String> hinhAnh;
     private String moTa;

@@ -48,6 +48,9 @@ public class DonDatPhong {
     @Column(name = "tong_tien")
     private double tongTien;
 
+    @Column(name = "phu_thu_tre_em")
+    private double phuThuTreEm;
+
     @NotNull
     @Column(name = "tong_tien_tt")
     private double tongTienTT;

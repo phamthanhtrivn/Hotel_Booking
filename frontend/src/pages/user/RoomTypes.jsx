@@ -3,8 +3,10 @@ import RoomTypeCard from "@/components/common/RoomTypeCard";
 import SearchBar from "@/components/common/SearchBar";
 import { Button } from "@/components/ui/button";
 import { toLocalDate } from "@/helpers/dateHelpers";
+import { setFilters } from "@/store/roomSearchSlice";
 import React, { useEffect, useRef, useState } from "react";
 import { Toaster } from "react-hot-toast";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -16,48 +18,23 @@ tomorrow.setDate(today.getDate() + 1);
 
 const RoomTypes = () => {
   const [roomTypes, setRoomTypes] = useState([]);
-  const [filters, setFilters] = useState({
-    checkIn: today,
-    checkOut: tomorrow,
-    guests: 2,
-    roomType: "ALL",
-    children: [8]
-  });
+  const filters = useSelector((state) => state.roomSearch);
   const navigate = useNavigate();
   const roomSectionRef = useRef(null);
 
   useEffect(() => {
+    console.log(filters)
     const init = async () => {
-      try {
-        const defaultFilters = {
-          checkIn: today,
-          checkOut: tomorrow,
-          guests: 2,
-          roomType: "ALL",
-          children: [8]
-        };
-        setFilters(defaultFilters);
-
-        await handleSearch(defaultFilters);
-      } catch (err) {
-        console.error(err);
-        toast.error("Không thể tải danh sách phòng từ server.");
-      }
+      await handleSearch(filters);
     };
-
     init();
-  }, []);
+  }, [filters]);
 
   const handleSearch = async (currentFilters) => {
     try {
       const body = {
-        checkIn: currentFilters.checkIn
-          ? toLocalDate(new Date(currentFilters.checkIn))
-          : null,
-
-        checkOut: currentFilters.checkOut
-          ? toLocalDate(new Date(currentFilters.checkOut))
-          : null,
+        checkIn: toLocalDate(new Date(currentFilters.checkIn)),
+        checkOut: toLocalDate(new Date(currentFilters.checkOut)),
 
         soKhach: currentFilters.guests || null,
         tenLoaiPhong: currentFilters.roomType || null,
@@ -68,7 +45,7 @@ const RoomTypes = () => {
         maxDienTich: null,
         maGiuong: null,
       };
-      
+
       const response = await fetch(
         `${import.meta.env.VITE_BASE_API_URL}/api/public/loaiphong/search`,
         {
@@ -92,10 +69,7 @@ const RoomTypes = () => {
   };
 
   const onDetail = (id) => {
-    navigate(`/room-types/${id}`, {state: {
-      checkIn: filters.checkIn,
-      checkOut: filters.checkOut
-    }});
+    navigate(`/room-types/${id}`);
   };
 
   return (
@@ -142,11 +116,7 @@ const RoomTypes = () => {
       >
         {roomTypes && roomTypes.length > 0 ? (
           roomTypes.map((dto, index) => (
-            <RoomTypeCard
-              key={index}
-              room={dto}
-              onDetail={onDetail}
-            />
+            <RoomTypeCard key={index} room={dto} onDetail={onDetail} />
           ))
         ) : (
           <div className="flex items-center justify-center p-10">

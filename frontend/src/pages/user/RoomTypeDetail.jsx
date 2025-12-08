@@ -6,7 +6,7 @@ import { tienNghiService } from "@/services/tienNghiService";
 import { LandPlotIcon } from "lucide-react";
 import { IoIosResize, IoMdPeople, IoMdReturnLeft } from "react-icons/io";
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { MdOutlineSingleBed } from "react-icons/md";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,9 @@ import { danhGiaService } from "@/services/danhGiaService";
 import { processReviews } from "@/helpers/reviewHelpers";
 import TienNghiByCategory from "@/components/common/TienNghiByCategory";
 import ReviewsList from "@/components/common/ReviewsList";
+import { calculateNights } from "@/helpers/dateHelpers";
+import { useSelector } from "react-redux";
+import { FaChild } from "react-icons/fa6";
 
 const OtherRoomsSlider = ({ otherRooms }) => {
   const navigate = useNavigate();
@@ -110,11 +113,10 @@ const OtherRoomsSlider = ({ otherRooms }) => {
 };
 const RoomTypeDetail = () => {
   const { id } = useParams();
+  const filters = useSelector((state) => state.roomSearch);
   const [room, setRoom] = useState({});
   const [bedTypes, setBedTypes] = useState([]);
-  const location = useLocation();
-  const bookingData = location.state || {};
-  const { checkIn, checkOut } = bookingData;
+  const { checkIn, checkOut } = filters;
   const [otherRooms, setOtherRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [amenities, setAmenities] = useState([]);
@@ -159,7 +161,7 @@ const RoomTypeDetail = () => {
         const resAll = await fetch(
           `${import.meta.env.VITE_BASE_API_URL}/api/public/loaiphong`
         );
-        
+
         if (!resAll.ok) throw new Error("Failed to fetch all rooms");
         const dataAll = await resAll.json();
 
@@ -195,17 +197,7 @@ const RoomTypeDetail = () => {
   }, [id]);
 
   const handleBookNow = () => {
-    navigate("/booking", {
-      state: {
-        maLoaiPhong: room.maLoaiPhong,
-        tenLoaiPhong: room.tenLoaiPhong,
-        checkIn: checkIn,
-        checkOut: checkOut,
-        soKhach: room.soKhach || 2,
-        gia: room.gia,
-        hinhAnh: room.hinhAnh[0],
-      },
-    });
+    navigate(`/booking?room_type=${id}`);
   };
   if (loading) return <p className="text-center text-2xl mt-20">Loading...</p>;
   if (!room) return null;
@@ -313,10 +305,12 @@ const RoomTypeDetail = () => {
               </div>
             </div>
             <div className="px-5 md:border-l lg:border-l sm:border-0 border-foreground/30 flex flex-col">
-              <p className="tracking-widest uppercase mb-4">giá / 1 đêm</p>
+              <p className="tracking-widest uppercase mb-4">
+                giá / {calculateNights(checkIn, checkOut)} đêm
+              </p>
               <div className="flex flex-col gap-5">
                 <p className="text-3xl text-center font-bold text-[var(--color-primary)]">
-                  {formatVND(room.gia)}
+                  {formatVND(room.gia * calculateNights(checkIn, checkOut))}
                 </p>
                 <Button
                   onClick={handleBookNow}
@@ -326,24 +320,28 @@ const RoomTypeDetail = () => {
                 </Button>
                 <div className="grid grid-cols-2 gap-7">
                   <div className="flex items-center space-x-6">
-                    <MdOutlineSingleBed size={35} />
+                    <IoMdPeople size={35} className="stroke-1" />
                     <span className="text-[16px]">
-                      {bedTypes.map((b) => b.tenGiuong).join(", ")}
+                      Tối đa {room.soKhach} người lớn
                     </span>
                   </div>
                   <div className="flex items-center space-x-6">
-                    <IoMdPeople size={35} className="stroke-1" />
+                    <FaChild size={35} />
                     <span className="text-[16px]">
-                      Tối đa {room.soKhach} Khách
+                      Tối đa {room.soTreEm} trẻ em
                     </span>
                   </div>
                   <div className="flex items-center space-x-6">
                     <IoIosResize size={35} />
-                    <span className="text-[16px]">{room.dienTich} m²</span>
+                    <span className="text-[16px]">
+                      Diện tích {room.dienTich} m²
+                    </span>
                   </div>
                   <div className="flex items-center space-x-6">
-                    <LandPlotIcon size={35} />
-                    <span className="text-[16px]">View biển</span>
+                    <MdOutlineSingleBed size={35} />
+                    <span className="text-[16px]">
+                      {bedTypes.map((b) => b.tenGiuong).join(", ")}
+                    </span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-6 border-t pt-3 border-foreground/30">

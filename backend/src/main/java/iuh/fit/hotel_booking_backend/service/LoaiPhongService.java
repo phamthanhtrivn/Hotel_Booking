@@ -150,9 +150,9 @@ public class LoaiPhongService {
 
     @Transactional
     public APIResponse<Object> save(LoaiPhong loaiPhong,
-                               List<MultipartFile> images,
-                               List<String> tienNghiIds,
-                               List<ChiTietLoaiGiuongRequest> chiTietGiuongs) {
+                                    List<MultipartFile> images,
+                                    List<String> tienNghiIds,
+                                    List<ChiTietLoaiGiuongRequest> chiTietGiuongs) {
 
         APIResponse<Object> response = new APIResponse<>();
         Map<String, String> errors = new HashMap<>();
@@ -199,7 +199,7 @@ public class LoaiPhongService {
             response.setMessage("Thêm loại phòng thành công");
             response.setData(loaiPhong);
             return response;
-        }catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             response.setMessage("Thêm loại phòng thất bại. " + e.getMessage());
             response.setSuccess(false);
@@ -233,7 +233,7 @@ public class LoaiPhongService {
             LocalDateTime checkIn,
             LocalDateTime checkOut,
             String tenLoaiPhong,
-            Integer soKhach,
+            Integer soNguoiLon,
             Integer[] treEm,
             Double minGia,
             Double maxGia,
@@ -241,12 +241,13 @@ public class LoaiPhongService {
             Double maxDienTich,
             String maGiuong
     ) {
-        int soKhachThucTe = QuyDoiKhachHelper.tinhSoKhachSauQuyDoi(soKhach, treEm);
+        QuyDoiKhachHelper.KhachThucTe kt =
+                QuyDoiKhachHelper.tinhKhachThucTe(soNguoiLon, treEm);
 
         Specification<LoaiPhong> spec = Specification.allOf(
                 LoaiPhongSpecification.phongTrong(checkIn, checkOut),
                 LoaiPhongSpecification.tenLoaiPhongContains(tenLoaiPhong),
-                LoaiPhongSpecification.soKhachGreaterOrEqual(soKhachThucTe),
+                LoaiPhongSpecification.sucChuaPhuHop(kt.soNguoiLon, kt.soTreEm),
                 LoaiPhongSpecification.giaBetween(minGia, maxGia),
                 LoaiPhongSpecification.dienTichBetween(minDienTich, maxDienTich),
                 LoaiPhongSpecification.loaiGiuong(maGiuong)
@@ -266,4 +267,5 @@ public class LoaiPhongService {
                 })
                 .collect(Collectors.toList());
     }
+
 }

@@ -44,6 +44,7 @@ public class DatPhongRequest {
     public double tongTienThanhToan;
     public String ghiChu;
 
+    public double phuThuTreEm;
     public double giamGiaLanDau;
     public double giamGiaDiemTichLuy;
     public String trangThaiDon;

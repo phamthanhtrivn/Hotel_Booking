@@ -95,6 +95,7 @@ public class DonDatPhongService {
         don.setSoDienThoai(req.soDienThoai);
         don.setEmail(req.email);
         don.setKhachHang(khachHang);
+        don.setPhuThuTreEm(req.phuThuTreEm);
 
         don.setGiamGiaLanDau(req.giamGiaLanDau);
         don.setGiamGiaDiemTichLuy(req.giamGiaDiemTichLuy);
@@ -121,8 +122,7 @@ public class DonDatPhongService {
         if (req.trangThaiDon.equals("DA_THANH_TOAN")) {
             emailService.sendBookingPaidEmail(don.getEmail(), don.getMaDatPhong());
             updateDiemTichLuy(don.getMaDatPhong());
-        }
-        else {
+        } else {
             emailService.sendBookingConfirmationWithPaymentInfo(don.getEmail(), don.getMaDatPhong(), req.tongTienThanhToan);
         }
 
@@ -151,8 +151,7 @@ public class DonDatPhongService {
 
             if (diem >= 10) {
                 diem = (diem + soDem) % 10;
-            }
-            else {
+            } else {
                 diem += soDem;
             }
             khachHang.setDiemTichLuy(diem);

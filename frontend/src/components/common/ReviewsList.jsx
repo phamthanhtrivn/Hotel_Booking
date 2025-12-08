@@ -38,7 +38,7 @@ export default function ReviewsList({ reviewsState }) {
           />
         </div>
       </div>
-      <div>
+      <div className="flex flex-col gap-2">
         <h2 className="text-xl uppercase  mb-4">Đánh giá của khách hàng</h2>
         {reviewsState.reviews.map((r) => (
           <div

@@ -39,9 +39,17 @@ const RoomTypeCard = ({ room, onDetail }) => {
             {room.soKhach && (
               <div className="flex">
                 <span className="w-28 font-semibold text-background/60">
-                  Số người:
+                  Số người lớn:
                 </span>
                 <span className="text-background">{room.soKhach}</span>
+              </div>
+            )}
+            {room.soTreEm && (
+              <div className="flex">
+                <span className="w-28 font-semibold text-background/60">
+                  Số trẻ em:
+                </span>
+                <span className="text-background">{room.soTreEm}</span>
               </div>
             )}
             {room.dienTich && (

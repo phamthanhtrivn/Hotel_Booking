@@ -36,6 +36,8 @@ public class LoaiPhong {
     @Column(name = "so_khach")
     private int soKhach;
 
+
+    @Min(value = 0, message = "Số trẻ em phải lớn hơn 0")
     @Column(name = "so_tre_em")
     private int soTreEm;
 

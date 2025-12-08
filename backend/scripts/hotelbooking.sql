@@ -1,6 +1,6 @@
 -- --------------------------------------------------------
 -- Host:                         127.0.0.1
--- Server version:               11.6.2-MariaDB - mariadb.org binary distribution
+-- Server version:               11.4.4-MariaDB - mariadb.org binary distribution
 -- Server OS:                    Win64
 -- HeidiSQL Version:             12.8.0.6908
 -- --------------------------------------------------------
@@ -192,7 +192,7 @@ CREATE TABLE IF NOT EXISTS `danh_gia` (
   CONSTRAINT `FK5l9noa6ee16y7twqcfqdalytn` FOREIGN KEY (`ma_loai_phong`) REFERENCES `loai_phong` (`ma_loai_phong`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.danh_gia: ~5 rows (approximately)
+-- Dumping data for table hotelbooking.danh_gia: ~6 rows (approximately)
 INSERT INTO `danh_gia` (`ma_danh_gia`, `binh_luan`, `diem_co_so_vat_chat`, `diem_dich_vu`, `diem_sach_se`, `thoi_gian_danh_gia`, `ma_loai_phong`, `tinh_trang`) VALUES
 	('DG001', 'Phòng rất đẹp và sạch sẽ, nhân viên thân thiện', 9, 8, 10, '2024-11-25 10:00:00.000000', 'LP1', b'1'),
 	('DG002', 'View ban công tuyệt vời, không gian yên tĩnh', 8, 9, 9, '2024-11-26 14:30:00.000000', 'LP2', b'1'),
@@ -220,6 +220,7 @@ CREATE TABLE IF NOT EXISTS `don_dat_phong` (
   `ma_khach_hang` varchar(255) DEFAULT NULL,
   `ma_phong` varchar(255) DEFAULT NULL,
   `ngay_tao` datetime(6) DEFAULT NULL,
+  `phu_thu_tre_em` double DEFAULT NULL,
   PRIMARY KEY (`ma_dat_phong`),
   UNIQUE KEY `UKipxmhku7rgbv70o63oeg3eqt8` (`ma_danh_gia`),
   KEY `FK31kww3fnehujkecraaf12t7uo` (`ma_khach_hang`),
@@ -229,24 +230,29 @@ CREATE TABLE IF NOT EXISTS `don_dat_phong` (
   CONSTRAINT `FKoofpaiwyvbalhesqbxlfsp2gq` FOREIGN KEY (`ma_danh_gia`) REFERENCES `danh_gia` (`ma_danh_gia`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.don_dat_phong: ~16 rows (approximately)
-INSERT INTO `don_dat_phong` (`ma_dat_phong`, `vat`, `check_in`, `check_out`, `email`, `ghi_chu`, `giam_gia_diem_tich_luy`, `ho_ten_khach_hang`, `giam_gia_lan_dau`, `so_dien_thoai`, `tong_tien`, `tong_tien_tt`, `trang_thai`, `ma_danh_gia`, `ma_khach_hang`, `ma_phong`, `ngay_tao`) VALUES
-	('DP_PENDING_001', 8, '2024-12-15 14:00:00.000000', '2024-12-17 12:00:00.000000', 'vana@gmail.com', 'Chưa có yêu cầu đặc biệt', 0, 'Nguyễn Văn A', 0, '0901234567', 900000, 972000, 'DA_HUY', NULL, 'KH1', 'P102', '2024-11-29 11:00:00.000000'),
-	('DP_PENDING_002', 8, '2024-12-20 14:00:00.000000', '2024-12-22 12:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Tổ chức sinh nhật', 20000, 'Hà Thanh Tuấn', 0, '0367155132', 1800000, 1926400, 'DA_HUY', NULL, 'KH2', 'P501', '2024-11-30 14:20:00.000000'),
-	('DP_SUCCESS_001', 8, '2024-11-20 14:00:00.000000', '2024-11-22 12:00:00.000000', 'vana@gmail.com', 'Yêu cầu phòng tầng cao, view đẹp', 0, 'Nguyễn Văn A', 1, '0901234567', 1000000, 1080000, 'DA_THANH_TOAN', 'DG001', 'KH1', 'P101', '2024-11-15 10:30:00.000000'),
-	('DP_SUCCESS_002', 8, '2024-11-25 14:00:00.000000', '2024-11-27 12:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Kỷ niệm 1 năm ngày cưới', 50000, 'Hà Thanh Tuấn', 0, '0367155132', 1200000, 1246000, 'DA_THANH_TOAN', 'DG002', 'KH2', 'P201', '2024-11-18 15:45:00.000000'),
-	('DP_SUCCESS_003', 8, '2024-12-01 14:00:00.000000', '2024-12-03 12:00:00.000000', 'vanb@gmail.com', 'Công tác kết hợp nghỉ dưỡng', 0, 'Nguyễn Văn B', 1, '0912345678', 4400000, 4752000, 'DA_THANH_TOAN', 'DG003', 'KH3', 'P701', '2024-11-22 09:20:00.000000'),
-	('DP_SUCCESS_004', 8, '2024-12-05 14:00:00.000000', '2024-12-07 12:00:00.000000', 'vanc@gmail.com', 'Du lịch gia đình cuối tuần', 100000, 'Nguyễn Văn C', 0, '0923456789', 3800000, 4004000, 'DA_THANH_TOAN', 'DG004', 'KH4', 'P601', '2024-11-25 14:15:00.000000'),
-	('DP_SUCCESS_005', 8, '2024-12-10 14:00:00.000000', '2024-12-12 12:00:00.000000', 'vana@gmail.com', 'Đi công tác', 0, 'Nguyễn Văn A', 0, '0901234567', 1400000, 1512000, 'DA_THANH_TOAN', 'DG005', 'KH1', 'P301', '2024-11-28 16:30:00.000000'),
-	('DP0XDTV1D3ZO', 8, '2025-11-25 12:30:00.000000', '2025-11-28 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1800000, 1944000.0000000002, 'DA_HUY', NULL, 'KHXN768S7ZH5', 'P110', '2025-11-25 22:32:55.252920'),
-	('DP2TKQTH8JF6', 8, '2025-11-25 12:30:00.000000', '2025-11-28 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1800000, 1944000.0000000002, 'DA_THANH_TOAN', NULL, 'KH0X07NXEF7G', 'P110', '2025-11-25 22:32:58.686746'),
-	('DP49U2BVQZRE', 0, '2025-12-10 13:00:00.000000', '2025-12-11 12:30:00.000000', 'phamthanhtri0712@gmail.com', '', 600000, 'Phạm Thành Trí', 0, '0398694435', 600000, 0, 'DA_HUY', NULL, 'KHFTE2LNJ7SW', 'P203', '2025-12-01 20:45:28.570871'),
-	('DP4V72X2JKG1', 8, '2025-11-24 12:30:00.000000', '2025-11-25 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1100000, 1188000, 'DA_HUY', NULL, 'KHT4ZJ524GG2', 'P502', '2025-11-24 15:34:20.883010'),
-	('DP4WEQ6C206E', 8, '2025-11-26 12:30:00.000000', '2025-11-28 13:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Không cần gì hết', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1200000, 1296000, 'DA_HUY', NULL, 'KH5B58BRLYL3', 'P110', '2025-11-24 15:25:34.088575'),
-	('DP76E9GWCRUQ', 48000, '2025-12-10 13:00:00.000000', '2025-12-12 12:30:00.000000', 'phamthanhtri0712@gmail.com', '', 600000, 'Phạm Thành Trí', 0, '0398694435', 1200000, 648000, 'DA_THANH_TOAN', NULL, 'KHFTE2LNJ7SW', 'P201', '2025-12-01 20:29:04.262545'),
-	('DPJAE7XTY86B', 240000, '2025-12-10 13:00:00.000000', '2025-12-15 12:30:00.000000', 'phamthanhtri0712@gmail.com', '', 0, 'Phạm Thành Trí', 0, '0398694435', 3000000, 3240000, 'DA_THANH_TOAN', NULL, 'KHFTE2LNJ7SW', 'P202', '2025-12-01 20:38:57.721077'),
-	('DPT1M90YGSN4', 8, '2025-11-24 12:30:00.000000', '2025-11-25 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1100000, 1188000, 'DA_HUY', NULL, 'KH308EUY9C2F', 'P502', '2025-11-24 15:40:10.674430'),
-	('DPU4VTAROQLJ', 561600, '2024-06-20 13:00:00.000000', '2024-06-22 12:30:00.000000', 'phamthanhtri0712@gmail.com', '', 0, 'Phạm Thành Trí', 780000, '0398694435', 7800000, 7581600, 'DA_THANH_TOAN', 'DG006', 'KHFTE2LNJ7SW', 'P110', '2025-12-01 20:26:18.134951');
+-- Dumping data for table hotelbooking.don_dat_phong: ~19 rows (approximately)
+INSERT INTO `don_dat_phong` (`ma_dat_phong`, `vat`, `check_in`, `check_out`, `email`, `ghi_chu`, `giam_gia_diem_tich_luy`, `ho_ten_khach_hang`, `giam_gia_lan_dau`, `so_dien_thoai`, `tong_tien`, `tong_tien_tt`, `trang_thai`, `ma_danh_gia`, `ma_khach_hang`, `ma_phong`, `ngay_tao`, `phu_thu_tre_em`) VALUES
+	('DP_PENDING_001', 8, '2024-12-15 14:00:00.000000', '2024-12-17 12:00:00.000000', 'vana@gmail.com', 'Chưa có yêu cshoppingdataầu đặc biệt', 0, 'Nguyễn Văn A', 0, '0901234567', 900000, 972000, 'DA_HUY', NULL, 'KH1', 'P102', '2024-11-29 11:00:00.000000', 0),
+	('DP_PENDING_002', 8, '2024-12-20 14:00:00.000000', '2024-12-22 12:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Tổ chức sinh nhật', 20000, 'Hà Thanh Tuấn', 0, '0367155132', 1800000, 1926400, 'DA_HUY', NULL, 'KH2', 'P501', '2024-11-30 14:20:00.000000', 0),
+	('DP_SUCCESS_001', 8, '2024-11-20 14:00:00.000000', '2024-11-22 12:00:00.000000', 'vana@gmail.com', 'Yêu cầu phòng tầng cao, view đẹp', 0, 'Nguyễn Văn A', 1, '0901234567', 1000000, 1080000, 'DA_THANH_TOAN', 'DG001', 'KH1', 'P101', '2024-11-15 10:30:00.000000', 0),
+	('DP_SUCCESS_002', 8, '2024-11-25 14:00:00.000000', '2024-11-27 12:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Kỷ niệm 1 năm ngày cưới', 50000, 'Hà Thanh Tuấn', 0, '0367155132', 1200000, 1246000, 'DA_THANH_TOAN', 'DG002', 'KH2', 'P201', '2024-11-18 15:45:00.000000', 0),
+	('DP_SUCCESS_003', 8, '2024-12-01 14:00:00.000000', '2024-12-03 12:00:00.000000', 'vanb@gmail.com', 'Công tác kết hợp nghỉ dưỡng', 0, 'Nguyễn Văn B', 1, '0912345678', 4400000, 4752000, 'DA_THANH_TOAN', 'DG003', 'KH3', 'P701', '2024-11-22 09:20:00.000000', 0),
+	('DP_SUCCESS_004', 8, '2024-12-05 14:00:00.000000', '2024-12-07 12:00:00.000000', 'vanc@gmail.com', 'Du lịch gia đình cuối tuần', 100000, 'Nguyễn Văn C', 0, '0923456789', 3800000, 4004000, 'DA_THANH_TOAN', 'DG004', 'KH4', 'P601', '2024-11-25 14:15:00.000000', 0),
+	('DP_SUCCESS_005', 8, '2024-12-10 14:00:00.000000', '2024-12-12 12:00:00.000000', 'vana@gmail.com', 'Đi công tác', 0, 'Nguyễn Văn A', 0, '0901234567', 1400000, 1512000, 'DA_THANH_TOAN', 'DG005', 'KH1', 'P301', '2024-11-28 16:30:00.000000', 0),
+	('DP0LNDDMEXZ2', 304000, '2025-12-10 13:00:00.000000', '2025-12-12 12:30:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 3800000, 4104000, 'DA_HUY', NULL, 'KH2', 'P604', '2025-12-08 19:27:10.466104', 0),
+	('DP0XDTV1D3ZO', 8, '2025-11-25 12:30:00.000000', '2025-11-28 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1800000, 1944000.0000000002, 'DA_HUY', NULL, 'KHXN768S7ZH5', 'P110', '2025-11-25 22:32:55.252920', 0),
+	('DP2TKQTH8JF6', 8, '2025-11-25 12:30:00.000000', '2025-11-28 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1800000, 1944000.0000000002, 'DA_THANH_TOAN', NULL, 'KH0X07NXEF7G', 'P110', '2025-11-25 22:32:58.686746', 0),
+	('DP49U2BVQZRE', 0, '2025-12-10 13:00:00.000000', '2025-12-11 12:30:00.000000', 'phamthanhtri0712@gmail.com', '', 600000, 'Phạm Thành Trí', 0, '0398694435', 600000, 0, 'DA_HUY', NULL, 'KHFTE2LNJ7SW', 'P203', '2025-12-01 20:45:28.570871', 0),
+	('DP4V72X2JKG1', 8, '2025-11-24 12:30:00.000000', '2025-11-25 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1100000, 1188000, 'DA_HUY', NULL, 'KHT4ZJ524GG2', 'P502', '2025-11-24 15:34:20.883010', 0),
+	('DP4WEQ6C206E', 8, '2025-11-26 12:30:00.000000', '2025-11-28 13:00:00.000000', 'hthanhtuan.2307@gmail.com', 'Không cần gì hết', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1200000, 1296000, 'DA_HUY', NULL, 'KH5B58BRLYL3', 'P110', '2025-11-24 15:25:34.088575', 0),
+	('DP76E9GWCRUQ', 48000, '2025-12-10 13:00:00.000000', '2025-12-12 12:30:00.000000', 'phamthanhtri0712@gmail.com', '', 600000, 'Phạm Thành Trí', 0, '0398694435', 1200000, 648000, 'DA_THANH_TOAN', NULL, 'KHFTE2LNJ7SW', 'P201', '2025-12-01 20:29:04.262545', 0),
+	('DPIOLFM11K84', 0, '2025-12-08 13:00:00.000000', '2025-12-09 12:30:00.000000', 'hthanhtuan.2307@gmail.com', '', 600000, 'Hà Thanh Tuấn', 0, '0367155132', 600000, 0, 'DA_THANH_TOAN', NULL, 'KH2', 'P110', '2025-12-08 22:02:29.334499', 100000),
+	('DPJAE7XTY86B', 240000, '2025-12-10 13:00:00.000000', '2025-12-15 12:30:00.000000', 'phamthanhtri0712@gmail.com', '', 0, 'Phạm Thành Trí', 0, '0398694435', 3000000, 3240000, 'DA_THANH_TOAN', NULL, 'KHFTE2LNJ7SW', 'P202', '2025-12-01 20:38:57.721077', 0),
+	('DPKEOS4TKSL4', 112000, '2025-12-09 13:00:00.000000', '2025-12-11 12:30:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1200000, 1512000, 'DA_THANH_TOAN', NULL, 'KH2', 'P110', '2025-12-08 21:36:04.251460', 100000),
+	('DPP10NI1ZRD3', 48000, '2025-12-08 13:00:00.000000', '2025-12-09 12:30:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 600000, 648000, 'DA_HUY', NULL, 'KH2', 'P110', '2025-12-08 19:24:46.920549', 0),
+	('DPT1M90YGSN4', 8, '2025-11-24 12:30:00.000000', '2025-11-25 13:00:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 1100000, 1188000, 'DA_HUY', NULL, 'KH308EUY9C2F', 'P502', '2025-11-24 15:40:10.674430', 0),
+	('DPU4VTAROQLJ', 561600, '2024-06-20 13:00:00.000000', '2024-06-22 12:30:00.000000', 'phamthanhtri0712@gmail.com', '', 0, 'Phạm Thành Trí', 780000, '0398694435', 7800000, 7581600, 'DA_THANH_TOAN', 'DG006', 'KHFTE2LNJ7SW', 'P110', '2025-12-01 20:26:18.134951', 0),
+	('DPZZWYCBM2R4', 320000, '2025-12-09 13:00:00.000000', '2025-12-11 12:30:00.000000', 'hthanhtuan.2307@gmail.com', '', 0, 'Hà Thanh Tuấn', 0, '0367155132', 3800000, 4320000, 'DA_HUY', NULL, 'KH2', 'P604', '2025-12-08 21:14:22.773539', 0);
 
 -- Dumping structure for table hotelbooking.hinh_anh
 CREATE TABLE IF NOT EXISTS `hinh_anh` (
@@ -305,18 +311,13 @@ CREATE TABLE IF NOT EXISTS `khach_hang` (
   PRIMARY KEY (`ma_khach_hang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.khach_hang: ~9 rows (approximately)
+-- Dumping data for table hotelbooking.khach_hang: ~10 rows (approximately)
 INSERT INTO `khach_hang` (`ma_khach_hang`, `diem_tich_luy`, `ho_ten_khach_hang`, `so_dien_thoai`) VALUES
-	('KH0X07NXEF7G', 0, 'Hà Thanh Tuấn', '0367155132'),
 	('KH1', 5, 'Nguyễn Văn A', '0901234567'),
-	('KH2', 3, 'Hà Thanh Tuấn', '0367155132'),
+	('KH2', 1, 'Hà Thanh Tuấn', '0367155132'),
 	('KH3', 8, 'Nguyễn Văn B', '0912345678'),
-	('KH308EUY9C2F', 0, 'Hà Thanh Tuấn', '0367155132'),
 	('KH4', 6, 'Nguyễn Văn C', '0923456789'),
-	('KH5B58BRLYL3', 0, 'Hà Thanh Tuấn', '0367155132'),
-	('KHFTE2LNJ7SW', 19, 'Phạm Thành Trí', '0398694435'),
-	('KHT4ZJ524GG2', 0, 'Hà Thanh Tuấn', '0367155132'),
-	('KHXN768S7ZH5', 0, 'Hà Thanh Tuấn', '0367155132');
+	('KHFTE2LNJ7SW', 19, 'Phạm Thành Trí', '0398694435');
 
 -- Dumping structure for table hotelbooking.loai_giuong
 CREATE TABLE IF NOT EXISTS `loai_giuong` (
@@ -327,7 +328,7 @@ CREATE TABLE IF NOT EXISTS `loai_giuong` (
   PRIMARY KEY (`ma_giuong`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.loai_giuong: ~5 rows (approximately)
+-- Dumping data for table hotelbooking.loai_giuong: ~4 rows (approximately)
 INSERT INTO `loai_giuong` (`ma_giuong`, `mo_ta`, `ten_giuong`, `tinh_trang`) VALUES
 	('G1', 'Giường đơn dành cho 1 khách', 'Single', b'1'),
 	('G2', 'Giường đôi dành cho 2 khách', 'Double', b'1'),
@@ -340,26 +341,24 @@ CREATE TABLE IF NOT EXISTS `loai_phong` (
   `dien_tich` double DEFAULT NULL,
   `gia` double DEFAULT NULL,
   `mo_ta` text DEFAULT NULL,
-  `so_khach` int(11) DEFAULT NULL,
+  `so_khach` int(11) NOT NULL,
+  `so_tre_em` int(11) NOT NULL,
   `ten_loai_phong` varchar(255) NOT NULL,
   `tinh_trang` bit(1) DEFAULT b'1',
   PRIMARY KEY (`ma_loai_phong`),
   UNIQUE KEY `UK69ws9ijpn3ywvy883h3bbawj1` (`ten_loai_phong`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.loai_phong: ~11 rows (approximately)
-INSERT INTO `loai_phong` (`ma_loai_phong`, `dien_tich`, `gia`, `mo_ta`, `so_khach`, `ten_loai_phong`, `tinh_trang`) VALUES
-	('LP1', 25, 500000, 'Phòng tiêu chuẩn với 1 giường đơn, diện tích 20m2, thiết kế tối giản nhưng đầy đủ tiện nghi, bao gồm TV, minibar, điều hòa, bàn làm việc và phòng tắm hiện đại. Phù hợp cho 1 khách, mang đến không gian nghỉ ngơi thoải mái và tiện lợi.', 1, 'Standard Single', b'1'),
-	('LP2', 25, 600000, 'Phòng tiêu chuẩn với 1 giường đôi, diện tích 20m2, trang bị đầy đủ tiện nghi như TV, minibar, điều hòa, bàn làm việc và phòng tắm hiện đại. Phù hợp cho 2 khách, lý tưởng cho cặp đôi hoặc bạn bè muốn nghỉ ngơi trong không gian vừa đủ thoải mái.', 2, 'Standard Double', b'1'),
-	('LP3', 30, 700000, 'Phòng tiêu chuẩn với 2 giường đơn, diện tích 20m2, được trang bị TV, minibar, điều hòa, bàn làm việc và phòng tắm hiện đại. Phù hợp cho 2 khách, mang lại sự tiện nghi và linh hoạt cho những ai muốn nghỉ ngơi riêng tư trong cùng một phòng.', 2, 'Standard 2 Single', b'1'),
-	('LP4', 30, 900000, 'Phòng cao cấp Deluxe với 1 giường siêu lớn King, diện tích 30m2, thiết kế tinh tế và sang trọng. Phòng có cửa sổ hoặc ban công, trang bị đầy đủ tiện nghi như TV, minibar, điều hòa, sofa, bàn trà và phòng tắm có bồn tắm.', 2, 'Deluxe King', b'1'),
-	('LP5', 35, 1100000, 'Phòng cao cấp Deluxe với 2 giường đôi lớn Queen, diện tích 30m2, thiết kế rộng rãi, trang bị TV, minibar, điều hòa, sofa, bàn trà, phòng tắm sang trọng với bồn tắm và ban công. Phù hợp cho 2–4 khách, lý tưởng cho gia đình hoặc nhóm bạn.', 4, 'Deluxe 2 Queen', b'1'),
-	('LP6', 60, 2200000, 'Phòng Suite hạng sang với giường King và phòng khách riêng, diện tích 60m2, gồm phòng ngủ và phòng khách riêng biệt. Trang bị đầy đủ tiện nghi cao cấp: TV, minibar, điều hòa, sofa, bàn làm việc, phòng tắm có bồn tắm và ban công rộng.', 3, 'Suite King', b'1'),
-	('LP7', 40, 1900000, 'Phòng Family rộng 40m2 với 2 giường đôi, thiết kế tiện lợi cho gia đình hoặc nhóm bạn 4 khách. Có TV, minibar, điều hòa, bàn làm việc, bàn ăn nhỏ và bếp tiện dụng.', 4, 'Family 2 Double', b'1'),
-	('LP7B03VQOL2D', 30, 600000, '', 2, 'Standard Single 2', b'1'),
-	('LP8', 40, 2100000, 'Phòng Family rộng 40m2 với 3 giường đôi, dành cho nhóm 4–6 khách. Có đầy đủ tiện nghi: TV, minibar, điều hòa, bàn làm việc, bàn ăn/bếp nhỏ. Lý tưởng cho gia đình hoặc nhóm bạn muốn nghỉ dưỡng cùng nhau.', 6, 'Family 3 Double', b'1'),
-	('LPJM9VTT40EE', 30, 700000, 'cxvxcvxcvxzcxcv', 2, 'Standard Single 4', b'1'),
-	('LPSLA25VA404', 30, 700000, '', 2, 'Standard Single 3', b'1');
+-- Dumping data for table hotelbooking.loai_phong: ~8 rows (approximately)
+INSERT INTO `loai_phong` (`ma_loai_phong`, `dien_tich`, `gia`, `mo_ta`, `so_khach`, `so_tre_em`, `ten_loai_phong`, `tinh_trang`) VALUES
+	('LP1', 25, 500000, 'Phòng tiêu chuẩn với 1 giường đơn, diện tích 20m2, thiết kế tối giản nhưng đầy đủ tiện nghi, bao gồm TV, minibar, điều hòa, bàn làm việc và phòng tắm hiện đại. Phù hợp cho 1 khách, mang đến không gian nghỉ ngơi thoải mái và tiện lợi.', 1, 1, 'Standard Single', b'1'),
+	('LP2', 25, 600000, 'Phòng tiêu chuẩn với 1 giường đôi, diện tích 20m2, trang bị đầy đủ tiện nghi như TV, minibar, điều hòa, bàn làm việc và phòng tắm hiện đại. Phù hợp cho 2 khách, lý tưởng cho cặp đôi hoặc bạn bè muốn nghỉ ngơi trong không gian vừa đủ thoải mái.', 2, 2, 'Standard Double', b'1'),
+	('LP3', 30, 700000, 'Phòng tiêu chuẩn với 2 giường đơn, diện tích 20m2, được trang bị TV, minibar, điều hòa, bàn làm việc và phòng tắm hiện đại. Phù hợp cho 2 khách, mang lại sự tiện nghi và linh hoạt cho những ai muốn nghỉ ngơi riêng tư trong cùng một phòng.', 2, 2, 'Standard 2 Single', b'1'),
+	('LP4', 30, 900000, 'Phòng cao cấp Deluxe với 1 giường siêu lớn King, diện tích 30m2, thiết kế tinh tế và sang trọng. Phòng có cửa sổ hoặc ban công, trang bị đầy đủ tiện nghi như TV, minibar, điều hòa, sofa, bàn trà và phòng tắm có bồn tắm.', 2, 2, 'Deluxe King', b'1'),
+	('LP5', 35, 1100000, 'Phòng cao cấp Deluxe với 2 giường đôi lớn Queen, diện tích 30m2, thiết kế rộng rãi, trang bị TV, minibar, điều hòa, sofa, bàn trà, phòng tắm sang trọng với bồn tắm và ban công. Phù hợp cho 2–4 khách, lý tưởng cho gia đình hoặc nhóm bạn.', 4, 3, 'Deluxe 2 Queen', b'1'),
+	('LP6', 60, 2200000, 'Phòng Suite hạng sang với giường King và phòng khách riêng, diện tích 60m2, gồm phòng ngủ và phòng khách riêng biệt. Trang bị đầy đủ tiện nghi cao cấp: TV, minibar, điều hòa, sofa, bàn làm việc, phòng tắm có bồn tắm và ban công rộng.', 3, 1, 'Suite King', b'1'),
+	('LP7', 40, 1900000, 'Phòng Family rộng 40m2 với 2 giường đôi, thiết kế tiện lợi cho gia đình hoặc nhóm bạn 4 khách. Có TV, minibar, điều hòa, bàn làm việc, bàn ăn nhỏ và bếp tiện dụng.', 4, 3, 'Family 2 Double', b'1'),
+	('LP8', 40, 2100000, 'Phòng Family rộng 40m2 với 3 giường đôi, dành cho nhóm 4–6 khách. Có đầy đủ tiện nghi: TV, minibar, điều hòa, bàn làm việc, bàn ăn/bếp nhỏ. Lý tưởng cho gia đình hoặc nhóm bạn muốn nghỉ dưỡng cùng nhau.', 6, 5, 'Family 3 Double', b'1');
 
 -- Dumping structure for table hotelbooking.phong
 CREATE TABLE IF NOT EXISTS `phong` (
@@ -451,7 +450,7 @@ CREATE TABLE IF NOT EXISTS `tai_khoan` (
   CONSTRAINT `FK5i1pbvg3w3w28px50xa67aho3` FOREIGN KEY (`ma_khach_hang`) REFERENCES `khach_hang` (`ma_khach_hang`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table hotelbooking.tai_khoan: ~5 rows (approximately)
+-- Dumping data for table hotelbooking.tai_khoan: ~6 rows (approximately)
 INSERT INTO `tai_khoan` (`ma_tai_khoan`, `email`, `mat_khau`, `vai_tro`, `ma_khach_hang`, `tinh_trang`) VALUES
 	('TK1', 'twanhotel@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'ADMIN', NULL, b'1'),
 	('TK2', 'hthanhtuan.2307@gmail.com', '$2a$10$MtfSOBYxBmw.w.eGwINNHuFkuWMk04uzRKxXu7TK/AzH4WZXENTZ6', 'MEMBER', 'KH2', b'1'),

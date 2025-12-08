@@ -11,29 +11,36 @@ import java.time.LocalDateTime;
 
 public class LoaiPhongSpecification {
 
-    public static Specification<LoaiPhong> tenLoaiPhongContains(String keyword){
+    public static Specification<LoaiPhong> tenLoaiPhongContains(String keyword) {
         return (root, query, cb) -> {
-            if(keyword == null || keyword.equals("ALL") || keyword.isBlank()) return null;
+            if (keyword == null || keyword.equals("ALL") || keyword.isBlank()) return null;
             return cb.like(cb.lower(root.get("tenLoaiPhong")), "%" + keyword.toLowerCase() + "%");
         };
     }
 
-    public static Specification<LoaiPhong> soKhachGreaterOrEqual(Integer soKhach){
+    public static Specification<LoaiPhong> soKhachGreaterOrEqual(Integer soKhach) {
         return (root, query, cb) -> {
-            if(soKhach == null) return null;
+            if (soKhach == null) return null;
             return cb.greaterThanOrEqualTo(root.get("soKhach"), soKhach);
         };
     }
 
-    public static Specification<LoaiPhong> giaBetween(Double min, Double max){
+    public static Specification<LoaiPhong> sucChuaPhuHop(int soNguoiLon, int soTreEm) {
+        return (root, query, cb) -> cb.and(
+                cb.greaterThanOrEqualTo(root.get("soKhach"), soNguoiLon),
+                cb.greaterThanOrEqualTo(root.get("soTreEm"), soTreEm)
+        );
+    }
+
+    public static Specification<LoaiPhong> giaBetween(Double min, Double max) {
         return (root, query, cb) -> {
             if (min == null && max == null) return null;
 
-            if(min != null && max != null){
+            if (min != null && max != null) {
                 return cb.between(root.get("gia"), min, max);
             }
 
-            if(min != null){
+            if (min != null) {
                 return cb.greaterThanOrEqualTo(root.get("gia"), min);
             }
 
@@ -41,7 +48,7 @@ public class LoaiPhongSpecification {
         };
     }
 
-    public static Specification<LoaiPhong> dienTichBetween(Double min, Double max){
+    public static Specification<LoaiPhong> dienTichBetween(Double min, Double max) {
         return (root, query, cb) -> {
             if (min == null && max == null) return null;
 
@@ -89,9 +96,9 @@ public class LoaiPhongSpecification {
         };
     }
 
-    public static Specification<LoaiPhong> tinhTrangEquals(Boolean tinhTrang){
+    public static Specification<LoaiPhong> tinhTrangEquals(Boolean tinhTrang) {
         return (root, query, cb) -> {
-            if(tinhTrang == null) return null;
+            if (tinhTrang == null) return null;
             return cb.equal(root.get("tinhTrang"), tinhTrang);
         };
     }

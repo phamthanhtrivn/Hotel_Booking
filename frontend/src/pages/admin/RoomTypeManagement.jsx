@@ -39,6 +39,7 @@ const defaultForm = {
   tenLoaiPhong: "",
   dienTich: null,
   soKhach: null,
+  soTreEm: null,
   gia: null,
   moTa: "",
   tinhTrang: true,
@@ -171,6 +172,7 @@ const RoomTypeManagement = () => {
       tenLoaiPhong: item.tenLoaiPhong,
       dienTich: item.dienTich,
       soKhach: item.soKhach,
+      soTreEm: item.soTreEm,
       gia: item.gia,
       moTa: item.moTa,
       tinhTrang: item.tinhTrang,
@@ -211,7 +213,7 @@ const RoomTypeManagement = () => {
     const { name, value } = e.target;
 
     // xử lý number
-    const numericFields = ["dienTich", "soKhach", "gia"];
+    const numericFields = ["dienTich", "soKhach", "gia", "soTreEm"];
 
     const newValue = numericFields.includes(name)
       ? value === ""
@@ -277,7 +279,9 @@ const RoomTypeManagement = () => {
       edit ? await loaiPhongService.update(fd) : await loaiPhongService.add(fd);
 
       setLoading(false);
-      toast.success(edit ? "Cập nhật loại phòng thành công":"Thêm loại phòng thành công!")
+      toast.success(
+        edit ? "Cập nhật loại phòng thành công" : "Thêm loại phòng thành công!"
+      );
       onClose();
       fetchLoaiPhong();
     } catch (error) {
@@ -293,7 +297,8 @@ const RoomTypeManagement = () => {
     { key: "hinhAnh", label: "Hình ảnh" },
     { key: "tenLoaiPhong", label: "Tên loại phòng" },
     { key: "dienTich", label: "Diện tích" },
-    { key: "soKhach", label: "Khách" },
+    { key: "soKhach", label: "Người lớn" },
+    { key: "soTreEm", label: "Trẻ em" },
     { key: "gia", label: "Giá / đêm" },
     {
       key: "tinhTrang",
@@ -497,9 +502,7 @@ const RoomTypeManagement = () => {
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">
-              Khách tối đa
-            </label>
+            <label className="block text-sm font-medium mb-2">Người lớn</label>
             <Input
               name="soKhach"
               value={formData.soKhach}
@@ -508,6 +511,19 @@ const RoomTypeManagement = () => {
             {errors.soKhach && (
               <span className="text-red-500 text-[13px] pt-1">
                 {errors.soKhach}
+              </span>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Trẻ em</label>
+            <Input
+              name="soTreEm"
+              value={formData.soTreEm}
+              onChange={handleInputChange}
+            />
+            {errors.soKhach && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.soTreEm}
               </span>
             )}
           </div>
@@ -524,7 +540,7 @@ const RoomTypeManagement = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectGroup>
+                <SelectGroup className="bg-white">
                   <SelectItem value="true">Hoạt động</SelectItem>
                   <SelectItem value="false">Không hoạt động</SelectItem>
                 </SelectGroup>
