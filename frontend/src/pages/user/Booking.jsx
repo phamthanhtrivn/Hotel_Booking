@@ -103,10 +103,11 @@ const Booking = () => {
   useEffect(() => {
     const nights = calculateNights(checkIn, checkOut);
     let chargedNights = nights;
-    setPhuThuTreEm(calculateChildFee(children));
 
     if (!user) {
-      const basePrice = room.gia * nights + phuThuTreEm * nights;
+      setPhuThuTreEm(calculateChildFee(children) * nights);
+      const basePrice = room.gia * nights + phuThuTreEm;
+
       const vatM = basePrice * (vat / 100);
       const total = basePrice + vatM;
 
@@ -129,9 +130,15 @@ const Booking = () => {
 
     const stayP = room.gia * nights;
 
-    const basePrice = room.gia * chargedNights + phuThuTreEm * chargedNights;
+    setPhuThuTreEm(calculateChildFee(children) * chargedNights);
 
-    const pointsDiscountMoney = room.gia * (nights - chargedNights);
+    const basePrice = room.gia * chargedNights + phuThuTreEm;
+
+    const pointsDiscountMoney =
+      room.gia * (nights - chargedNights) +
+      calculateChildFee(children) *
+        (nights - chargedNights) *
+        (nights - chargedNights);
 
     let firstDiscount = 0;
     if (totalBookingNumber === 0) {
@@ -500,6 +507,17 @@ const Booking = () => {
               )}
             </>
           )}
+          {phuThuTreEm > 0 && (
+            <>
+              <hr />
+              <div className="px-3 py-2 flex justify-between">
+                <p>Phụ thu trẻ em</p>
+                <p className="text-gray-500 text-[14px]">
+                  {formatVND(phuThuTreEm)}
+                </p>
+              </div>
+            </>
+          )}
           {user?.khachHang.diemTichLuy >= 10 && (
             <>
               <hr />
@@ -514,17 +532,6 @@ const Booking = () => {
                     - {formatVND(discountPointsMoney)}
                   </p>
                 </div>
-              </div>
-            </>
-          )}
-          {phuThuTreEm > 0 && (
-            <>
-              <hr />
-              <div className="px-3 py-2 flex justify-between">
-                <p>Phụ thu trẻ em</p>
-                <p className="text-gray-500 text-[14px]">
-                  {formatVND(phuThuTreEm * calculateNights(checkIn, checkOut))}
-                </p>
               </div>
             </>
           )}
@@ -546,7 +553,7 @@ const Booking = () => {
       </div>
       <InformationDialog
         onClose={() => setOpenQuyDinh(false)}
-        className="min-w-xl"
+        className="min-w-[40vw]  max-h-[95vh]"
         open={openQuyDinh}
         title="Điều khoản và quy định của chúng tôi"
         children={

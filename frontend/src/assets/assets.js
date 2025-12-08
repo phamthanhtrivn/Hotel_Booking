@@ -90,62 +90,62 @@ export const roomPackageDummyData = [
 ];
 
 export const bookingHistorysDummyData = [
-    {
-        maDatPhong: "1",
-        maLoaiPhong: "1",
-        tenLoaiPhong: "Superior Room",
-        loaiGiuong: "twin bed",
-        soKhach: 3,
-        hinhAnh: [
-            "https://max-themes.net/demos/hoteller/hoteller/beach/upload/Aqua6-1024x658.jpg",
-        ],
-        checkIn: "September 20, 2025",
-        checkOut: "September 26, 2025",
-        tongTien: 199,
-        status: "Paid",
-    },
-    {
-        maDatPhong: "2",
-        maLoaiPhong: "2",
-        tenLoaiPhong: "Deluxe Room",
-        loaiGiuong: "king bed",
-        soKhach: 4,
-        hinhAnh: [
-            "https://max-themes.net/demos/hoteller/hoteller/beach/upload/Porto-Fira-Suites-Hotel-in-Santorini-by-Interior-Design-Laboratorium-Yellowtrace-06-683x1024.jpg",
-        ],
-        checkIn: "September 20, 2025",
-        checkOut: "September 26, 2025",
-        tongTien: 249,
-        status: "Paid",
-    },
-    {
-        maDatPhong: "3",
-        maLoaiPhong: "3",
-        tenLoaiPhong: "Signature Room",
-        loaiGiuong: "king bed",
-        soKhach: 5,
-        hinhAnh: [
-            "https://max-themes.net/demos/hoteller/hoteller/beach/upload/Porto-Fira-Suites-Hotel-in-Santorini-by-Interior-Design-Laboratorium-Yellowtrace-12-1024x683.jpg",
-        ],
-        checkIn: "September 20, 2025",
-        checkOut: "September 26, 2025",
-        tongTien: 299,
-        status: "Unpaid",
-    },
-    {
-        maDatPhong: "4",
-        maLoaiPhong: "4",
-        tenLoaiPhong: "Luxury Suite Room",
-        loaiGiuong: "king bed",
-        soKhach: 6,
-        hinhAnh: [
-            "https://max-themes.net/demos/hoteller/hoteller/beach/upload/Porto-Fira-Suites-Hotel-in-Santorini-by-Interior-Design-Laboratorium-Yellowtrace-19-1024x683.jpg",
-        ],
-        checkIn: "September 20, 2025",
-        checkOut: "September 26, 2025",
-        tongTien: 399,
-        status: "Paid",
-    },
+  {
+    maDatPhong: "1",
+    maLoaiPhong: "1",
+    tenLoaiPhong: "Superior Room",
+    loaiGiuong: "twin bed",
+    soKhach: 3,
+    hinhAnh: [
+      "https://max-themes.net/demos/hoteller/hoteller/beach/upload/Aqua6-1024x658.jpg",
+    ],
+    checkIn: "September 20, 2025",
+    checkOut: "September 26, 2025",
+    tongTien: 199,
+    status: "Paid",
+  },
+  {
+    maDatPhong: "2",
+    maLoaiPhong: "2",
+    tenLoaiPhong: "Deluxe Room",
+    loaiGiuong: "king bed",
+    soKhach: 4,
+    hinhAnh: [
+      "https://max-themes.net/demos/hoteller/hoteller/beach/upload/Porto-Fira-Suites-Hotel-in-Santorini-by-Interior-Design-Laboratorium-Yellowtrace-06-683x1024.jpg",
+    ],
+    checkIn: "September 20, 2025",
+    checkOut: "September 26, 2025",
+    tongTien: 249,
+    status: "Paid",
+  },
+  {
+    maDatPhong: "3",
+    maLoaiPhong: "3",
+    tenLoaiPhong: "Signature Room",
+    loaiGiuong: "king bed",
+    soKhach: 5,
+    hinhAnh: [
+      "https://max-themes.net/demos/hoteller/hoteller/beach/upload/Porto-Fira-Suites-Hotel-in-Santorini-by-Interior-Design-Laboratorium-Yellowtrace-12-1024x683.jpg",
+    ],
+    checkIn: "September 20, 2025",
+    checkOut: "September 26, 2025",
+    tongTien: 299,
+    status: "Unpaid",
+  },
+  {
+    maDatPhong: "4",
+    maLoaiPhong: "4",
+    tenLoaiPhong: "Luxury Suite Room",
+    loaiGiuong: "king bed",
+    soKhach: 6,
+    hinhAnh: [
+      "https://max-themes.net/demos/hoteller/hoteller/beach/upload/Porto-Fira-Suites-Hotel-in-Santorini-by-Interior-Design-Laboratorium-Yellowtrace-19-1024x683.jpg",
+    ],
+    checkIn: "September 20, 2025",
+    checkOut: "September 26, 2025",
+    tongTien: 399,
+    status: "Paid",
+  },
 ];
 
 export const overviewDummyData = [
@@ -193,7 +193,8 @@ export const roomStaticDummyData = [
 
 export const floorStatusDummyData = 80; // thể hiện số lượng phòng sẵn sàng đón khách trên tổng số phòng và số lượng phòng còn lại không sẵn sàng
 
-export const occupancyStatistic = { // tỷ lệ số phòng được thuê / tổng số phòng trong một khoảng thời gian
+export const occupancyStatistic = {
+  // tỷ lệ số phòng được thuê / tổng số phòng trong một khoảng thời gian
   weekly: {
     "2025-10": [
       { week: "Week 1", occupancy: 82 },
@@ -280,7 +281,7 @@ export const feedbackDummyData = [
     thoiGianDanhGia: "2025-10-20T10:00:00",
   },
 ];
- export const revenueDummyData = {
+export const revenueDummyData = {
   2023: [
     { month: "Jan", revenue: 95000000 },
     { month: "Feb", revenue: 87000000 },
@@ -340,63 +341,63 @@ export const quyDinhDieuKhoan = [
     content: [
       "Khách hàng cần cung cấp thông tin cá nhân chính xác (họ tên, số điện thoại, email).",
       "Thanh toán đầy đủ để giữ phòng.",
-    ]
+    ],
   },
   {
     title: "Hủy đặt phòng phòng",
     content: [
       "Thời gian hủy phải trước thời gian checkin tối thiểu 24h, sau thời gian đó mọi yêu cầu không được giải quyết.",
-      "Khách hàng không đến vì một lý do nào đó phải chịu mất tiền cọc."
-    ]
+      "Khách hàng không đến vì một lý do nào đó phải chịu mất tiền cọc.",
+    ],
   },
   {
     title: "Thời gian nhận – trả phòng",
     content: [
       "Nhận phòng (check-in) từ 13:00.",
       "Trả phòng (check-out) trước 12:30.",
-    ]
+    ],
   },
   {
     title: "Chính sách thanh toán",
     content: [
       "Chấp nhận thanh toán bằng thẻ hoặc các hình thức điện tử (Momo, VNPay,...).",
       "Được bao gồm 8 % Thuế GTGT được bao gồm 5 % Phí dịch vụ ",
-    ]
+    ],
   },
   {
     title: "Chính sách ưu đãi",
     content: [
       "Khách hàng thành viên sẽ được giảm giá 10% cho lần đặt phòng đầu tiên.",
       "Khách hàng thành viên được tặng 1 đêm lưu trú miễn phí mỗi khi tích lũy đủ 10 đêm lưu trú tại khách sạn.",
-    ]
+    ],
   },
   {
     title: "Chính sách dành cho trẻ em",
     content: [
-      "Trẻ em dưới từ 2 - 6 tuổi sẽ được sẽ được xem là không chiếm chỗ nếu đi cùng cha mẹ, tuy nhiên 2 trẻ sẽ được tính là một người lớn.",
-      "Đối với trẻ em dưới một tuổi thì sẽ tùy theo yêu cầu của từng loại phòng, vui lòng tham khảo chi tiết tại trang web.",
-    ]
-  }
-  ,
+      "Trẻ em từ 0 – 6 tuổi sẽ được ngủ cùng người lớn mà không tính thêm phụ phí.",
+      "Trẻ em từ 7 – 11 tuổi cũng sẽ được tính là số khách trẻ em nhưng sẽ thêm phụ phí 100.000 VNĐ / 1 trẻ.",
+      "Các trường hợp trẻ em từ 12 tuổi trở lên sẽ được tính là 1 khách người lớn / 1 trẻ. ",
+    ],
+  },
   {
     title: "Giấy tờ khi nhận phòng",
     content: [
       "Xuất trình CMND/CCCD hoặc hộ chiếu khi nhận phòng.",
-      "Khách nước ngoài cần khai báo tạm trú theo quy định."
-    ]
+      "Khách nước ngoài cần khai báo tạm trú theo quy định.",
+    ],
   },
   {
     title: "Quy định về an toàn",
     content: [
       "Cấm mang chất cấm, vũ khí, vật dễ cháy nổ vào khách sạn.",
-      "Tuân thủ hướng dẫn an toàn trong các trường hợp khẩn cấp."
-    ]
+      "Tuân thủ hướng dẫn an toàn trong các trường hợp khẩn cấp.",
+    ],
   },
   {
     title: "Chính sách bảo mật thông tin",
     content: [
       "Khách sạn cam kết bảo mật thông tin cá nhân của khách hàng.",
-      "Thông tin chỉ được chia sẻ khi có sự đồng ý của khách hoặc theo yêu cầu pháp lý."
-    ]
-  }
+      "Thông tin chỉ được chia sẻ khi có sự đồng ý của khách hoặc theo yêu cầu pháp lý.",
+    ],
+  },
 ];
