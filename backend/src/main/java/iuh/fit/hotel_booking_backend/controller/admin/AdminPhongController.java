@@ -44,6 +44,7 @@ public class AdminPhongController {
 
     @PutMapping
     public ResponseEntity<APIResponse<Phong>> update(@RequestBody PhongDTO phong) {
+        System.out.println(phong);
         APIResponse<Phong> response = new APIResponse<>();
         try {
             Phong p = phongService.save(phong);
@@ -51,7 +52,7 @@ public class AdminPhongController {
             response.setSuccess(true);
             response.setMessage("Cập nhật thành công!");
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             response.setMessage("Cập nhật thất bại!");
             response.setSuccess(false);
             return ResponseEntity.status(500).body(response);

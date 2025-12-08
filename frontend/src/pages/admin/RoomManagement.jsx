@@ -91,6 +91,7 @@ const RoomManagement = () => {
   // Submit update
   const handleUpdate = async () => {
     try {
+      console.log(formData)
       await phongService.update(formData);
       fetchRooms();
       resetFormData();

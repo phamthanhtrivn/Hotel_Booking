@@ -123,8 +123,6 @@ const RoomTypeManagement = () => {
         ...filters,
         tinhTrang: filters.tinhTrang === "ALL" ? null : filters.tinhTrang,
       };
-
-      console.log(payload)
       const result = await loaiPhongService.search(currentPage, 10, payload);
       setLoaiPhongs(result.content);
       setTotalPages(result.totalPages);
@@ -279,7 +277,7 @@ const RoomTypeManagement = () => {
       edit ? await loaiPhongService.update(fd) : await loaiPhongService.add(fd);
 
       setLoading(false);
-      toast.success("Thêm loại phòng thành công!")
+      toast.success(edit ? "Cập nhật loại phòng thành công":"Thêm loại phòng thành công!")
       onClose();
       fetchLoaiPhong();
     } catch (error) {

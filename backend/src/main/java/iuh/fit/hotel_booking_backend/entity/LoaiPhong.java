@@ -36,6 +36,9 @@ public class LoaiPhong {
     @Column(name = "so_khach")
     private int soKhach;
 
+    @Column(name = "so_tre_em")
+    private int soTreEm;
+
     @NotNull(message = "Hãy nhập giá")
     @Min(value = 100000, message = "Giá tổi thiểu là 100000")
     @Column(name = "gia")
