@@ -9,8 +9,8 @@ import iuh.fit.hotel_booking_backend.entity.Phong;
 import iuh.fit.hotel_booking_backend.entity.TrangThaiDon;
 import iuh.fit.hotel_booking_backend.helper.DonDatPhongSpecification;
 import iuh.fit.hotel_booking_backend.repository.DonDatPhongRepository;
-import iuh.fit.hotel_booking_backend.repository.KhachHangRepository;
-import iuh.fit.hotel_booking_backend.repository.PhongRepository;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import iuh.fit.hotel_booking_backend.util.IdUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -74,8 +74,10 @@ public class DonDatPhongService {
         return repo.countByKhachHangId(maKhachHang);
     }
 
-    public List<DonDatPhong> search(DonDatPhongSearchRequest req) {
-        return repo.findAll(DonDatPhongSpecification.build(req));
+    public Page<DonDatPhong> search(DonDatPhongSearchRequest req, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "checkIn"));
+        Specification<DonDatPhong> spec = DonDatPhongSpecification.build(req);
+        return repo.findAll(spec, pageable);
     }
 
     @Transactional
@@ -94,6 +96,9 @@ public class DonDatPhongService {
         don.setEmail(req.email);
         don.setKhachHang(khachHang);
 
+        don.setGiamGiaLanDau(req.giamGiaLanDau);
+        don.setGiamGiaDiemTichLuy(req.giamGiaDiemTichLuy);
+
         don.setPhong(phong);
 
         if (req.checkIn.isAfter(req.checkOut)) {
@@ -106,10 +111,21 @@ public class DonDatPhongService {
         don.setVAT(req.vat);
         don.setTongTienTT(req.tongTienThanhToan);
         don.setGhiChu(req.ghiChu);
-        don.setTrangThai(TrangThaiDon.CHUA_THANH_TOAN);
-
+        don.setTrangThai(
+                req.trangThaiDon.equals("DA_THANH_TOAN")
+                        ? TrangThaiDon.DA_THANH_TOAN
+                        : TrangThaiDon.CHUA_THANH_TOAN
+        );
         repo.save(don);
-        emailService.sendBookingConfirmationWithPaymentInfo(don.getEmail(), don.getMaDatPhong(), req.tongTienThanhToan);
+
+        if (req.trangThaiDon.equals("DA_THANH_TOAN")) {
+            emailService.sendBookingPaidEmail(don.getEmail(), don.getMaDatPhong());
+            updateDiemTichLuy(don.getMaDatPhong());
+        }
+        else {
+            emailService.sendBookingConfirmationWithPaymentInfo(don.getEmail(), don.getMaDatPhong(), req.tongTienThanhToan);
+        }
+
         return don;
     }
 
@@ -119,8 +135,59 @@ public class DonDatPhongService {
             DonDatPhong don = donOpt.get();
             if (don.getTrangThai().name().equals("CHUA_THANH_TOAN")) {
                 don.setTrangThai(TrangThaiDon.valueOf("DA_THANH_TOAN"));
+                emailService.sendBookingPaidEmail(don.getEmail(), don.getMaDatPhong());
                 repo.save(don);
             }
+        }
+    }
+
+    public void updateDiemTichLuy(String maDatPhong) {
+        Optional<DonDatPhong> donOpt = repo.findById(maDatPhong);
+        if (donOpt.isPresent()) {
+            DonDatPhong don = donOpt.get();
+            KhachHang khachHang = don.getKhachHang();
+            int diem = khachHang.getDiemTichLuy();
+            int soDem = repo.getSoDem(maDatPhong);
+
+            if (diem >= 10) {
+                diem = (diem + soDem) % 10;
+            }
+            else {
+                diem += soDem;
+            }
+            khachHang.setDiemTichLuy(diem);
+            khachHangService.save(khachHang);
+        }
+    }
+
+    public APIResponse<Integer> getTotalBookings(String maKhachHang) {
+        APIResponse<Integer> response = new APIResponse<>();
+
+        int total = repo.countDonDatPhongByKhachHang_MaKhachHangAndTrangThaiNot(maKhachHang, TrangThaiDon.DA_HUY);
+        response.setSuccess(true);
+        response.setMessage("Lấy tổng số đơn đặt phòng thành công!");
+        response.setData(total);
+        return response;
+    }
+
+    public void updateDTLChoDonHuy(String maDatPhong) {
+        Optional<DonDatPhong> donOpt = repo.findById(maDatPhong);
+        if (donOpt.isPresent()) {
+            DonDatPhong don = donOpt.get();
+            KhachHang khachHang = don.getKhachHang();
+
+            int diem = khachHang.getDiemTichLuy();
+            int soDem = repo.getSoDem(maDatPhong);
+
+            boolean daSuDungDiem = don.getGiamGiaDiemTichLuy() > 0;
+
+            if (daSuDungDiem) {
+                diem = diem - soDem + 10;
+            } else {
+                diem = diem - soDem;
+            }
+            khachHang.setDiemTichLuy(diem);
+            khachHangService.save(khachHang);
         }
     }
 

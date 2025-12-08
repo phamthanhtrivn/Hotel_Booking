@@ -1,5 +1,6 @@
 package iuh.fit.hotel_booking_backend.dto;
 
+import iuh.fit.hotel_booking_backend.entity.TrangThaiDon;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -42,4 +43,8 @@ public class DatPhongRequest {
     public int vat;
     public double tongTienThanhToan;
     public String ghiChu;
+
+    public double giamGiaLanDau;
+    public double giamGiaDiemTichLuy;
+    public String trangThaiDon;
 }

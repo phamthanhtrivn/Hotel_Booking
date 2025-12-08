@@ -73,7 +73,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const res = await axios.post(`${baseUrl}/login`, {
+      const res = await axios.post(`${baseUrl}/auth/login`, {
         email,
         matKhau: password,
       });

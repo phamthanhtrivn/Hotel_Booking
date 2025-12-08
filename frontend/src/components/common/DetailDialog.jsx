@@ -15,7 +15,7 @@ const DetailDialog = ({ open, onClose, data, fields }) => (
       </DialogHeader>
       <div className="space-y-2">
         {fields.map((f) => (
-          <p key={f.key}>
+          <div key={f.key}>
             <strong>{f.label}: </strong>
             {typeof f.render === "function" ? (
               f.render(data ?? {})
@@ -39,7 +39,7 @@ const DetailDialog = ({ open, onClose, data, fields }) => (
             ) : (
               "—"
             )}
-          </p>
+          </div>
         ))}
       </div>
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   InputGroup,
@@ -13,16 +14,22 @@ import HotelLogo from "@/assets/hotelLogo/HotelLogo.jpg";
 import { Button } from "@/components/ui/button";
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { calculateNights, formatVietnameseDate, toLocalDate } from "@/helpers/dateHelpers";
+import {
+  calculateNights,
+  formatVietnameseDate,
+  toLocalDate,
+} from "@/helpers/dateHelpers";
 import { formatVND } from "@/helpers/currencyFormatter";
 import { AuthContext } from "@/context/AuthContext";
 import { donDatPhongService } from "@/services/donDatPhongService";
 import { toast } from "react-toastify";
 import InformationDialog from "@/components/common/InformationDialog";
 import { quyDinhDieuKhoan } from "@/assets/assets";
+import axios from "axios";
 
 const Booking = () => {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
+  const baseUrl = import.meta.env.VITE_BASE_API_URL;
   const location = useLocation();
   const navigate = useNavigate();
   const bookingData = location.state || {};
@@ -50,18 +57,86 @@ const Booking = () => {
   const [isLoading, setLoading] = useState(false);
   const [openQuyDinh, setOpenQuyDinh] = useState(false);
   const vat = 8;
+  const discount = 10;
+  const [totalBookingNumber, setTotalBookingNumber] = useState(0);
+  const [vatMoney, setVatMoney] = useState(0);
+  const [discountFirstTime, setDiscountFirstTime] = useState(0);
+  const [discountPointsMoney, setDiscountPointsMoney] = useState(0);
+
+  const fetchTotalBookingNumber = async () => {
+    try {
+      const res = await axios.get(
+        `${baseUrl}/api/member/dondatphong/count/${user.khachHang.maKhachHang}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (res.data.success) {
+        setTotalBookingNumber(res.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Không thể tính số lần đặt phòng.");
+    }
+  };
 
   useEffect(() => {
     if (user) {
+      fetchTotalBookingNumber();
       setCustomerName(user.khachHang.hoTenKH);
       setEmail(user.email);
       setPhone(user.khachHang.soDienThoai);
-      console.log(user);
     }
-    setStayNights(calculateNights(checkIn, checkOut));
-    setStayPrice(gia * calculateNights(checkIn, checkOut));
-    setTotalPrice(stayPrice * (1 + vat / 100));
-  }, [checkIn, checkOut, gia, stayPrice, user]);
+  }, [user]);
+
+  useEffect(() => {
+    const nights = calculateNights(checkIn, checkOut);
+    let chargedNights = nights;
+
+    if (!user) {
+      const basePrice = gia * nights;
+      const vatM = basePrice * (vat / 100);
+      const total = basePrice + vatM;
+
+      setStayNights(nights);
+      setStayPrice(basePrice);
+      setVatMoney(vatM);
+      setTotalPrice(total);
+      setDiscountFirstTime(0);
+      setDiscountPointsMoney(0);
+      return;
+    }
+
+    setCustomerName(user.khachHang.hoTenKH);
+    setEmail(user.email);
+    setPhone(user.khachHang.soDienThoai);
+
+    if (user.khachHang.diemTichLuy >= 10) {
+      chargedNights = nights - 1;
+    }
+
+    const stayP = gia * nights;
+
+    const basePrice = gia * chargedNights;
+
+    const pointsDiscountMoney = gia * (nights - chargedNights);
+
+    let firstDiscount = 0;
+    if (totalBookingNumber === 0) {
+      firstDiscount = basePrice * (discount / 100);
+    }
+
+    const vatValue = (basePrice - firstDiscount) * (vat / 100);
+
+    const total = basePrice - firstDiscount + vatValue;
+
+    setStayNights(nights);
+    setStayPrice(stayP);
+    setDiscountPointsMoney(pointsDiscountMoney);
+    setDiscountFirstTime(firstDiscount);
+    setVatMoney(vatValue);
+    setTotalPrice(total);
+  }, [checkIn, checkOut, gia, vat, totalBookingNumber, user]);
 
   const onCustomerNameChange = (e) => {
     setCustomerName(e.target.value);
@@ -92,22 +167,27 @@ const Booking = () => {
         soDienThoai: phone,
         maLoaiPhong: maLoaiPhong,
         email: email,
-        checkIn: toLocalDate(checkIn), 
+        checkIn: toLocalDate(checkIn),
         checkOut: toLocalDate(checkOut),
         tongTien: stayPrice,
-        vat: vat,
+        vat: vatMoney,
         tongTienThanhToan: totalPrice,
         ghiChu: additionalInformation,
         agreed: agreed,
+        giamGiaLanDau: discountFirstTime,
+        giamGiaDiemTichLuy: discountPointsMoney,
+        trangThaiDon: totalPrice > 0 ? "CHUA_THANH_TOAN" : "DA_THANH_TOAN",
       };
-      console.log(bookingRequest);
       const result = await donDatPhongService.datPhong(bookingRequest);
-      console.log(result.data);
       setLoading(false);
       toast.success(
         "Đặt phòng thành công. Mã đơn đặt phòng: " + result.data.maDatPhong
       );
-      navigate("/payment", { state: { maDatPhong: result.data.maDatPhong } });
+      if (totalPrice > 0) {
+        navigate("/payment", { state: { maDatPhong: result.data.maDatPhong } });
+      } else {
+        navigate("/account/booking-history");
+      }
     } catch (error) {
       console.log(error.response.data.data);
       setErrors(error.response.data.data);
@@ -256,7 +336,10 @@ const Booking = () => {
             </div>
 
             <div className="flex justify-end">
-              <Button className="w-[150px]" onClick={handleOnBook}>
+              <Button
+                className="w-[150px] cursor-pointer bg-[#1E2A38] hover:bg-[#16202b]"
+                onClick={handleOnBook}
+              >
                 {isLoading ? (
                   <div className="flex gap-3 items-center justify-center">
                     <Loader2 className="animate-spin" />
@@ -330,6 +413,14 @@ const Booking = () => {
           </div>
           <hr />
           <div className="px-3 py-2">
+            <p>Dịch vụ</p>
+            <div className="flex justify-between ml-2">
+              <p className="text-gray-500 text-[14px]">Bữa sáng</p>
+              <p className="text-gray-500 text-[14px]">Include</p>
+            </div>
+          </div>
+          <hr />
+          <div className="px-3 py-2">
             <p>{stayNights} đêm lưu trú</p>
             <div className="flex justify-between ml-2">
               <p className="text-gray-500 text-[14px]">
@@ -341,22 +432,45 @@ const Booking = () => {
               </p>
             </div>
           </div>
-          <hr />
-          <div className="px-3 py-2">
-            <p>Dịch vụ</p>
-            <div className="flex justify-between ml-2">
-              <p className="text-gray-500 text-[14px]">Bữa sáng</p>
-              <p className="text-gray-500 text-[14px]">Include</p>
-            </div>
-          </div>
+          {totalBookingNumber === 0 && (
+            <>
+              <hr />
+              <div className="px-3 py-2">
+                <p>Giảm giá</p>
+                <div className="flex justify-between ml-2">
+                  <p className="text-gray-500 text-[14px]">
+                    Giảm 10% cho đơn đặt phòng đầu tiên
+                  </p>
+                  <p className="text-gray-500 text-[14px]">
+                    - {formatVND(discountFirstTime)}
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
+          {user?.khachHang.diemTichLuy >= 10 && (
+            <>
+              <hr />
+              <div className="px-3 py-2">
+                <p>Ưu đãi tích lũy</p>
+                <div className="flex justify-between ml-2">
+                  <p className="text-gray-500 text-[14px] w-[70%]">
+                    Miễn phí 1 đêm vì bạn có điểm tích lũy &gt;= 10 <br /> (trừ
+                    đi 10 điểm sau khi áp dụng)
+                  </p>
+                  <p className="text-gray-500 text-[14px]">
+                    - {formatVND(discountPointsMoney)}
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
           <hr />
           <div className="px-3 py-2">
             <p>Taxes</p>
             <div className="flex justify-between ml-2">
               <p className="text-gray-500 text-[14px]">VAT 8%</p>
-              <p className="text-gray-500 text-[14px]">
-                {formatVND(stayPrice * (vat / 100))}
-              </p>
+              <p className="text-gray-500 text-[14px]">{formatVND(vatMoney)}</p>
             </div>
           </div>
           <hr />

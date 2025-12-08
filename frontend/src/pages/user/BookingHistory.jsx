@@ -1,19 +1,32 @@
-import React, { useEffect, useState,useContext } from "react";
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useState, useContext } from "react";
 import BookingItem from "@/components/common/BookingItem";
 import BookingDetailModal from "@/components/common/BookingDetailModal";
-import {motion,AnimatePresence } from "framer-motion";
-import { AuthContext } from "@/context/AuthContext"
+import { motion, AnimatePresence } from "framer-motion";
+import { AuthContext } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const BookingHistory = () => {
-  const { user } = useContext(AuthContext)
+  const { user, token } = useContext(AuthContext);
   const [bookingHistory, setBookingHistory] = useState([]);
   const [filteredHistory, setFilteredHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [filterStatus, setFilterStatus] = useState("TAT_CA");
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5;
 
-  const maKhachHang = user.khachHang.maKhachHang; // Giả sử mã khách hàng
+  const totalPages = Math.ceil(filteredHistory.length / rowsPerPage);
+
+  const paginatedData = filteredHistory.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const maKhachHang = user.khachHang.maKhachHang;
 
   const statusOptions = [
     { value: "TAT_CA", label: "Tất cả" },
@@ -25,15 +38,24 @@ const BookingHistory = () => {
   useEffect(() => {
     const fetchBookingHistory = async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BASE_API_URL}/api/dondatphong/lichsu/${maKhachHang}`
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_BASE_API_URL
+          }/api/member/dondatphong/lichsu/${maKhachHang}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+          }
         );
-        if (!response.ok) {
-          throw new Error("Không thể tải dữ liệu đặt phòng");
-        }
-        const data = await response.json();
-        setBookingHistory(data);
-        setFilteredHistory(data);
+
+        const data = response.data;
+
+        const sortedData = data.sort(
+          (a, b) => new Date(b.ngayTao) - new Date(a.ngayTao)
+        );
+        setBookingHistory(sortedData);
+        setFilteredHistory(sortedData);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -48,10 +70,16 @@ const BookingHistory = () => {
       setFilteredHistory(bookingHistory);
     } else {
       setFilteredHistory(
-        bookingHistory.filter((b) => b.trangThai === filterStatus)
+        bookingHistory
+          .filter((b) => b.trangThai === filterStatus)
+          .sort((a, b) => new Date(b.ngayTao) - new Date(a.ngayTao))
       );
     }
   }, [filterStatus, bookingHistory]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterStatus]);
 
   if (loading)
     return (
@@ -61,9 +89,7 @@ const BookingHistory = () => {
     );
 
   if (error)
-    return (
-      <div className="text-center py-20 text-red-500">Lỗi: {error}</div>
-    );
+    return <div className="text-center py-20 text-red-500">Lỗi: {error}</div>;
 
   if (bookingHistory.length === 0)
     return (
@@ -73,7 +99,7 @@ const BookingHistory = () => {
     );
 
   return (
-    <div className="bg-gray-50 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header + Filter */}
       <div className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         {/* Title */}
@@ -88,10 +114,7 @@ const BookingHistory = () => {
 
         {/* Filter */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-          <p
-            htmlFor="booking-status"
-            className="text-gray-700 text-base"
-          >
+          <p htmlFor="booking-status" className="text-gray-700 text-base">
             Lọc theo trạng thái:
           </p>
           <div className="relative w-full sm:w-48">
@@ -107,7 +130,7 @@ const BookingHistory = () => {
                 </option>
               ))}
             </select>
-        
+
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
               <svg
                 className="w-4 h-4"
@@ -132,13 +155,17 @@ const BookingHistory = () => {
       <div className="grid grid-cols-12 gap-4 px-4 sm:px-6 py-3 text-sm font-medium text-gray-700 border-b border-gray-300">
         <div className="col-span-12 md:col-span-5">Phòng</div>
         <div className="hidden md:block md:col-span-3">Thời gian</div>
-        <div className="hidden md:block md:col-span-2 text-right">Trạng thái</div>
-        <div className="hidden md:block md:col-span-2 text-right">Hành động</div>
+        <div className="hidden md:block md:col-span-2 text-right">
+          Trạng thái
+        </div>
+        <div className="hidden md:block md:col-span-2 text-right">
+          Hành động
+        </div>
       </div>
 
       {/* List items */}
       <div className="divide-y divide-gray-200">
-        {filteredHistory.map((booking) => {
+        {paginatedData.map((booking) => {
           const loaiPhong = booking.phong?.loaiPhong;
 
           return (
@@ -150,16 +177,54 @@ const BookingHistory = () => {
                 loaiGiuong: loaiPhong?.moTa?.split(",")[0] || "N/A",
                 soKhach: loaiPhong?.soKhach || 1,
                 hinhAnh:
-                  Array.isArray(loaiPhong?.hinhAnh) && loaiPhong.hinhAnh.length > 0
+                  Array.isArray(loaiPhong?.hinhAnh) &&
+                  loaiPhong.hinhAnh.length > 0
                     ? loaiPhong.hinhAnh.map((img) =>
-                        img.startsWith("http") ? img : `http://localhost:8080${img}`
+                        img.startsWith("http")
+                          ? img
+                          : `http://localhost:8080${img}`
                       )
                     : ["/default-room.jpg"],
               }}
               onViewDetail={() => setSelectedBooking(booking)}
+              onPay={() =>
+                navigate("/payment", {
+                  state: { maDatPhong: booking.maDatPhong },
+                })
+              }
             />
           );
         })}
+      </div>
+
+      <div className="flex justify-center items-center mt-8 gap-3">
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+          disabled={currentPage === 1}
+          className={`px-4 py-2 rounded-lg border text-sm transition ${
+            currentPage === 1
+              ? "text-gray-400 border-gray-300 cursor-not-allowed"
+              : "text-gray-700 border-gray-400 hover:bg-gray-100"
+          }`}
+        >
+          &lt;
+        </button>
+
+        <div className="text-gray-700 font-medium">
+          {currentPage} / {totalPages}
+        </div>
+
+        <button
+          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+          disabled={currentPage === totalPages}
+          className={`px-4 py-2 rounded-lg border text-sm transition ${
+            currentPage === totalPages
+              ? "text-gray-400 border-gray-300 cursor-not-allowed"
+              : "text-gray-700 border-gray-400 hover:bg-gray-100"
+          }`}
+        >
+          &gt;
+        </button>
       </div>
 
       {/* Modal */}
@@ -182,13 +247,3 @@ const BookingHistory = () => {
 };
 
 export default BookingHistory;
-
-
-
-
-
-
-
-
-
-

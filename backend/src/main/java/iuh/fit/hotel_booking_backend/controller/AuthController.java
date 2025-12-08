@@ -2,6 +2,7 @@ package iuh.fit.hotel_booking_backend.controller;
 
 import iuh.fit.hotel_booking_backend.dto.*;
 import iuh.fit.hotel_booking_backend.security.jwt.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,15 +13,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
-@RequestMapping("/")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody SignUpRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody SignUpRequest request) {
         return ResponseEntity.ok(authService.register(request));
     }
 

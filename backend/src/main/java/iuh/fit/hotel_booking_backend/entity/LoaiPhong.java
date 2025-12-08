@@ -46,7 +46,6 @@ public class LoaiPhong {
             name = "hinh_anh",
             joinColumns = @JoinColumn(name = "ma_loai_phong")
     )
-
     @NotEmpty(message = "Vui lòng thêm hình")
     @Column(name = "url")
     private List<String> hinhAnh;

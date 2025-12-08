@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/loaigiuong")
+@RequestMapping("/api/public/loaigiuong")
 public class LoaiGiuongController {
     private LoaiGiuongService loaiGiuongService;
 
@@ -33,19 +33,4 @@ public class LoaiGiuongController {
         return ResponseEntity.ok(loaiGiuongService.getById(id));
     }
 
-    @PostMapping
-    public ResponseEntity<?> createLoaiGiuong(@RequestBody LoaiGiuong loaiGiuong) {
-        return ResponseEntity.ok(loaiGiuongService.save(loaiGiuong));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateLoaiGiuong(@PathVariable String id, @RequestBody LoaiGiuong loaiGiuong) {
-        loaiGiuong.setMaGiuong(id);
-        return ResponseEntity.ok(loaiGiuongService.update(loaiGiuong));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteLoaiGiuong(@PathVariable String id) {
-        return ResponseEntity.ok(loaiGiuongService.deleteById(id));
-    }
 }

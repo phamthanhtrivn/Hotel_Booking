@@ -36,7 +36,7 @@ const ResetPassword = () => {
 
       try {
         const response = await axios.get(
-          `${baseUrl}/validate-reset-token`,
+          `${baseUrl}/auth/validate-reset-token`,
           { params: { token } } 
         );
 

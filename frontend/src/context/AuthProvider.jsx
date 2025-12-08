@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       const fetchUser = async () => {
         try {
-          const res = await axios.get(`${baseUrl}/verify-token`, {
+          const res = await axios.get(`${baseUrl}/auth/verify-token`, {
             headers: { Authorization: `Bearer ${token}` },
             validateStatus: () => true,
           });

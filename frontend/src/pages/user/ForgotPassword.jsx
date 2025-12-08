@@ -37,7 +37,7 @@ const ForgotPassword = () => {
     }
     try {
       setIsLoading(true);
-      const response = await axios.post(`${baseUrl}/forgot-password`, {
+      const response = await axios.post(`${baseUrl}/auth/forgot-password`, {
         email,
       });
       if (response.data.success) {

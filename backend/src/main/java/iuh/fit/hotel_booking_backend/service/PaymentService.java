@@ -8,22 +8,27 @@ import iuh.fit.hotel_booking_backend.dto.APIResponse;
 import iuh.fit.hotel_booking_backend.dto.MoMoRequest;
 import iuh.fit.hotel_booking_backend.dto.MoMoResponse;
 import iuh.fit.hotel_booking_backend.dto.PaymentRequest;
+import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
 import iuh.fit.hotel_booking_backend.util.PaymentUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
+
     private final VNPayConfig vnPayConfig;
     private final DonDatPhongService donDatPhongService;
-    private final String frontendUrl = Dotenv.load().get("FRONTEND_URL");
     private final MoMoConfig momoConfig;
     private final MoMoApi moMoApi;
+
+    private final String frontendUrl = Dotenv.load().get("FRONTEND_URL");
+    private final String backendUrl = Dotenv.load().get("BACKEND_URL");
 
     public APIResponse<Object> createVnPayPayment(HttpServletRequest request, PaymentRequest paymentRequest) {
         APIResponse<Object> response = new APIResponse<>();
@@ -38,7 +43,6 @@ public class PaymentService {
         }
         vnpParamsMap.put("vnp_IpAddr", PaymentUtil.getIpAddress(request));
 
-        //build query url
         String queryUrl = PaymentUtil.getPaymentURL(vnpParamsMap, true);
         String hashData = PaymentUtil.getPaymentURL(vnpParamsMap, false);
         String vnpSecureHash = PaymentUtil.hmacSHA512(vnPayConfig.getSecretKey(), hashData);
@@ -55,7 +59,11 @@ public class PaymentService {
         String responseCode = request.getParameter("vnp_ResponseCode");
         String bookingId = request.getParameter("vnp_TxnRef");
         try {
-            if (responseCode.equals("00")) {
+            if ("00".equals(responseCode)) {
+                DonDatPhong donDatPhong = donDatPhongService.getById(bookingId);
+                if (donDatPhong.getKhachHang() != null)  {
+                    donDatPhongService.updateDiemTichLuy(bookingId);
+                }
                 donDatPhongService.updateStatusPaymentSuccess(bookingId);
                 response.sendRedirect(frontendUrl + "/payment/success?bookingId=" + bookingId);
             } else {
@@ -68,20 +76,23 @@ public class PaymentService {
 
     public MoMoResponse createMoMoPayment(PaymentRequest paymentRequest) {
         String bookingId = paymentRequest.getBookingId();
-        String bookingInfo = "Thanh toan don dat phong: " + bookingId;
+        String bookingInfo = "Thanh toán đơn đặt phòng: " + bookingId;
         long amount = paymentRequest.getAmount();
         String requestId = UUID.randomUUID().toString();
+
+        String ipnUrl = backendUrl + "/api/payments/momo-pay-callback";
+        String redirectUrl = backendUrl + "/api/payments/momo-return";
 
         String rawSignature = String.format(
                 "accessKey=%s&amount=%s&extraData=%s&ipnUrl=%s&orderId=%s&orderInfo=%s&partnerCode=%s&redirectUrl=%s&requestId=%s&requestType=%s",
                 momoConfig.getAccessKey(),
                 amount,
                 "",
-                momoConfig.getReturnUrl(),
+                ipnUrl,
                 bookingId,
                 bookingInfo,
                 momoConfig.getPartnerCode(),
-                momoConfig.getReturnUrl(),
+                redirectUrl,
                 requestId,
                 momoConfig.getRequestType()
         );
@@ -90,7 +101,8 @@ public class PaymentService {
         MoMoRequest momoRequest = MoMoRequest.builder()
                 .partnerCode(momoConfig.getPartnerCode())
                 .requestType(momoConfig.getRequestType())
-                .ipnUrl(momoConfig.getReturnUrl())
+                .ipnUrl(ipnUrl)
+                .redirectUrl(redirectUrl)
                 .orderId(bookingId)
                 .orderInfo(bookingInfo)
                 .amount(amount)
@@ -98,24 +110,24 @@ public class PaymentService {
                 .lang("vi")
                 .extraData("")
                 .signature(signature)
-                .redirectUrl(momoConfig.getReturnUrl())
                 .build();
 
         return moMoApi.createMoMoQR(momoRequest);
     }
 
-    public void momoPayCallbackHandler(HttpServletRequest request, HttpServletResponse response) {
+    public void handleMoMoReturn(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String resultCode = request.getParameter("resultCode");
         String bookingId = request.getParameter("orderId");
-        try {
-            if (resultCode.equals("0")) {
-                donDatPhongService.updateStatusPaymentSuccess(bookingId);
-                response.sendRedirect(frontendUrl + "/payment/success?bookingId=" + bookingId);
-            } else {
-                response.sendRedirect(frontendUrl + "/payment/failed?bookingId=" + bookingId);
+
+        if ("0".equals(resultCode)) {
+            DonDatPhong donDatPhong = donDatPhongService.getById(bookingId);
+            if (donDatPhong.getKhachHang() != null)  {
+                donDatPhongService.updateDiemTichLuy(bookingId);
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            donDatPhongService.updateStatusPaymentSuccess(bookingId);
+            response.sendRedirect(frontendUrl + "/payment/success?bookingId=" + bookingId);
+        } else {
+            response.sendRedirect(frontendUrl + "/payment/failed?bookingId=" + bookingId);
         }
     }
 }

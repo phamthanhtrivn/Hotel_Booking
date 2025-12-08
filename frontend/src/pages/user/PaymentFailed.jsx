@@ -26,7 +26,7 @@ const PaymentFailed = () => {
     const fetchBooking = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${baseUrl}/api/dondatphong/${bookingId}`);
+        const res = await axios.get(`${baseUrl}/api/public/dondatphong/${bookingId}`);
         if (res.data.success && res.data.data.trangThai !== "DA_THANH_TOAN") {
           setBooking(res.data.data);
         } else {

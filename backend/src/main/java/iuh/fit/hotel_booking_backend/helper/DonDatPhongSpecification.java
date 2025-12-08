@@ -14,6 +14,14 @@ public class DonDatPhongSpecification {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            if (req.getKeyword() != null && !req.getKeyword().isEmpty()) {
+                String kw = "%" + req.getKeyword().toLowerCase() + "%";
+                Predicate byHoTen = cb.like(cb.lower(root.get("hoTenKhachHang")), kw);
+                Predicate byEmail = cb.like(cb.lower(root.get("email")), kw);
+                Predicate bySoDienThoai = cb.like(root.get("soDienThoai"), kw);
+                predicates.add(cb.or(byHoTen, byEmail, bySoDienThoai));
+            }
+
             if (req.getHoTenKhachHang() != null && !req.getHoTenKhachHang().isEmpty()) {
                 predicates.add(cb.like(cb.lower(root.get("hoTenKhachHang")), "%" + req.getHoTenKhachHang().toLowerCase() + "%"));
             }
@@ -32,17 +40,16 @@ public class DonDatPhongSpecification {
             if (req.getTrangThai() != null) {
                 predicates.add(cb.equal(root.get("trangThai"), req.getTrangThai()));
             }
-            if (req.getCheckInFrom() != null) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get("checkIn"), req.getCheckInFrom()));
-            }
-            if (req.getCheckInTo() != null) {
-                predicates.add(cb.lessThanOrEqualTo(root.get("checkIn"), req.getCheckInTo()));
-            }
-            if (req.getCheckOutFrom() != null) {
-                predicates.add(cb.greaterThanOrEqualTo(root.get("checkOut"), req.getCheckOutFrom()));
-            }
-            if (req.getCheckOutTo() != null) {
-                predicates.add(cb.lessThanOrEqualTo(root.get("checkOut"), req.getCheckOutTo()));
+            if (req.getCheckIn() != null && req.getCheckOut() != null) {
+                predicates.add(cb.lessThan(root.get("checkIn"), req.getCheckOut()));
+                predicates.add(cb.greaterThan(root.get("checkOut"), req.getCheckIn()));
+            } else {
+                if (req.getCheckIn() != null) {
+                    predicates.add(cb.greaterThanOrEqualTo(root.get("checkIn"), req.getCheckIn()));
+                }
+                if (req.getCheckOut() != null) {
+                    predicates.add(cb.lessThanOrEqualTo(root.get("checkOut"), req.getCheckOut()));
+                }
             }
             if (req.getMinTongTien() != null) {
                 predicates.add(cb.greaterThanOrEqualTo(root.get("tongTien"), req.getMinTongTien()));

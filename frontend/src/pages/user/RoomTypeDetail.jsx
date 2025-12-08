@@ -157,8 +157,9 @@ const RoomTypeDetail = () => {
         setRoom(roomRes.data);
 
         const resAll = await fetch(
-          `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong`
+          `${import.meta.env.VITE_BASE_API_URL}/api/public/loaiphong`
         );
+        
         if (!resAll.ok) throw new Error("Failed to fetch all rooms");
         const dataAll = await resAll.json();
 

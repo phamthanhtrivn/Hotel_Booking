@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,7 @@ import EditCreateDialog from "@/components/common/EditCreateDialog";
 import ConfirmDeleteDialog from "@/components/common/ConfirmDeleteDialog";
 import ActionButtons from "@/components/common/ActionButtons";
 import { Textarea } from "@/components/ui/textarea";
+import { AuthContext } from "@/context/AuthContext";
 
 const BedTypeManagement = () => {
   const baseUrl = import.meta.env.VITE_BASE_API_URL;
@@ -39,10 +40,11 @@ const BedTypeManagement = () => {
   const rowsPerPage = 10;
   const [nameError, setNameError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
+  const { token } = useContext(AuthContext);
 
   const fetchBedTypes = async () => {
     try {
-      const res = await axios.get(baseUrl + "/api/loaigiuong");
+      const res = await axios.get(baseUrl + "/api/public/loaigiuong");
 
       if (res.data.success) {
         setBedTypes(res.data.data);
@@ -90,6 +92,11 @@ const BedTypeManagement = () => {
             tenGiuong: formData.name,
             moTa: formData.description,
             tinhTrang: formData.status,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
@@ -107,7 +114,13 @@ const BedTypeManagement = () => {
         const res = await axios.post(`${baseUrl}/api/loaigiuong`, {
           tenGiuong: formData.name,
           moTa: formData.description,
-        });
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
         if (res.data.success) {
           setBedTypes((prev) => [...prev, res.data.data]);
@@ -119,6 +132,7 @@ const BedTypeManagement = () => {
 
       setOpenModal(false);
     } catch (error) {
+      toast.error("Lưu loại giường thất bại");
       console.error("Lỗi khi lưu loại giường:", error);
     }
   };
@@ -126,7 +140,12 @@ const BedTypeManagement = () => {
   const handleConfirmDelete = async () => {
     try {
       const res = await axios.delete(
-        `${baseUrl}/api/loaigiuong/${currentBedType.maGiuong}`
+        `${baseUrl}/api/loaigiuong/${currentBedType.maGiuong}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
       if (res.data.success) {
@@ -140,6 +159,7 @@ const BedTypeManagement = () => {
 
       setOpenDelete(false);
     } catch (error) {
+      toast.error("Xóa loại giường thất bại");
       console.error("Lỗi khi xóa loại giường:", error);
     }
   };
@@ -260,6 +280,7 @@ const BedTypeManagement = () => {
                 onView={() => handleDetail(item)}
                 onEdit={() => handleEdit(item)}
                 onDelete={() => handleDelete(item)}
+                canDelete={true}
               />
             )}
           />

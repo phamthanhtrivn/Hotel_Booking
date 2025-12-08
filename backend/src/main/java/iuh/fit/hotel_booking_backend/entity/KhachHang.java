@@ -23,8 +23,6 @@ public class KhachHang {
     @Column(name = "ho_ten_khach_hang")
     private String hoTenKH;
 
-    @NotBlank(message = "Vui lòng nhập số điện thoại")
-    @Pattern(regexp = "^(\\+?84|0)(3[2-9]|5[2689]|7[06-9]|8[1-689]|9[0-9])[0-9]{7}$", message = "Số điện thoại không hợp lệ")
     @Column(name = "so_dien_thoai")
     private String soDienThoai;
 

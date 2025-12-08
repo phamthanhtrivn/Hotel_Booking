@@ -111,7 +111,7 @@ const Register = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post(`${baseUrl}/register`, {
+      const response = await axios.post(`${baseUrl}/auth/register`, {
         hoTenKH: name,
         soDienThoai: phone,
         email,

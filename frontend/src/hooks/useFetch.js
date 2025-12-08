@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const useFetch = (baseUrl) => {
+export const useFetch = (baseUrl, defaultHeaders = {}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -9,7 +9,7 @@ export const useFetch = (baseUrl) => {
     setError(null);
     try {
       const response = await fetch(baseUrl + url, {
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...defaultHeaders },
         ...options,
       });
 
