@@ -1,20 +1,9 @@
 package iuh.fit.hotel_booking_backend.service;
 
-import iuh.fit.hotel_booking_backend.tools.LoaiPhongTools;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.embedding.EmbeddingModel;
-import org.springframework.ai.google.genai.GoogleGenAiChatModel;
-import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 
