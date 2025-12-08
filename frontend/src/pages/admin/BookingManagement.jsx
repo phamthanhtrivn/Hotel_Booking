@@ -9,9 +9,11 @@ import AdminInput from "@/components/admin/AdminInput";
 import AdminSelect from "@/components/admin/AdminSelect";
 import { Button } from "@/components/ui/button";
 import { AuthContext } from "@/context/AuthContext";
+import AdminBookingDetailModal from "@/components/common/AdminBookingDetailModal";
+import { formatVND } from "@/helpers/currencyFormatter";
 
 export default function BookingManagement() {
-  const { token } = useContext(AuthContext)
+  const { token } = useContext(AuthContext);
   const [bookings, setBookings] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -49,12 +51,13 @@ export default function BookingManagement() {
       const res = await axios.get(
         `${import.meta.env.VITE_BASE_API_URL}/api/admin/dondatphong?page=${
           page - 1
-        }&size=10`
-      , {
-        headers: {
-          "Authorization": `Bearer ${token}`
+        }&size=10`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
       setBookings(res.data.content || []);
       setTotalPages(res.data.totalPages || 1);
       setCurrentPage(page);
@@ -67,14 +70,15 @@ export default function BookingManagement() {
     try {
       const payload = sanitizeSearch(search);
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_API_URL}/api/admin/dondatphong/search?page=${
-          page - 1
-        }&size=10`,
+        `${
+          import.meta.env.VITE_BASE_API_URL
+        }/api/admin/dondatphong/search?page=${page - 1}&size=10`,
         payload,
-        { headers: {
-          "Authorization": `Bearer ${token}`
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      }
       );
       setBookings(res.data.content || []);
       setTotalPages(res.data.totalPages || 1);
@@ -116,10 +120,32 @@ export default function BookingManagement() {
   const columns = [
     { key: "maDatPhong", label: "ID" },
     { key: "hoTenKhachHang", label: "Họ và tên" },
-    { key: "soDienThoai", label: "Số điện thoại" },
+    { key: "soDienThoai", label: "SĐT" },
     { key: "email", label: "Email" },
-    { key: "tongTienTT", label: "Tổng tiền" },
-    { key: "trangThai", label: "Trạng thái" },
+    {
+      key: "tongTienTT",
+      label: "Tổng tiền",
+      render: (i) => formatVND(i.tongTienTT),
+    },
+    {
+      key: "trangThai",
+      label: "Trạng thái",
+      render: (i) => {
+        const color =
+          i.trangThai === "CHUA_THANH_TOAN"
+            ? "text-yellow-600"
+            : i.trangThai === "DA_THANH_TOAN"
+            ? "text-green-600"
+            : "text-red-600";
+        const label =
+          i.trangThai === "CHUA_THANH_TOAN"
+            ? "Chưa thanh toán"
+            : i.trangThai === "DA_THANH_TOAN"
+            ? "Đã thanh toán"
+            : "Đã hủy";
+        return <span className={`${color} italic`}>{label}</span>;
+      },
+    },
   ];
 
   return (
@@ -194,7 +220,7 @@ export default function BookingManagement() {
                 className="rounded-2xl bg-gray-400 h-10"
                 onClick={resetSearch}
               >
-                X
+                Làm mới
               </Button>
             </div>
           </div>
@@ -209,17 +235,12 @@ export default function BookingManagement() {
         </CardContent>
       </Card>
 
-      <DetailDialog
-        open={isOpenDetail}
-        onClose={() => setIsOpenDetail(false)}
-        data={currentBooking}
-        fields={[
-          ...columns,
-          { key: "checkIn", label: "Check In" },
-          { key: "checkOut", label: "Check Out" },
-          { key: "ghiChu", label: "Ghi Chú" },
-        ]}
-      />
+      {isOpenDetail && currentBooking && (
+        <AdminBookingDetailModal
+          booking={currentBooking}
+          onClose={() => setIsOpenDetail(false)}
+        />
+      )}
 
       <AdminPagination
         currentPage={currentPage}
