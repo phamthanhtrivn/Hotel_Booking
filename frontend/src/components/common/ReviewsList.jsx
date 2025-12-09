@@ -1,6 +1,6 @@
 import React from "react";
 import RatingBar from "./RatingBar";
-import { timeAgo } from "@/helpers/dateHelpers"
+import { timeAgo } from "@/helpers/dateHelpers";
 import { calculateAverage } from "@/helpers/numberFormatter";
 import AdminPagination from "./AdminPagination";
 import { CiUser } from "react-icons/ci";
@@ -41,11 +41,17 @@ export default function ReviewsList({
               </div>
             </div>
             <div className="flex flex-col gap-5">
-              <RatingBar title={"Vệ sinh"} score={reviewsStats.avgClean} />
-              <RatingBar title={"Dịch vụ"} score={reviewsStats.avgService} />
+              <RatingBar
+                title={"Vệ sinh"}
+                score={reviewsStats.avgClean.toFixed(1)}
+              />
+              <RatingBar
+                title={"Dịch vụ"}
+                score={reviewsStats.avgService.toFixed(1)}
+              />
               <RatingBar
                 title={"Cơ sở vật chất"}
-                score={reviewsStats.avgFacilities}
+                score={reviewsStats.avgFacilities.toFixed(1)}
               />
             </div>
           </div>
@@ -69,19 +75,23 @@ export default function ReviewsList({
                 className="grid grid-cols-3 border rounded-md p-4 shadow"
               >
                 <div className="col-span-1 flex items-center gap-2">
-                  <div className="w-14 h-14 flex items-center justify-center border rounded-full shadow-sm"><CiUser size={30}/></div>
+                  <div className="w-14 h-14 flex items-center justify-center border rounded-full shadow-sm">
+                    <CiUser size={30} />
+                  </div>
                   <p className="font-medium text-[16px]">{r.hoTenKhachHang}</p>
                 </div>
                 <div className="col-span-2 flex flex-col gap-4">
                   <div className="flex gap-5 items-center">
-                    <p className="bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)] text-[12px] text-(--color-primary) font-semibold py-1.5 px-4 rounded-full">
-                      {calculateAverage([
-                        r.diemSachSe,
-                        r.diemDichVu,
-                        r.DiemCoSoVatChat,
-                      ]).toFixed(1)}{" "}
-                      / 10
-                    </p>
+                    <div className="flex items-center gap-1 bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)] text-[14px] text-(--color-primary)  py-1.5 px-4 rounded-full">
+                      <p className="text-[15px] font-bold">
+                        {calculateAverage([
+                          r.diemSachSe,
+                          r.diemDichVu,
+                          r.DiemCoSoVatChat,
+                        ]).toFixed(1)}
+                      </p>
+                      <p className="font-medium">/ 10</p>
+                    </div>
                     <p className="font-bold text-[14px] text-(--muted-foreground)">
                       Đánh giá {timeAgo(r.thoiGianDanhGia)}
                     </p>

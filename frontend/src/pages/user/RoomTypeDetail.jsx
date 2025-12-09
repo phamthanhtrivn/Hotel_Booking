@@ -14,10 +14,12 @@ import { getStyledIcon, mainAmenityCodes } from "@/helpers/iconMapper";
 import { danhGiaService } from "@/services/danhGiaService";
 import TienNghiByCategory from "@/components/common/TienNghiByCategory";
 import ReviewsList from "@/components/common/ReviewsList";
-import { calculateNights } from "@/helpers/dateHelpers";
+import { calculateNights, toLocalDate } from "@/helpers/dateHelpers";
 import { useSelector } from "react-redux";
 import { FaChild } from "react-icons/fa6";
 import { calculateAverage } from "@/helpers/numberFormatter";
+import InformationDialog from "@/components/common/InformationDialog";
+import axios from "axios";
 
 const OtherRoomsSlider = ({ otherRooms }) => {
   const navigate = useNavigate();
@@ -29,7 +31,9 @@ const OtherRoomsSlider = ({ otherRooms }) => {
     setStartIndex((prev) =>
       Math.min(prev + visibleCount, otherRooms.length - visibleCount)
     );
+
   const visibleRooms = otherRooms.slice(startIndex, startIndex + visibleCount);
+  const showButtons = otherRooms.length > visibleCount;
 
   return (
     <section className="w-full py-10 bg-background relative">
@@ -39,19 +43,22 @@ const OtherRoomsSlider = ({ otherRooms }) => {
       </p>
 
       <div className="max-w-7xl mx-auto flex items-center relative">
-        <button
-          onClick={prev}
-          disabled={startIndex === 0}
-          className="absolute left-0 z-10 bg-gray-800 text-white p-3 rounded disabled:opacity-50"
-        >
-          &#8592;
-        </button>
+        {/* PREV BUTTON */}
+        {showButtons && (
+          <button
+            onClick={prev}
+            disabled={startIndex === 0}
+            className="absolute left-0 z-10 bg-gray-800 text-white p-3 rounded disabled:opacity-50"
+          >
+            &#8592;
+          </button>
+        )}
 
         <div className="flex overflow-hidden w-full">
           {visibleRooms.map((r, index) => (
             <div
               key={index}
-              className="flex-shrink-0 w-1/3 px-2 flex flex-col space-y-6"
+              className="flex-shrink-0 w-1/3 px-2 flex flex-col space-y-6 h-[430px]"
             >
               <div
                 onClick={() => navigate(`/room-types/${r.maLoaiPhong}`)}
@@ -62,25 +69,19 @@ const OtherRoomsSlider = ({ otherRooms }) => {
                   alt=""
                   className="w-full h-[30vh] object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute top-0 left-0 w-full h-full bg-foreground opacity-0 hover:opacity-40 transition-opacity duration-500 z-10"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="absolute w-0.5 h-0 bg-white transition-all duration-500 group-hover:h-12"></span>
-                  <span className="absolute h-0.5 w-0 bg-white transition-all duration-500 group-hover:w-12"></span>
-                </div>
               </div>
+
               <div className="flex w-full items-center justify-center">
                 <p className="text-2xl font-light tracking-widest">
                   {r.tenLoaiPhong}
                 </p>
               </div>
+
               <div className="w-full flex flex-col">
                 <div className="border border-t border-foreground/30"></div>
-                <p className="text-sm font-light">
-                  Great choice for a relaxing vacation for families with
-                  children or a group of friends. Exercitation photo booth
-                  stumptown tote bag Banksy, elit small...
-                </p>
+                <p className="text-sm font-light line-clamp-3">{r.moTa}</p>
               </div>
+
               <div className="grid grid-cols-2 mb-10">
                 <div className="flex flex-col items-center justify-center">
                   <p className="text-sm font-light uppercase">Giá</p>
@@ -99,17 +100,21 @@ const OtherRoomsSlider = ({ otherRooms }) => {
           ))}
         </div>
 
-        <button
-          onClick={next}
-          disabled={startIndex + visibleCount >= otherRooms.length}
-          className="absolute right-0 z-10 bg-gray-800 text-white p-3 rounded disabled:opacity-50"
-        >
-          &#8594;
-        </button>
+        {/* NEXT BUTTON */}
+        {showButtons && (
+          <button
+            onClick={next}
+            disabled={startIndex + visibleCount >= otherRooms.length}
+            className="absolute right-0 z-10 bg-gray-800 text-white p-3 rounded disabled:opacity-50"
+          >
+            &#8594;
+          </button>
+        )}
       </div>
     </section>
   );
 };
+
 const RoomTypeDetail = () => {
   const { id } = useParams();
   const filters = useSelector((state) => state.roomSearch);
@@ -122,6 +127,7 @@ const RoomTypeDetail = () => {
   const [activeTab, setActiveTab] = useState("");
   const [currentReviewPage, setCurrentReviewPage] = useState(1);
   const [totalReviewPages, setTotalReviewPages] = useState(0);
+  const [chinhSachHuyDialog, setOpenQuyDinh] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [reviewStats, setReviewStats] = useState({
     topReviews: [],
@@ -135,6 +141,29 @@ const RoomTypeDetail = () => {
 
   const navigate = useNavigate();
 
+  const handleSearch = async (currentFilters) => {
+    try {
+      const body = {
+        checkIn: toLocalDate(new Date(currentFilters.checkIn)),
+        checkOut: toLocalDate(new Date(currentFilters.checkOut)),
+
+        soKhach: currentFilters.guests || null,
+        tenLoaiPhong: currentFilters.roomType || null,
+        treEm: currentFilters.children,
+      };
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_API_URL}/api/public/loaiphong/search`,
+        body
+      );
+
+      console.log(response);
+      setOtherRooms(response.data);
+    } catch (err) {
+      console.error(err);
+      toast.error("Không thể tìm phòng. Vui lòng thử lại.");
+    }
+  };
+
   const fetchLoaiGiuong = async () => {
     const result = await loaiGiuongService.findByLoaiPhong(id);
     setBedTypes(result.data);
@@ -144,7 +173,7 @@ const RoomTypeDetail = () => {
     const res1 = await danhGiaService.findByLoaiPhong(
       id,
       currentReviewPage - 1,
-      6
+      8
     );
     const res2 = await danhGiaService.getReviewStats(id);
 
@@ -160,6 +189,7 @@ const RoomTypeDetail = () => {
 
   useEffect(() => {
     fetchReviews();
+    handleSearch(filters);
   }, [currentReviewPage]);
 
   useEffect(() => {
@@ -169,18 +199,6 @@ const RoomTypeDetail = () => {
         // Chạy tuần tự các API call
         const roomRes = await loaiPhongService.findById(id);
         setRoom(roomRes.data);
-
-        const resAll = await fetch(
-          `${import.meta.env.VITE_BASE_API_URL}/api/public/loaiphong`
-        );
-
-        if (!resAll.ok) throw new Error("Failed to fetch all rooms");
-        const dataAll = await resAll.json();
-
-        const others = dataAll
-          .filter((r) => r.maLoaiPhong !== id)
-          .map((r) => r);
-        setOtherRooms(others);
 
         await fetchLoaiGiuong();
         await fetchAmenities();
@@ -228,7 +246,7 @@ const RoomTypeDetail = () => {
             <h2 className="text-6xl font-thin tracking-wide">
               {room.tenLoaiPhong}
             </h2>
-            <p className="text-lg font-[500px]">{room.moTa}</p>
+            <p className="text-lg">{room.moTa}</p>
           </div>
 
           <nav className="pb-40 flex items-center justify-center gap-10">
@@ -257,7 +275,7 @@ const RoomTypeDetail = () => {
       <section id="detail" className="relative z-30 -mt-[140px]">
         <div className="bg-background max-w-[1350px] mx-auto px-8 py-10 shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-3 mb-8">
-            <div className="lg:col-span-1 px-5 max-h-[400px] overflow-hidden flex flex-col">
+            <div className="lg:col-span-1 px-5 max-h-[360px] overflow-hidden flex flex-col">
               <h2 className="tracking-widest uppercase mb-5">Đánh giá</h2>
 
               <div className="flex gap-3 items-center">
@@ -268,7 +286,10 @@ const RoomTypeDetail = () => {
                 <div className="w-full">
                   <p className="font-[450]">{reviewStats.rating}</p>
                   <div className="flex justify-between w-full">
-                    <p className="text-(--color-primary) font-semibold hover:underline hover:cursor-pointer hover:underline-1" onClick={() => handleScroll("reviews")}>
+                    <p
+                      className="text-(--color-primary) font-semibold hover:underline hover:cursor-pointer hover:underline-1"
+                      onClick={() => handleScroll("reviews")}
+                    >
                       {reviewStats.numOfReviews} đánh giá {">"}
                     </p>
                     <a
@@ -318,7 +339,7 @@ const RoomTypeDetail = () => {
                       className="flex items-center space-x-2 gap-2"
                     >
                       {getStyledIcon(a.icon, {
-                        size: "w-6 h-6",
+                        size: "w-5 h-5",
                         color: "black",
                       })}
                       <span className="text-sm">{a.tenTienNghi}</span>
@@ -348,25 +369,25 @@ const RoomTypeDetail = () => {
                 </Button>
                 <div className="grid grid-cols-2 gap-7">
                   <div className="flex items-center space-x-6">
-                    <IoMdPeople size={35} className="stroke-1" />
+                    <IoMdPeople size={25} className="stroke-1" />
                     <span className="text-[16px]">
                       Tối đa {room.soKhach} người lớn
                     </span>
                   </div>
                   <div className="flex items-center space-x-6">
-                    <FaChild size={35} />
+                    <FaChild size={25} />
                     <span className="text-[16px]">
                       Tối đa {room.soTreEm} trẻ em
                     </span>
                   </div>
                   <div className="flex items-center space-x-6">
-                    <IoIosResize size={35} />
+                    <IoIosResize size={25} />
                     <span className="text-[16px]">
                       Diện tích {room.dienTich} m²
                     </span>
                   </div>
                   <div className="flex items-center space-x-6">
-                    <MdOutlineSingleBed size={35} />
+                    <MdOutlineSingleBed size={25} />
                     <span className="text-[16px]">
                       {bedTypes.map((b) => b.tenGiuong).join(", ")}
                     </span>
@@ -374,11 +395,16 @@ const RoomTypeDetail = () => {
                 </div>
                 <div className="flex flex-col gap-6 border-t pt-3 border-foreground/30">
                   <div className="flex items-center space-x-6">
-                    <IoMdReturnLeft size={30} />
-                    <span className="text-[16px]">Chính sách hủy bỏ</span>
+                    <IoMdReturnLeft size={25} />
+                    <span
+                      onClick={() => setOpenQuyDinh(true)}
+                      className="text-[16px] hover:underline hover:cursor-pointer hover:underline-1"
+                    >
+                      Chính sách hủy phòng
+                    </span>
                   </div>
                   <div className="flex items-center space-x-6">
-                    <BiSolidWalletAlt size={30} />
+                    <BiSolidWalletAlt size={25} />
                     <span className="text-[16px]">Thanh toán trực tuyến</span>
                   </div>
                 </div>
@@ -408,6 +434,22 @@ const RoomTypeDetail = () => {
         />
       </section>
       <OtherRoomsSlider otherRooms={otherRooms} />
+      <InformationDialog
+        title={"Chính sách hủy phòng"}
+        children={
+          <div className="flex flex-col gap-2">
+            <p>
+              Thời gian hủy phải trước thời gian checkin tối thiểu 24h, sau thời
+              gian đó mọi yêu cầu không được giải quyết.
+            </p>
+            <p>
+              Khách hàng không đến vì một lý do nào đó phải chịu mất tiền cọc.
+            </p>
+          </div>
+        }
+        open={chinhSachHuyDialog}
+        onClose={() => setOpenQuyDinh(false)}
+      />
     </div>
   );
 };

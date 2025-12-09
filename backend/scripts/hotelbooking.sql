@@ -933,7 +933,7 @@ INSERT INTO `tien_nghi` (`ma_tien_nghi`, `ten_tien_nghi`, `icon`, `loai_tien_ngh
 	('TN16', 'Phòng tắm vòi sen', 'shower', 'Nhà tắm', b'1'),
 	('TN17', 'Móc quần áo', 'hang', 'Đồ nội thất', b'1'),
 	('TN18', 'Điện thoại', 'phone', 'Mạng Internet và điện thoại', b'1'),
-	('TN19', 'Tủ lạnh', '', 'Đồ nội thất', b'1'),
+	('TN19', 'Tủ lạnh', 'frigde', 'Đồ nội thất', b'1'),
 	('TN2', 'TV màn hình phẳng', 'tv', 'Hình ảnh/âm thanh', b'1'),
 	('TN20', 'Máy sấy tóc', 'hair-dryer', 'Đồ điện tử', b'1'),
 	('TN21', 'Phòng cách âm', 'mute', 'Khác', b'1'),

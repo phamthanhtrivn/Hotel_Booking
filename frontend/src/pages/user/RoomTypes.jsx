@@ -23,7 +23,6 @@ const RoomTypes = () => {
   const roomSectionRef = useRef(null);
 
   useEffect(() => {
-    console.log(filters)
     const init = async () => {
       await handleSearch(filters);
     };

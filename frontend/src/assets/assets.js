@@ -335,6 +335,7 @@ export const roomTypeOptionDummyData = [
   "Twin Bed",
 ];
 
+
 export const quyDinhDieuKhoan = [
   {
     title: "Đặt phòng",
