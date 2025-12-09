@@ -76,9 +76,9 @@ const RoomTypeCard = ({ room, onDetail }) => {
 
           <button
             onClick={() => onDetail(room.maLoaiPhong)}
-            className="mt-6 border border-background text-background py-2.5 px-8 text-sm uppercase tracking-wide hover:bg-chart-2 hover:border-none hover:scale-90 transition-all duration-300 self-start cursor-pointer"
+            className="mt-6 border border-background text-background py-2.5 px-8 text-sm uppercase tracking-wide hover:bg-(--color-primary) hover:border-(--color-background) hover:scale-90 transition-all duration-300 self-start cursor-pointer"
           >
-            View detail
+            Chọn
           </button>
         </div>
 

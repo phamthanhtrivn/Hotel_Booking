@@ -38,9 +38,9 @@ const ChatWidget = () => {
 
     try {
       const eventSource = new EventSource(
-        `http://localhost:8080/api/chat/stream?request=${encodeURIComponent(
-          question
-        )}`
+        `${
+          import.meta.env.VITE_BASE_API_URL
+        }/api/chat/stream?request=${encodeURIComponent(question)}`
       );
 
       eventSource.onmessage = (event) => {
@@ -67,8 +67,6 @@ const ChatWidget = () => {
       };
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -87,8 +85,8 @@ const ChatWidget = () => {
         <div className="fixed bottom-6 right-6 md:w-md sm:w-sm bg-white h-[600px] rounded-lg shadow-xl z-50 border flex flex-col">
           <div className="flex justify-between items-center p-4 bg-(--color-background) text-white rounded-t-lg">
             <div>
-              <h2 className="font-medium text-lg">Twan Hotel</h2>
-              <h3>Chat với chúng tôi</h3>
+              <p className="font-medium text-lg">Twan Hotel</p>
+              <p>Chat với chúng tôi</p>
             </div>
             <button
               onClick={() => setIsOpen(false)}
@@ -108,16 +106,23 @@ const ChatWidget = () => {
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`p-3 rounded-lg max-w-[85%] whitespace-pre-wrap ${
-                  msg.role === "user"
-                    ? "bg-blue-500 text-white ml-auto"
-                    : "bg-gray-100 text-gray-800 mr-auto"
+                className={`flex ${
+                  msg.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
-                <Markdown>
-                  {msg.content ||
-                    (msg.role === "ai" && loading ? "Đang trả lời..." : "")}
-                </Markdown>
+                {msg.role === "ai" && msg.content === "" && loading ? (
+                  <TypingIndicator />
+                ) : (
+                  <div
+                    className={`p-3 rounded-lg whitespace-pre-wrap max-w-[80%] ${
+                      msg.role === "user"
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    <Markdown>{msg.content}</Markdown>
+                  </div>
+                )}
               </div>
             ))}
 
@@ -129,14 +134,14 @@ const ChatWidget = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
+              className="flex-1 border rounded-lg px-3 py-2 focus:outline-none focus:border-(--color-primary)"
               placeholder="Nhập tin nhắn..."
               disabled={loading}
             />
             <button
               onClick={() => sendMessage()}
               disabled={loading || !input.trim()}
-              className="bg-(--color-background) text-white px-4 py-2 rounded-lg hover:bg-(--color-primary) disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="bg-(--color-background) hover:cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-(--color-primary) disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               <Send size={18} />
             </button>
@@ -144,6 +149,16 @@ const ChatWidget = () => {
         </div>
       )}
     </>
+  );
+};
+
+const TypingIndicator = () => {
+  return (
+    <div className="flex gap-1 items-center px-3 py-2 bg-gray-200 rounded-xl w-fit">
+      <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></span>
+      <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:0.15s]"></span>
+      <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce [animation-delay:0.3s]"></span>
+    </div>
   );
 };
 

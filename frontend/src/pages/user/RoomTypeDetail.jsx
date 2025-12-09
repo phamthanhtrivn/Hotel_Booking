@@ -370,25 +370,25 @@ const RoomTypeDetail = () => {
                 <div className="grid grid-cols-2 gap-7">
                   <div className="flex items-center space-x-6">
                     <IoMdPeople size={25} className="stroke-1" />
-                    <span className="text-[16px]">
+                    <span className="text-[15px]">
                       Tối đa {room.soKhach} người lớn
                     </span>
                   </div>
                   <div className="flex items-center space-x-6">
                     <FaChild size={25} />
-                    <span className="text-[16px]">
+                    <span className="text-[15px]">
                       Tối đa {room.soTreEm} trẻ em
                     </span>
                   </div>
                   <div className="flex items-center space-x-6">
                     <IoIosResize size={25} />
-                    <span className="text-[16px]">
+                    <span className="text-[15px]">
                       Diện tích {room.dienTich} m²
                     </span>
                   </div>
                   <div className="flex items-center space-x-6">
                     <MdOutlineSingleBed size={25} />
-                    <span className="text-[16px]">
+                    <span className="text-[15px]">
                       {bedTypes.map((b) => b.tenGiuong).join(", ")}
                     </span>
                   </div>
@@ -398,14 +398,14 @@ const RoomTypeDetail = () => {
                     <IoMdReturnLeft size={25} />
                     <span
                       onClick={() => setOpenQuyDinh(true)}
-                      className="text-[16px] hover:underline hover:cursor-pointer hover:underline-1"
+                      className="text-[15px] hover:underline hover:cursor-pointer hover:underline-1"
                     >
                       Chính sách hủy phòng
                     </span>
                   </div>
                   <div className="flex items-center space-x-6">
                     <BiSolidWalletAlt size={25} />
-                    <span className="text-[16px]">Thanh toán trực tuyến</span>
+                    <span className="text-[15px]">Thanh toán trực tuyến</span>
                   </div>
                 </div>
               </div>
