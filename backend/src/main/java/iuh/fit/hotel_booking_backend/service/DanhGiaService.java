@@ -1,9 +1,6 @@
 package iuh.fit.hotel_booking_backend.service;
 
-import iuh.fit.hotel_booking_backend.dto.APIResponse;
-import iuh.fit.hotel_booking_backend.dto.DanhGiaRequest;
-import iuh.fit.hotel_booking_backend.dto.DanhGiaRespone;
-import iuh.fit.hotel_booking_backend.dto.DanhGiaTimKiemRequest;
+import iuh.fit.hotel_booking_backend.dto.*;
 import iuh.fit.hotel_booking_backend.entity.DanhGia;
 import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
@@ -13,10 +10,12 @@ import iuh.fit.hotel_booking_backend.repository.LoaiPhongRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DanhGiaService {
@@ -30,8 +29,63 @@ public class DanhGiaService {
         this.loaiPhongRepo = loaiPhongRepo;
     }
 
-    public List<DanhGia> findByLoaiPhong(String id){
-        return repo.findByLoaiPhong(id);
+    public Page<DanhGia> findByLoaiPhong(String id, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("thoiGianDanhGia").descending());
+        return repo.findByLoaiPhongPagable(id, pageable);
+    }
+
+    public ReviewStatsDTO getReviewStats(String maLoaiPhong) {
+        List<DanhGia> allReviews = repo.findByLoaiPhong(maLoaiPhong);
+
+        if (allReviews.isEmpty()) {
+            return new ReviewStatsDTO(null, 0, "", 0.0, 0.0, 0.0, 0);
+        }
+        int numOfReviews = allReviews.size();
+
+        double totalService = 0;
+        double totalClean = 0;
+        double totalFacilities = 0;
+
+        for (DanhGia review : allReviews) {
+            totalService += review.getDiemDichVu();
+            totalClean += review.getDiemSachSe();
+            totalFacilities += review.getDiemCoSoVatChat();
+        }
+
+        double avgService = totalService / numOfReviews;
+        double avgClean = totalClean / numOfReviews;
+        double avgFacilities = totalFacilities / numOfReviews;
+        double avg = (avgService + avgClean + avgFacilities) / 3;
+
+        String ratingText = getRatingText(avg);
+
+        List<DanhGia> top5 = allReviews.stream()
+                .sorted((a, b) -> {
+                    double avgA = (a.getDiemDichVu() + a.getDiemSachSe() + a.getDiemCoSoVatChat()) / 3.0;
+                    double avgB = (b.getDiemDichVu() + b.getDiemSachSe() + b.getDiemCoSoVatChat()) / 3.0;
+
+                    return Double.compare(avgB, avgA);
+                })
+                .limit(5)
+                .collect(Collectors.toList());
+
+        return new ReviewStatsDTO(
+                top5,
+                numOfReviews,
+                ratingText,
+                avgService,
+                avgClean,
+                avgFacilities,
+                avg
+        );
+    }
+
+    private String getRatingText(double score) {
+        if (score >= 8.5) return "Rất tốt";
+        if (score >= 7.5) return "Tốt";
+        if (score >= 5) return "Trung bình";
+        if (score >= 3) return "Kém";
+        return "Rất kém";
     }
 
     public DanhGia getById(String id) {
@@ -42,7 +96,7 @@ public class DanhGiaService {
         DanhGia newDanhGia = new DanhGia();
         DanhGia dg = repo.findTopByOrderByMaDanhGiaDesc();
         int cnt = 0;
-        if(dg != null){
+        if (dg != null) {
             cnt = Integer.parseInt(dg.getMaDanhGia().substring(dg.getMaDanhGia().length() - 3));
         }
         String maDG = "DG" + String.format("%03d", cnt + 1);
@@ -58,7 +112,7 @@ public class DanhGiaService {
         DonDatPhong donDatPhong = donDatPhongRepo.findById(danhGiaRequest.getMaDatPhong()).orElse(null);
         newDanhGia.setLoaiPhong(loaiPhong);
 
-        if(donDatPhong != null){
+        if (donDatPhong != null) {
             donDatPhong.setDanhGia(newDanhGia);
             donDatPhongRepo.save(donDatPhong);
         }
@@ -67,13 +121,12 @@ public class DanhGiaService {
     }
 
 
-    public Page<DanhGiaRespone> getAllByDanhGia(int page, int size,  DanhGiaTimKiemRequest request) {
+    public Page<DanhGiaRespone> getAllByDanhGia(int page, int size, DanhGiaTimKiemRequest request) {
         int minDiem = 0, maxDiem = 0;
-        if(request.getDanhGia() != null){
-            if(request.getDanhGia().getLoai().equals("BAD")){
+        if (request.getDanhGia() != null) {
+            if (request.getDanhGia().getLoai().equals("BAD")) {
                 minDiem = request.getDanhGia().getDiem();
-            }
-            else maxDiem = request.getDanhGia().getDiem();
+            } else maxDiem = request.getDanhGia().getDiem();
         }
         Pageable pageable = PageRequest.of(page, size);
         return repo.searchDanhGia(

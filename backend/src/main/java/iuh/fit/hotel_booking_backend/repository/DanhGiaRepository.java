@@ -18,6 +18,13 @@ public interface DanhGiaRepository extends JpaRepository<DanhGia, String> {
             "JOIN d.donDatPhong ddp " +
             "JOIN ddp.khachHang kh " +
             "WHERE d.loaiPhong.maLoaiPhong = :maLoaiPhong")
+    Page<DanhGia> findByLoaiPhongPagable(String maLoaiPhong, Pageable pageable);
+
+    @Query("SELECT d " +
+            "FROM DanhGia d " +
+            "JOIN d.donDatPhong ddp " +
+            "JOIN ddp.khachHang kh " +
+            "WHERE d.loaiPhong.maLoaiPhong = :maLoaiPhong")
     List<DanhGia> findByLoaiPhong(String maLoaiPhong);
 
     @Query("""

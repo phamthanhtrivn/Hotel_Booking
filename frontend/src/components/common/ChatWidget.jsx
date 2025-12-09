@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { MessageCircle, X, Send } from "lucide-react";
+import { X, Send } from "lucide-react";
+import { BsRobot } from "react-icons/bs";
 import Markdown from "react-markdown";
 
 const ChatWidget = () => {
@@ -76,9 +77,9 @@ const ChatWidget = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-(--color-background) rounded-full shadow-lg hover:transition-all z-50 flex items-center justify-center hover:scale-110"
+          className="fixed bottom-10 hover:cursor-pointer right-3 w-15 h-15 bg-(--color-background) rounded-full shadow-lg hover:transition-all z-50 flex items-center justify-center hover:scale-110"
         >
-          <MessageCircle className="text-white" size={24} />
+          <BsRobot className="text-white" size={30} />
         </button>
       )}
 
