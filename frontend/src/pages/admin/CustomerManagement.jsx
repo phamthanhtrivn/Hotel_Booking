@@ -255,6 +255,7 @@ export default function CustomerManagement() {
             data={customers}
             renderActions={(item) => (
               <ActionButtons
+                canDelete={true}
                 onView={() => handleDetail(item)}
                 onEdit={() => handleEdit(item)}
                 onDelete={() => handleDelete(item)}

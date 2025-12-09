@@ -39,5 +39,23 @@ public class DocumentVectorService {
                 Map.of("type", "introduction", "source", "hotel_introduce.txt", "category", "hotel_info")
         );
         vectorStore.add(List.of(doc2));
+        // Load file 3
+        Resource resource3 = new ClassPathResource("documents/facilities.txt");
+        String facilities = new String(resource3.getInputStream().readAllBytes());
+        Document doc3 = new Document(
+                UUID.nameUUIDFromBytes("facilities_doc_003".getBytes()).toString(),
+                facilities,
+                Map.of("type", "facilities", "source", "facilities.txt", "category", "facilities")
+        );
+        vectorStore.add(List.of(doc3));
+        // Load file 4
+        Resource resource4 = new ClassPathResource("documents/manual.txt");
+        String manual = new String(resource4.getInputStream().readAllBytes());
+        Document doc4 = new Document(
+                UUID.nameUUIDFromBytes("manual_doc_004".getBytes()).toString(),
+                manual,
+                Map.of("type", "user manual", "source", "manual.txt", "category", "user manual")
+        );
+        vectorStore.add(List.of(doc4));
     }
 }

@@ -44,7 +44,7 @@ const BookingHistory = () => {
           }/api/member/dondatphong/lichsu/${maKhachHang}`,
           {
             headers: {
-              "Authorization": `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -64,6 +64,31 @@ const BookingHistory = () => {
     };
     fetchBookingHistory();
   }, []);
+
+  const reloadHistory = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_BASE_API_URL
+        }/api/member/dondatphong/lichsu/${maKhachHang}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = response.data;
+      const sortedData = data.sort(
+        (a, b) => new Date(b.ngayTao) - new Date(a.ngayTao)
+      );
+      setBookingHistory(sortedData);
+      setFilteredHistory(sortedData);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (filterStatus === "TAT_CA") {
@@ -238,6 +263,7 @@ const BookingHistory = () => {
             <BookingDetailModal
               booking={selectedBooking}
               onClose={() => setSelectedBooking(null)}
+              onReload={reloadHistory}
             />
           </motion.div>
         )}

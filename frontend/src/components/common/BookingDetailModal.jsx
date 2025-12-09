@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Swal from "sweetalert2";
 import { AuthContext } from "@/context/AuthContext";
 
-const BookingDetailModal = ({ booking, onClose }) => {
+const BookingDetailModal = ({ booking, onClose, onReload }) => {
   const baseUrl = import.meta.env.VITE_BASE_API_URL;
   const [note, setNote] = useState(booking.ghiChu || "");
   const statusLabels = {
@@ -12,7 +12,7 @@ const BookingDetailModal = ({ booking, onClose }) => {
     DA_THANH_TOAN: "Đã thanh toán",
     DA_HUY: "Đã hủy",
   };
-  const { token } = useContext(AuthContext)
+  const { token } = useContext(AuthContext);
 
   const checkInTime = new Date(booking.checkIn);
   const now = new Date();
@@ -34,7 +34,10 @@ const BookingDetailModal = ({ booking, onClose }) => {
         `${baseUrl}/api/member/dondatphong/capnhat-ghichu/${booking.maDatPhong}`,
         {
           method: "POST",
-          headers: { "Content-Type": "text/plain", "Authorization": `Bearer ${token}` },
+          headers: {
+            "Content-Type": "text/plain",
+            Authorization: `Bearer ${token}`,
+          },
           body: note,
         }
       );
@@ -53,7 +56,7 @@ const BookingDetailModal = ({ booking, onClose }) => {
     try {
       const response = await fetch(
         `${baseUrl}/api/member/dondatphong/huy/${booking.maDatPhong}`,
-        { method: "POST", headers: { "Authorization": `Bearer ${token}` } }
+        { method: "POST", headers: { Authorization: `Bearer ${token}` } }
       );
       if (!response.ok) {
         const errorMsg = await response.text();
@@ -82,6 +85,9 @@ const BookingDetailModal = ({ booking, onClose }) => {
         Swal.fire({
           title: "Cập nhật ghi chú thành công!",
           icon: "success",
+        }).then(() => {
+          onClose();
+          onReload();
         });
       }
     });
@@ -104,6 +110,9 @@ const BookingDetailModal = ({ booking, onClose }) => {
         Swal.fire({
           title: "Hủy đơn đặt phòng thành công!",
           icon: "success",
+        }).then(() => {
+          onClose();
+          onReload();
         });
       }
     });

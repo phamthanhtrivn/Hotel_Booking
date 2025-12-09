@@ -87,7 +87,7 @@ const BedTypeManagement = () => {
     try {
       if (currentBedType) {
         const res = await axios.put(
-          `${baseUrl}/api/loaigiuong/${currentBedType.maGiuong}`,
+          `${baseUrl}/api/admin/loaigiuong/${currentBedType.maGiuong}`,
           {
             tenGiuong: formData.name,
             moTa: formData.description,
@@ -111,7 +111,7 @@ const BedTypeManagement = () => {
           toast.info(res.data.message);
         }
       } else {
-        const res = await axios.post(`${baseUrl}/api/loaigiuong`, {
+        const res = await axios.post(`${baseUrl}/api/admin/loaigiuong`, {
           tenGiuong: formData.name,
           moTa: formData.description,
         },
@@ -140,7 +140,7 @@ const BedTypeManagement = () => {
   const handleConfirmDelete = async () => {
     try {
       const res = await axios.delete(
-        `${baseUrl}/api/loaigiuong/${currentBedType.maGiuong}`,
+        `${baseUrl}/api/admin/loaigiuong/${currentBedType.maGiuong}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

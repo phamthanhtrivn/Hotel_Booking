@@ -32,7 +32,6 @@ const ChatWidget = () => {
     setInput("");
     setLoading(true);
 
-    // AI message placeholder
     const aiId = crypto.randomUUID();
     setMessages((prev) => [...prev, { id: aiId, role: "ai", content: "" }]);
 
@@ -45,9 +44,14 @@ const ChatWidget = () => {
 
       eventSource.onmessage = (event) => {
         const text = event.data;
-        if (!text) return;
 
-        // Append chunk vào AI message
+        // Kết thúc stream
+        if (!text || text === "[DONE]") {
+          setLoading(false);
+          eventSource.close();
+          return;
+        }
+
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === aiId ? { ...msg, content: msg.content + text } : msg
@@ -61,15 +65,11 @@ const ChatWidget = () => {
         eventSource.close();
         setLoading(false);
       };
-
-      eventSource.onopen = () => {
-        console.log("Stream connected");
-      };
     } catch (err) {
       console.error(err);
+      setLoading(false);
     }
   };
-
   return (
     <>
       {!isOpen && (

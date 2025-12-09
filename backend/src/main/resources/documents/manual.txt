@@ -1,0 +1,22 @@
+HƯỚNG DẪN SỬ DỤNG
+
+Hướng dẫn đặt phòng
+1. Trên thanh menu của trang web - chọn "Đặt phòng".
+2. Khi giao diện tìm phòng hiện lên - chọn ngày checkin, checkout - chọn số người lớn, trẻ em - chọn loại phòng (tùy ý).
+3. Chọn vào loại phòng phù hợp - chi tiết phòng hiện lên.
+4. Chọn "Đặt phòng".
+5. Điền thông tin theo yêu cầu - chọn "Đặt phòng".
+6. Chọn phương thức thanh toán - thực hiện thanh toán.
+
+Hướng dẫn xem thông tin khách hàng
+1. Đăng nhập.
+2. Chọn icon user ở góc trên phải màn hình.
+3. Chọn xem thông tin tài khoản.
+
+Hướng dẫn hủy đặt phòng
+Lưu ý: Chỉ có thể hủy đặt phòng trước giờ checkin là 24h sau khoảng thời gian đó không được phép hủy.
+1. Đăng nhập.
+2. Chọn icon user ở góc trên phải màn hình.
+3. Chọn xem lịch sử đặt phòng.
+4. Trên đơn muốn hủy - chọn chi tiết.
+5. Chọn hủy đặt phòng.
