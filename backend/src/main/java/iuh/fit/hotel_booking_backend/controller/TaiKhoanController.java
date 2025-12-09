@@ -16,36 +16,4 @@ public class TaiKhoanController {
         this.taikhoanService = taikhoanService;
     }
 
-    @GetMapping("/{id}")
-    public APIResponse<TaiKhoan> getById(@PathVariable String id) {
-        APIResponse<TaiKhoan> response = new APIResponse<>();
-        try{
-            TaiKhoan tk = taikhoanService.getById(id);
-            if(tk != null) {
-                response.setData(tk);
-                response.setSuccess(true);
-                response.setMessage("Get TaiKhoan successfully");
-            }
-        } catch (Exception e) {
-            response.setSuccess(false);
-            response.setMessage("Error retrieving TaiKhoan");
-            return response;
-        }
-        return response;
-    }
-
-    @PutMapping("/update")
-    public APIResponse<TaiKhoan> updateTaiKhoan(@RequestBody TaiKhoan t) {
-        APIResponse<TaiKhoan> response = new APIResponse<>();
-        try{
-            response.setData(taikhoanService.update(t));
-            response.setSuccess(true);
-            response.setMessage("Update TaiKhoan successfully");
-            return response;
-        } catch (Exception e) {
-            response.setSuccess(false);
-            response.setMessage("Error updating TaiKhoan: " + e.getMessage());
-            return response;
-        }
-    }
 }

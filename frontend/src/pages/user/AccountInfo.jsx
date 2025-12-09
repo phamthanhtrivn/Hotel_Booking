@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { User, Phone, Mail, Award } from "lucide-react";
@@ -7,17 +7,39 @@ import { toast } from "react-toastify";
 import { AuthContext } from "@/context/AuthContext";
 import axios from "axios";
 const AccountInfo = () => {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const [acc, setAcc] = useState(user);
+
+  const handleFetchUser = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BASE_API_URL}/api/member/taikhoan/${user.id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.data.success) {
+        setAcc(res.data.data);
+      }
+    } catch (err) {
+      console.log("REQUEST FAILED:", err);
+    }
+  };
 
   const handelSave = () => {
     const updateUser = async () => {
       try {
         const req = await axios.put(
-          `${import.meta.env.VITE_BASE_API_URL}/api/public/taikhoan/update`,
+          `${import.meta.env.VITE_BASE_API_URL}/api/member/taikhoan/update`,
           acc,
           {
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+            },
           }
         );
         if (req) {
@@ -29,6 +51,10 @@ const AccountInfo = () => {
     };
     updateUser();
   };
+
+  useEffect(() => {
+    handleFetchUser();
+  }, []);
 
   return (
     <div className="flex justify-center items-start min-h-screen bg-gray-50 pt-16 pb-20">
