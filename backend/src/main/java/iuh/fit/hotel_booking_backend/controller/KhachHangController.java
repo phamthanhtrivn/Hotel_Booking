@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/khachhang")
+@RequestMapping("/api/public/khachhang")
 public class KhachHangController {
     private KhachHangService khachHangService;
 

@@ -1,31 +1,36 @@
 package iuh.fit.hotel_booking_backend.helper;
 
 public class QuyDoiKhachHelper {
-    public static int tinhSoKhachSauQuyDoi(Integer soKhach, Integer[] treEm) {
-        if (treEm == null || treEm.length == 0) {
-            return soKhach;
-        }
+    public static class KhachThucTe {
+        public int soNguoiLon;
+        public int soTreEm;
+    }
 
-        int count_1_2 = 0;
-        int count_3_8 = 0;
+    public static KhachThucTe tinhKhachThucTe(Integer soNguoiLon, Integer[] treEm) {
 
-        for (int age : treEm) {
-            if (age >= 1 && age <= 2) {
-                count_1_2++;
-            } else if (age >= 3 && age <= 8) {
-                count_3_8++;
+        KhachThucTe k = new KhachThucTe();
+
+        int tre0_6 = 0;
+        int tre7_11 = 0;
+        int tre12_plus = 0;
+
+        if (treEm != null) {
+            for (int age : treEm) {
+                if (age <= 6) {
+                    tre0_6++;
+                } else if (age <= 11) {
+                    tre7_11++;
+                } else {
+                    tre12_plus++;
+                }
             }
         }
 
-        // Trẻ 3–8 tuổi: 2 trẻ = 1 người lớn
-        int adultsFrom3to8 = count_3_8 / 2;
+        k.soNguoiLon = soNguoiLon + tre12_plus;
+        k.soTreEm = tre0_6 + tre7_11;
 
-        // Trẻ 1–2 tuổi: quá 2 trẻ thì tính người lớn
-        int adultsFrom1to2 = Math.max(0, count_1_2 - 2);
-
-        int totalAdults = soKhach + adultsFrom3to8 + adultsFrom1to2;
-
-        return totalAdults;
+        return k;
     }
+
 
 }

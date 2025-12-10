@@ -12,20 +12,26 @@ import {
 } from "../ui/select";
 import { Button } from "../ui/button";
 import { DateRange } from "react-date-range";
+import { useDispatch, useSelector } from "react-redux";
+import { setFilters } from "@/store/roomSearchSlice";
 
-export default function SearchBar({ filters, setFilters, handleSearch }) {
+export default function SearchBar({ handleSearch }) {
+  const filters = useSelector((state) => state.roomSearch);
+  const dispatch = useDispatch();
+
   const [range, setRange] = useState({
-    startDate: filters.checkIn ? new Date(filters.checkIn) : new Date(),
-    endDate: filters.checkOut ? new Date(filters.checkOut) : new Date(),
+    startDate: new Date(filters.checkIn),
+    endDate: new Date(filters.checkOut),
     key: "selection",
   });
 
   const [guestData, setGuestData] = useState({
-    adults: filters.adults || 2,
-    children: filters.children || [8],
+    adults: filters.guests ?? 2,
+    children: filters.children ?? [],
   });
 
   const [selectedRoomType, setSelectedRoomType] = useState(filters.roomType);
+
   const [openCalendar, setOpenCalendar] = useState(false);
   const calendarRef = useRef(null);
 
@@ -39,17 +45,18 @@ export default function SearchBar({ filters, setFilters, handleSearch }) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Cập nhật filters mỗi khi dữ liệu thay đổi
-  useEffect(() => {
-    setFilters((prev) => ({
-      ...prev,
-      checkIn: range.startDate,
-      checkOut: range.endDate,
+  const applySearch = () => {
+    const payload = {
+      checkIn: range.startDate.toISOString(),
+      checkOut: range.endDate.toISOString(),
       guests: guestData.adults,
-      roomType: selectedRoomType,
       children: guestData.children,
-    }));
-  }, [range, guestData, selectedRoomType]);
+      roomType: selectedRoomType,
+    };
+
+    dispatch(setFilters(payload));
+    handleSearch(payload);
+  };
 
   return (
     <div className="relative bg-white p-2 w-full border rounded-md flex flex-col md:flex-row gap-2 items-center">
@@ -109,15 +116,19 @@ export default function SearchBar({ filters, setFilters, handleSearch }) {
               <label className="font-medium text-xs text-gray-500">
                 Loại phòng
               </label>
-              <p className="font-medium">{selectedRoomType != "ALL" ? selectedRoomType : "Tất cả loại phòng"}</p>
+              <p className="font-medium">
+                {selectedRoomType !== "ALL"
+                  ? selectedRoomType
+                  : "Tất cả loại phòng"}
+              </p>
             </div>
           </RoomSelectTrigger>
 
           <SelectContent>
             <SelectGroup>
-              {["ALL","Standard", "Delux", "Suite", "Family"].map((room) => (
+              {["ALL", "Standard", "Delux", "Suite", "Family"].map((room) => (
                 <SelectItem key={room} value={room}>
-                  {room == "ALL" ? "Tất cả loại phòng" : room}
+                  {room === "ALL" ? "Tất cả loại phòng" : room}
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -127,17 +138,10 @@ export default function SearchBar({ filters, setFilters, handleSearch }) {
 
       {/* Search button */}
       <Button
-        className="h-[59px] font-semibold hover:font-bold hover:bg-(--color-accent) bg-(--color-primary) sm:w-full md:w-[200px] hover:cursor-pointer"
-        onClick={() =>
-          handleSearch({
-            ...filters,
-            checkIn: range.startDate,
-            checkOut: range.endDate,
-            adults: guestData.adults,
-            children: guestData.children,
-            roomType: selectedRoomType,
-          })
-        }
+        className="h-[59px] font-semibold hover:font-bold
+        hover:bg-(--color-accent) bg-(--color-primary)
+        sm:w-full md:w-[200px] hover:cursor-pointer"
+        onClick={applySearch}
       >
         Tìm phòng
       </Button>

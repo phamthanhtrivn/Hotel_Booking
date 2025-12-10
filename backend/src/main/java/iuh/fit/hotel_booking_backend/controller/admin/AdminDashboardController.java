@@ -1,4 +1,4 @@
-package iuh.fit.hotel_booking_backend.controller;
+package iuh.fit.hotel_booking_backend.controller.admin;
 
 import iuh.fit.hotel_booking_backend.dto.DashboardDataDTO;
 import iuh.fit.hotel_booking_backend.service.DashboardService;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/dashboard")
+@RequestMapping("/api/admin/dashboard")
 public class AdminDashboardController {
     @Autowired
     private DashboardService dashboardService;

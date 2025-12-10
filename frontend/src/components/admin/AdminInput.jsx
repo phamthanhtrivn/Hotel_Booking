@@ -14,6 +14,7 @@ export default function AdminInput({
 }) {
   const [displayValue, setDisplayValue] = useState("");
 
+  // Sync state -> hiển thị
   useEffect(() => {
     if (type === "number" || type === "currency" || type === "area") {
       setDisplayValue(value != null ? String(value) : "");
@@ -34,6 +35,7 @@ export default function AdminInput({
         setDisplayValue("");
         return;
       }
+
       let num = Number(numStr);
       if (isNaN(num)) return;
       if (min !== undefined && num < min) num = min;
@@ -42,12 +44,12 @@ export default function AdminInput({
       onChange(num);
       setDisplayValue(num);
     } else {
-      // Với datetime-local hoặc text
       onChange(val);
       setDisplayValue(val);
     }
   };
 
+  // Đuôi hiển thị
   const suffix = type === "currency" ? ".000₫" : type === "area" ? " m²" : "";
 
   return (
@@ -59,7 +61,7 @@ export default function AdminInput({
       )}
       <div className="relative">
         <Input
-          type={type} // thêm type ở đây
+          type={type}
           value={displayValue}
           onChange={handleChange}
           placeholder={placeholder}

@@ -5,9 +5,10 @@ import BookingDetailModal from "@/components/common/BookingDetailModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { AuthContext } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const BookingHistory = () => {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const [bookingHistory, setBookingHistory] = useState([]);
   const [filteredHistory, setFilteredHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,8 +16,17 @@ const BookingHistory = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [filterStatus, setFilterStatus] = useState("TAT_CA");
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5;
 
-  const maKhachHang = user.khachHang.maKhachHang; // Giả sử mã khách hàng
+  const totalPages = Math.ceil(filteredHistory.length / rowsPerPage);
+
+  const paginatedData = filteredHistory.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const maKhachHang = user.khachHang.maKhachHang;
 
   const statusOptions = [
     { value: "TAT_CA", label: "Tất cả" },
@@ -28,15 +38,19 @@ const BookingHistory = () => {
   useEffect(() => {
     const fetchBookingHistory = async () => {
       try {
-        const response = await fetch(
+        const response = await axios.get(
           `${
             import.meta.env.VITE_BASE_API_URL
-          }/api/dondatphong/lichsu/${maKhachHang}`
+          }/api/member/dondatphong/lichsu/${maKhachHang}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
-        if (!response.ok) {
-          throw new Error("Không thể tải dữ liệu đặt phòng");
-        }
-        const data = await response.json();
+
+        const data = response.data;
+
         const sortedData = data.sort(
           (a, b) => new Date(b.ngayTao) - new Date(a.ngayTao)
         );
@@ -51,6 +65,31 @@ const BookingHistory = () => {
     fetchBookingHistory();
   }, []);
 
+  const reloadHistory = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_BASE_API_URL
+        }/api/member/dondatphong/lichsu/${maKhachHang}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = response.data;
+      const sortedData = data.sort(
+        (a, b) => new Date(b.ngayTao) - new Date(a.ngayTao)
+      );
+      setBookingHistory(sortedData);
+      setFilteredHistory(sortedData);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (filterStatus === "TAT_CA") {
       setFilteredHistory(bookingHistory);
@@ -62,6 +101,10 @@ const BookingHistory = () => {
       );
     }
   }, [filterStatus, bookingHistory]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterStatus]);
 
   if (loading)
     return (
@@ -81,7 +124,7 @@ const BookingHistory = () => {
     );
 
   return (
-    <div className="bg-gray-50 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header + Filter */}
       <div className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         {/* Title */}
@@ -147,7 +190,7 @@ const BookingHistory = () => {
 
       {/* List items */}
       <div className="divide-y divide-gray-200">
-        {filteredHistory.map((booking) => {
+        {paginatedData.map((booking) => {
           const loaiPhong = booking.phong?.loaiPhong;
 
           return (
@@ -179,6 +222,36 @@ const BookingHistory = () => {
         })}
       </div>
 
+      <div className="flex justify-center items-center mt-8 gap-3">
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+          disabled={currentPage === 1}
+          className={`px-4 py-2 rounded-lg border text-sm transition ${
+            currentPage === 1
+              ? "text-gray-400 border-gray-300 cursor-not-allowed"
+              : "text-gray-700 border-gray-400 hover:bg-gray-100"
+          }`}
+        >
+          &lt;
+        </button>
+
+        <div className="text-gray-700 font-medium">
+          {currentPage} / {totalPages}
+        </div>
+
+        <button
+          onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+          disabled={currentPage === totalPages}
+          className={`px-4 py-2 rounded-lg border text-sm transition ${
+            currentPage === totalPages
+              ? "text-gray-400 border-gray-300 cursor-not-allowed"
+              : "text-gray-700 border-gray-400 hover:bg-gray-100"
+          }`}
+        >
+          &gt;
+        </button>
+      </div>
+
       {/* Modal */}
       <AnimatePresence>
         {selectedBooking && (
@@ -190,6 +263,7 @@ const BookingHistory = () => {
             <BookingDetailModal
               booking={selectedBooking}
               onClose={() => setSelectedBooking(null)}
+              onReload={reloadHistory}
             />
           </motion.div>
         )}

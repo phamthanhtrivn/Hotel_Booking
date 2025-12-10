@@ -3,19 +3,23 @@ import { formatVND } from "@/helpers/currencyFormatter";
 import { loaiGiuongService } from "@/services/loaiGiuongService";
 import { loaiPhongService } from "@/services/loaiPhongService";
 import { tienNghiService } from "@/services/tienNghiService";
-import { LandPlotIcon } from "lucide-react";
 import { IoIosResize, IoMdPeople, IoMdReturnLeft } from "react-icons/io";
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { MdOutlineSingleBed } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { BiSolidWalletAlt } from "react-icons/bi";
 import { getStyledIcon, mainAmenityCodes } from "@/helpers/iconMapper";
 import { danhGiaService } from "@/services/danhGiaService";
-import { processReviews } from "@/helpers/reviewHelpers";
 import TienNghiByCategory from "@/components/common/TienNghiByCategory";
 import ReviewsList from "@/components/common/ReviewsList";
+import { calculateNights, toLocalDate } from "@/helpers/dateHelpers";
+import { useSelector } from "react-redux";
+import { FaChild } from "react-icons/fa6";
+import { calculateAverage } from "@/helpers/numberFormatter";
+import InformationDialog from "@/components/common/InformationDialog";
+import axios from "axios";
 
 const OtherRoomsSlider = ({ otherRooms }) => {
   const navigate = useNavigate();
@@ -27,7 +31,9 @@ const OtherRoomsSlider = ({ otherRooms }) => {
     setStartIndex((prev) =>
       Math.min(prev + visibleCount, otherRooms.length - visibleCount)
     );
+
   const visibleRooms = otherRooms.slice(startIndex, startIndex + visibleCount);
+  const showButtons = otherRooms.length > visibleCount;
 
   return (
     <section className="w-full py-10 bg-background relative">
@@ -37,19 +43,22 @@ const OtherRoomsSlider = ({ otherRooms }) => {
       </p>
 
       <div className="max-w-7xl mx-auto flex items-center relative">
-        <button
-          onClick={prev}
-          disabled={startIndex === 0}
-          className="absolute left-0 z-10 bg-gray-800 text-white p-3 rounded disabled:opacity-50"
-        >
-          &#8592;
-        </button>
+        {/* PREV BUTTON */}
+        {showButtons && (
+          <button
+            onClick={prev}
+            disabled={startIndex === 0}
+            className="absolute left-0 z-10 bg-gray-800 text-white p-3 rounded disabled:opacity-50"
+          >
+            &#8592;
+          </button>
+        )}
 
         <div className="flex overflow-hidden w-full">
           {visibleRooms.map((r, index) => (
             <div
               key={index}
-              className="flex-shrink-0 w-1/3 px-2 flex flex-col space-y-6"
+              className="flex-shrink-0 w-1/3 px-2 flex flex-col space-y-6 h-[430px]"
             >
               <div
                 onClick={() => navigate(`/room-types/${r.maLoaiPhong}`)}
@@ -60,25 +69,19 @@ const OtherRoomsSlider = ({ otherRooms }) => {
                   alt=""
                   className="w-full h-[30vh] object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute top-0 left-0 w-full h-full bg-foreground opacity-0 hover:opacity-40 transition-opacity duration-500 z-10"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="absolute w-[2px] h-0 bg-white transition-all duration-500 group-hover:h-12"></span>
-                  <span className="absolute h-[2px] w-0 bg-white transition-all duration-500 group-hover:w-12"></span>
-                </div>
               </div>
+
               <div className="flex w-full items-center justify-center">
                 <p className="text-2xl font-light tracking-widest">
                   {r.tenLoaiPhong}
                 </p>
               </div>
+
               <div className="w-full flex flex-col">
                 <div className="border border-t border-foreground/30"></div>
-                <p className="text-sm font-light">
-                  Great choice for a relaxing vacation for families with
-                  children or a group of friends. Exercitation photo booth
-                  stumptown tote bag Banksy, elit small...
-                </p>
+                <p className="text-sm font-light line-clamp-3">{r.moTa}</p>
               </div>
+
               <div className="grid grid-cols-2 mb-10">
                 <div className="flex flex-col items-center justify-center">
                   <p className="text-sm font-light uppercase">Giá</p>
@@ -97,30 +100,36 @@ const OtherRoomsSlider = ({ otherRooms }) => {
           ))}
         </div>
 
-        <button
-          onClick={next}
-          disabled={startIndex + visibleCount >= otherRooms.length}
-          className="absolute right-0 z-10 bg-gray-800 text-white p-3 rounded disabled:opacity-50"
-        >
-          &#8594;
-        </button>
+        {/* NEXT BUTTON */}
+        {showButtons && (
+          <button
+            onClick={next}
+            disabled={startIndex + visibleCount >= otherRooms.length}
+            className="absolute right-0 z-10 bg-gray-800 text-white p-3 rounded disabled:opacity-50"
+          >
+            &#8594;
+          </button>
+        )}
       </div>
     </section>
   );
 };
+
 const RoomTypeDetail = () => {
   const { id } = useParams();
+  const filters = useSelector((state) => state.roomSearch);
   const [room, setRoom] = useState({});
   const [bedTypes, setBedTypes] = useState([]);
-  const location = useLocation();
-  const bookingData = location.state || {};
-  const { checkIn, checkOut } = bookingData;
+  const { checkIn, checkOut } = filters;
   const [otherRooms, setOtherRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [amenities, setAmenities] = useState([]);
   const [activeTab, setActiveTab] = useState("");
-  const [reviewState, setReviewState] = useState({
-    reviews: [],
+  const [currentReviewPage, setCurrentReviewPage] = useState(1);
+  const [totalReviewPages, setTotalReviewPages] = useState(0);
+  const [chinhSachHuyDialog, setOpenQuyDinh] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [reviewStats, setReviewStats] = useState({
     topReviews: [],
     rating: "",
     numOfReviews: 0,
@@ -132,21 +141,56 @@ const RoomTypeDetail = () => {
 
   const navigate = useNavigate();
 
+  const handleSearch = async (currentFilters) => {
+    try {
+      const body = {
+        checkIn: toLocalDate(new Date(currentFilters.checkIn)),
+        checkOut: toLocalDate(new Date(currentFilters.checkOut)),
+
+        soKhach: currentFilters.guests || null,
+        tenLoaiPhong: currentFilters.roomType || null,
+        treEm: currentFilters.children,
+      };
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_API_URL}/api/public/loaiphong/search`,
+        body
+      );
+
+      console.log(response);
+      setOtherRooms(response.data);
+    } catch (err) {
+      console.error(err);
+      toast.error("Không thể tìm phòng. Vui lòng thử lại.");
+    }
+  };
+
   const fetchLoaiGiuong = async () => {
     const result = await loaiGiuongService.findByLoaiPhong(id);
     setBedTypes(result.data);
   };
 
   const fetchReviews = async () => {
-    const result = await danhGiaService.findByLoaiPhong(id);
-    const processed = processReviews(result.data);
-    setReviewState(processed);
+    const res1 = await danhGiaService.findByLoaiPhong(
+      id,
+      currentReviewPage - 1,
+      8
+    );
+    const res2 = await danhGiaService.getReviewStats(id);
+
+    setReviewStats(res2);
+    setTotalReviewPages(res1.data.totalPages);
+    setReviews(res1.data.content);
   };
 
   const fetchAmenities = async () => {
     const result = await tienNghiService.findTienNghiByLoaiPhong(id);
     setAmenities(result.data);
   };
+
+  useEffect(() => {
+    fetchReviews();
+    handleSearch(filters);
+  }, [currentReviewPage]);
 
   useEffect(() => {
     const fetchRoomData = async () => {
@@ -156,20 +200,8 @@ const RoomTypeDetail = () => {
         const roomRes = await loaiPhongService.findById(id);
         setRoom(roomRes.data);
 
-        const resAll = await fetch(
-          `${import.meta.env.VITE_BASE_API_URL}/api/loaiphong`
-        );
-        if (!resAll.ok) throw new Error("Failed to fetch all rooms");
-        const dataAll = await resAll.json();
-
-        const others = dataAll
-          .filter((r) => r.maLoaiPhong !== id)
-          .map((r) => r);
-        setOtherRooms(others);
-
         await fetchLoaiGiuong();
         await fetchAmenities();
-        await fetchReviews();
       } catch (err) {
         console.error(err);
         toast.error("Không thể tải dữ liệu phòng!");
@@ -194,17 +226,7 @@ const RoomTypeDetail = () => {
   }, [id]);
 
   const handleBookNow = () => {
-    navigate("/booking", {
-      state: {
-        maLoaiPhong: room.maLoaiPhong,
-        tenLoaiPhong: room.tenLoaiPhong,
-        checkIn: checkIn,
-        checkOut: checkOut,
-        soKhach: room.soKhach || 2,
-        gia: room.gia,
-        hinhAnh: room.hinhAnh[0],
-      },
-    });
+    navigate(`/booking?room_type=${id}`);
   };
   if (loading) return <p className="text-center text-2xl mt-20">Loading...</p>;
   if (!room) return null;
@@ -215,16 +237,16 @@ const RoomTypeDetail = () => {
         <img
           src={room.hinhAnh[0]}
           alt=""
-          className="absolute top-0 left-0 w-full h-full object-cover brightness-[75%]"
+          className="absolute top-0 left-0 w-full h-full object-cover brightness-75"
         />
         <div className="absolute top-0 left-0 w-full h-full bg-foreground opacity-30 z-10"></div>
 
         <div className="relative z-20 flex flex-col h-full text-muted">
-          <div className="flex-grow w-[70vw] flex flex-col text-center justify-center gap-4">
+          <div className="grow w-[70vw] flex flex-col text-center justify-center gap-4">
             <h2 className="text-6xl font-thin tracking-wide">
               {room.tenLoaiPhong}
             </h2>
-            <p className="text-lg font-[500px]">{room.moTa}</p>
+            <p className="text-lg">{room.moTa}</p>
           </div>
 
           <nav className="pb-40 flex items-center justify-center gap-10">
@@ -232,10 +254,10 @@ const RoomTypeDetail = () => {
               <button
                 key={tab}
                 onClick={() => handleScroll(tab)}
-                className={`uppercase tracking-widest font-medium text-sm transition-all ${
+                className={`uppercase tracking-widest font-medium text-sm transition-all hover:cursor-pointer ${
                   activeTab === tab
-                    ? "text-[var(--color-accent)] pb-1 font-bold"
-                    : "text-background hover:text-[var(--color-accent)]"
+                    ? "text-(--color-accent) pb-1 font-bold"
+                    : "text-background hover:text-(--color-accent)"
                 }`}
               >
                 {tab === "detail"
@@ -253,39 +275,59 @@ const RoomTypeDetail = () => {
       <section id="detail" className="relative z-30 -mt-[140px]">
         <div className="bg-background max-w-[1350px] mx-auto px-8 py-10 shadow-2xl">
           <div className="grid grid-cols-1 lg:grid-cols-3 mb-8">
-            <div className="lg:col-span-1 px-5">
+            <div className="lg:col-span-1 px-5 max-h-[360px] overflow-hidden flex flex-col">
               <h2 className="tracking-widest uppercase mb-5">Đánh giá</h2>
+
               <div className="flex gap-3 items-center">
-                <p className="font-bold text-2xl text-[var(--color-primary)]">
-                  {reviewState.avg}
+                <p className="font-bold text-2xl text-(--color-primary)">
+                  {reviewStats.avg.toFixed(1)}
                 </p>
-                <p className="text-[var(--color-primary)] -ml-2">/10</p>
-                <div>
-                  <p className="font-[450]">{reviewState.rating}</p>
-                  <p className="text-[var(--color-primary)] font-[600]">
-                    {reviewState.numOfReviews} đánh giá
-                  </p>
+                <p className="text-(--color-primary) -ml-2">/10</p>
+                <div className="w-full">
+                  <p className="font-[450]">{reviewStats.rating}</p>
+                  <div className="flex justify-between w-full">
+                    <p
+                      className="text-(--color-primary) font-semibold hover:underline hover:cursor-pointer hover:underline-1"
+                      onClick={() => handleScroll("reviews")}
+                    >
+                      {reviewStats.numOfReviews} đánh giá {">"}
+                    </p>
+                    <a
+                      className="hover:underline hover:cursor-pointer hover:underline-1 text-sm"
+                      onClick={() => handleScroll("reviews")}
+                    >
+                      Xem thêm
+                    </a>
+                  </div>
                 </div>
               </div>
-              <div className="mt-4">
-                <div className="flex flex-col gap-2">
-                  <p className="font-[600]">Khách hàng nói gì?</p>
-                  {reviewState.topReviews.map((r) => (
+
+              <div className="mt-4 flex flex-col gap-2 flex-1 overflow-y-auto pr-1">
+                <p className="font-semibold">Khách hàng nói gì?</p>
+
+                <div className="flex flex-col gap-2 overflow-y-auto pr-1 custom-scrollbar">
+                  {reviewStats.topReviews.map((r) => (
                     <div className="border rounded p-2" key={r.maDanhGia}>
                       <div className="flex justify-between">
-                        <p className="font-[600] text-[14px]">
+                        <p className="font-semibold text-[14px]">
                           {r.hoTenKhachHang}
                         </p>
-                        <p className="bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)] text-[12px] text-[var(--color-primary)] font-[600] p-1 rounded">
-                          {r.diemTrungBinh} / 10
+                        <p className="bg-[color-mix(in_srgb,var(--color-primary)_10%,transparent)] text-[12px] text-(--color-primary) font-semibold p-1 rounded">
+                          {calculateAverage([
+                            r.diemSachSe,
+                            r.diemDichVu,
+                            r.DiemCoSoVatChat,
+                          ]).toFixed(1)}{" "}
+                          / 10
                         </p>
                       </div>
-                      <p className="text-[14px] font-[500]">{r.binhLuan}</p>
+                      <p className="text-[14px] font-medium">{r.binhLuan}</p>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
+
             <div className="lg:col-span-1 md:border-l lg:border-l sm:border-0 border-foreground/30 px-5">
               <h2 className="tracking-widest uppercase mb-5">Tiện nghi</h2>
               <div className="flex flex-col gap-5">
@@ -297,14 +339,14 @@ const RoomTypeDetail = () => {
                       className="flex items-center space-x-2 gap-2"
                     >
                       {getStyledIcon(a.icon, {
-                        size: "w-6 h-6",
+                        size: "w-5 h-5",
                         color: "black",
                       })}
                       <span className="text-sm">{a.tenTienNghi}</span>
                     </div>
                   ))}
                 <a
-                  className="hover:underline hover:underline-1"
+                  className="hover:underline hover:cursor-pointer hover:underline-1 text-sm"
                   onClick={() => handleScroll("amenities")}
                 >
                   Xem thêm
@@ -312,47 +354,58 @@ const RoomTypeDetail = () => {
               </div>
             </div>
             <div className="px-5 md:border-l lg:border-l sm:border-0 border-foreground/30 flex flex-col">
-              <p className="tracking-widest uppercase mb-4">giá / 1 đêm</p>
+              <p className="tracking-widest uppercase mb-4">
+                giá / {calculateNights(checkIn, checkOut)} đêm
+              </p>
               <div className="flex flex-col gap-5">
-                <p className="text-3xl text-center font-bold text-[var(--color-primary)]">
-                  {formatVND(room.gia)}
+                <p className="text-3xl text-center font-bold text-(--color-primary)">
+                  {formatVND(room.gia * calculateNights(checkIn, checkOut))}
                 </p>
                 <Button
                   onClick={handleBookNow}
-                  className="bg-[var(--color-primary)] hover:cursor-pointer hover:bg-[color-mix(in_srgb,var(--color-primary)_70%,transparent)] text-background w-full py-5 transition-colors duration-300 uppercase text-[18px] font-[600]"
+                  className="bg-(--color-primary) hover:cursor-pointer hover:bg-[color-mix(in_srgb,var(--color-primary)_70%,transparent)] text-background w-full py-5 transition-colors duration-300 uppercase text-[18px] font-semibold"
                 >
                   Đặt phòng
                 </Button>
                 <div className="grid grid-cols-2 gap-7">
                   <div className="flex items-center space-x-6">
-                    <MdOutlineSingleBed size={35} />
-                    <span className="text-[16px]">
+                    <IoMdPeople size={25} className="stroke-1" />
+                    <span className="text-[15px]">
+                      Tối đa {room.soKhach} người lớn
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-6">
+                    <FaChild size={25} />
+                    <span className="text-[15px]">
+                      Tối đa {room.soTreEm} trẻ em
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-6">
+                    <IoIosResize size={25} />
+                    <span className="text-[15px]">
+                      Diện tích {room.dienTich} m²
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-6">
+                    <MdOutlineSingleBed size={25} />
+                    <span className="text-[15px]">
                       {bedTypes.map((b) => b.tenGiuong).join(", ")}
                     </span>
-                  </div>
-                  <div className="flex items-center space-x-6">
-                    <IoMdPeople size={35} className="stroke-1" />
-                    <span className="text-[16px]">
-                      Tối đa {room.soKhach} Khách
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-6">
-                    <IoIosResize size={35} />
-                    <span className="text-[16px]">{room.dienTich} m²</span>
-                  </div>
-                  <div className="flex items-center space-x-6">
-                    <LandPlotIcon size={35} />
-                    <span className="text-[16px]">View biển</span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-6 border-t pt-3 border-foreground/30">
                   <div className="flex items-center space-x-6">
-                    <IoMdReturnLeft size={30} />
-                    <span className="text-[16px]">Chính sách hủy bỏ</span>
+                    <IoMdReturnLeft size={25} />
+                    <span
+                      onClick={() => setOpenQuyDinh(true)}
+                      className="text-[15px] hover:underline hover:cursor-pointer hover:underline-1"
+                    >
+                      Chính sách hủy phòng
+                    </span>
                   </div>
                   <div className="flex items-center space-x-6">
-                    <BiSolidWalletAlt size={30} />
-                    <span className="text-[16px]">Thanh toán trực tuyến</span>
+                    <BiSolidWalletAlt size={25} />
+                    <span className="text-[15px]">Thanh toán trực tuyến</span>
                   </div>
                 </div>
               </div>
@@ -362,7 +415,7 @@ const RoomTypeDetail = () => {
       </section>
       <section
         id="amenities"
-        className="relative bg-[var(--color-background)] w-full overflow-hidden px-25 py-8"
+        className="relative bg-(--color-background) w-full overflow-hidden px-25 py-8"
       >
         <TienNghiByCategory tienNghiList={amenities} />
       </section>
@@ -372,9 +425,31 @@ const RoomTypeDetail = () => {
       </section>
       <section id="reviews" className="mx-20 px-5 py-8 shadow-2xl">
         <h2 className="text-xl uppercase">Đánh giá tổng thể</h2>
-        <ReviewsList reviewsState={reviewState} />
+        <ReviewsList
+          onChange={setCurrentReviewPage}
+          reviews={reviews}
+          reviewsStats={reviewStats}
+          totalPages={totalReviewPages}
+          currentPage={currentReviewPage}
+        />
       </section>
       <OtherRoomsSlider otherRooms={otherRooms} />
+      <InformationDialog
+        title={"Chính sách hủy phòng"}
+        children={
+          <div className="flex flex-col gap-2">
+            <p>
+              Thời gian hủy phải trước thời gian checkin tối thiểu 24h, sau thời
+              gian đó mọi yêu cầu không được giải quyết.
+            </p>
+            <p>
+              Khách hàng không đến vì một lý do nào đó phải chịu mất tiền cọc.
+            </p>
+          </div>
+        }
+        open={chinhSachHuyDialog}
+        onClose={() => setOpenQuyDinh(false)}
+      />
     </div>
   );
 };

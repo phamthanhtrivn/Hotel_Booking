@@ -1,384 +1,260 @@
-import React, { useEffect, useState } from "react";
-import { Search, Eye } from "lucide-react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import toast, { Toaster } from "react-hot-toast";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import AdminTable from "@/components/common/AdminTable";
+import AdminPagination from "@/components/common/AdminPagination";
+import ActionButtons from "@/components/common/ActionButtons";
+import DetailDialog from "@/components/common/DetailDialog";
+import AdminInput from "@/components/admin/AdminInput";
+import AdminSelect from "@/components/admin/AdminSelect";
+import { Button } from "@/components/ui/button";
+import { AuthContext } from "@/context/AuthContext";
+import AdminBookingDetailModal from "@/components/common/AdminBookingDetailModal";
+import { formatVND } from "@/helpers/currencyFormatter";
 
-let debounceTimer;
-
-const BookingManagement = () => {
+export default function BookingManagement() {
+  const { token } = useContext(AuthContext);
   const [bookings, setBookings] = useState([]);
-  const [viewing, setViewing] = useState(null);
-  const [keyword, setKeyword] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const [filters, setFilters] = useState({
+  const [isOpenDetail, setIsOpenDetail] = useState(false);
+  const [currentBooking, setCurrentBooking] = useState(null);
+
+  const [search, setSearch] = useState({
+    keyword: "",
     hoTenKhachHang: "",
     soDienThoai: "",
     email: "",
     maKhachHang: "",
     maPhong: "",
     trangThai: "",
-    checkInFrom: "",
-    checkInTo: "",
-    checkOutFrom: "",
-    checkOutTo: "",
     minTongTien: "",
     maxTongTien: "",
+    checkIn: "",
+    checkOut: "",
   });
 
-  const fetchAllBookings = async () => {
+  const sanitizeSearch = (searchObj) => {
+    const cleaned = {};
+    Object.keys(searchObj).forEach((key) => {
+      const value = searchObj[key];
+      if (value !== "" && value !== null && value !== undefined) {
+        cleaned[key] = value;
+      }
+    });
+    return cleaned;
+  };
+
+  const fetchAllBookings = async (page = currentPage) => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_BASE_API_URL}/api/dondatphong`
+        `${import.meta.env.VITE_BASE_API_URL}/api/admin/dondatphong?page=${
+          page - 1
+        }&size=10`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      setBookings(res.data);
+      setBookings(res.data.content || []);
+      setTotalPages(res.data.totalPages || 1);
+      setCurrentPage(page);
     } catch (err) {
       console.error(err);
     }
   };
 
-  useEffect(() => {
-    fetchAllBookings();
-  }, []);
-
-  const searchAdvanced = async () => {
+  const searchBookings = async (page = 1) => {
     try {
-      const payload = {
-        ...filters,
-        minTongTien: filters.minTongTien ? Number(filters.minTongTien) : null,
-        maxTongTien: filters.maxTongTien ? Number(filters.maxTongTien) : null,
-        trangThai: filters.trangThai || null,
-        checkInFrom: filters.checkInFrom || null,
-        checkInTo: filters.checkInTo || null,
-        checkOutFrom: filters.checkOutFrom || null,
-        checkOutTo: filters.checkOutTo || null,
-      };
+      const payload = sanitizeSearch(search);
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_API_URL}/api/dondatphong/search`,
-        payload
+        `${
+          import.meta.env.VITE_BASE_API_URL
+        }/api/admin/dondatphong/search?page=${page - 1}&size=10`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      setBookings(res.data);
+      setBookings(res.data.content || []);
+      setTotalPages(res.data.totalPages || 1);
+      setCurrentPage(page);
     } catch (err) {
-      console.error(err);
+      console.error("Search error:", err.response?.data || err.message);
     }
+  };
+
+  const handleDetail = (item) => {
+    setCurrentBooking(item);
+    setIsOpenDetail(true);
+  };
+
+  const resetSearch = () => {
+    setSearch({
+      keyword: "",
+      hoTenKhachHang: "",
+      soDienThoai: "",
+      email: "",
+      maKhachHang: "",
+      maPhong: "",
+      trangThai: "",
+      minTongTien: "",
+      maxTongTien: "",
+      checkIn: "",
+      checkOut: "",
+    });
+    fetchAllBookings(1);
   };
 
   useEffect(() => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
-      if (Object.values(filters).some((v) => v !== "")) {
-        searchAdvanced();
-      } else {
-        fetchAllBookings();
-      }
-    }, 300);
-    return () => clearTimeout(debounceTimer);
-  }, [filters]);
-
-  const handleDateChange = (field, value) => {
-    setFilters((prev) => ({ ...prev, [field]: value }));
-    const { checkInFrom, checkInTo, checkOutFrom, checkOutTo } = {
-      ...filters,
-      [field]: value,
-    };
-    if (
-      checkInFrom &&
-      checkInTo &&
-      new Date(checkInTo) < new Date(checkInFrom)
-    ) {
-      toast.error("Ngày kết thúc check-in phải sau ngày bắt đầu!");
+    const payload = sanitizeSearch(search);
+    if (Object.keys(payload).length === 0) {
+      fetchAllBookings(currentPage);
     }
-    if (
-      checkOutFrom &&
-      checkOutTo &&
-      new Date(checkOutTo) < new Date(checkOutFrom)
-    ) {
-      toast.error("Ngày kết thúc check-out phải sau ngày bắt đầu!");
-    }
-  };
+  }, [currentPage]);
 
-  // --- filter search keyword ---
-  const filtered = bookings.filter((b) => {
-    const k = keyword.toLowerCase();
-    return (
-      (b.maDatPhong && b.maDatPhong.toLowerCase().includes(k)) ||
-      (b.hoTenKhachHang && b.hoTenKhachHang.toLowerCase().includes(k)) ||
-      (b.soDienThoai && b.soDienThoai.includes(k)) ||
-      (b.email && b.email.toLowerCase().includes(k)) ||
-      (b.trangThai && b.trangThai.toLowerCase().includes(k))
-    );
-  });
+  const columns = [
+    { key: "maDatPhong", label: "ID" },
+    { key: "hoTenKhachHang", label: "Họ và tên" },
+    { key: "soDienThoai", label: "SĐT" },
+    { key: "email", label: "Email" },
+    {
+      key: "tongTienTT",
+      label: "Tổng tiền",
+      render: (i) => formatVND(i.tongTienTT),
+    },
+    {
+      key: "trangThai",
+      label: "Trạng thái",
+      render: (i) => {
+        const color =
+          i.trangThai === "CHUA_THANH_TOAN"
+            ? "text-yellow-600"
+            : i.trangThai === "DA_THANH_TOAN"
+            ? "text-green-600"
+            : "text-red-600";
+        const label =
+          i.trangThai === "CHUA_THANH_TOAN"
+            ? "Chưa thanh toán"
+            : i.trangThai === "DA_THANH_TOAN"
+            ? "Đã thanh toán"
+            : "Đã hủy";
+        return <span className={`${color} italic`}>{label}</span>;
+      },
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-[var(--color-background)] text-[var(--color-text)] p-8">
-      <style>{`
-        :root {
-          --color-primary: #CBA75E;
-          --color-background: #1E2A38;
-          --color-text: #FFFFFF;
-          --color-muted: #B5B5B5;
-          --color-accent: #E5C97B;
-        }
-        ::placeholder { color: var(--color-muted); }
-        .input-filter {
-          background: #1E2A38;
-          padding: 10px 12px;
-          border-radius: 10px;
-          color: white;
-          outline: none;
-        }
-        .filter-group {
-          display: flex;
-          flex-direction: column;
-        }
-        .filter-label {
-          margin-bottom: 4px;
-          font-weight: 500;
-          color: var(--color-accent);
-        }
-      `}</style>
+    <div className="p-6 space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle>Quản Lý Đơn Đặt Phòng</CardTitle>
+        </CardHeader>
 
-      <Toaster position="top-right" reverseOrder={false} />
-
-      <h1 className="text-4xl font-bold text-center text-[var(--color-accent)] mb-8">
-        Quản Lý Đơn Đặt Phòng
-      </h1>
-
-      {/* Tìm kiếm */}
-      <div className="flex items-center bg-[#2b3a4b] p-3 rounded-xl mb-7 shadow-md">
-        <Search className="text-[var(--color-muted)] mr-3" />
-        <input
-          type="text"
-          placeholder="Tìm kiếm đơn đặt phòng..."
-          className="bg-transparent flex-1 outline-none text-[var(--color-text)]"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-        />
-      </div>
-
-      {/* Filters */}
-      <div className="bg-[#2b3a4b] p-5 rounded-xl mb-6 shadow-lg grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="filter-group">
-          <label className="filter-label">Tên khách hàng</label>
-          <input
-            type="text"
-            value={filters.hoTenKhachHang}
-            onChange={(e) =>
-              setFilters({ ...filters, hoTenKhachHang: e.target.value })
-            }
-            className="input-filter"
-          />
-        </div>
-        <div className="filter-group">
-          <label className="filter-label">Số điện thoại</label>
-          <input
-            type="text"
-            value={filters.soDienThoai}
-            onChange={(e) =>
-              setFilters({ ...filters, soDienThoai: e.target.value })
-            }
-            className="input-filter"
-          />
-        </div>
-        <div className="filter-group">
-          <label className="filter-label">Email</label>
-          <input
-            type="email"
-            value={filters.email}
-            onChange={(e) => setFilters({ ...filters, email: e.target.value })}
-            className="input-filter"
-          />
-        </div>
-        <div className="filter-group">
-          <label className="filter-label">Trạng thái</label>
-          <select
-            value={filters.trangThai}
-            onChange={(e) =>
-              setFilters({ ...filters, trangThai: e.target.value })
-            }
-            className="input-filter"
-          >
-            <option value="">-- Chọn trạng thái --</option>
-            <option value="CHUA_THANH_TOAN">Chưa thanh toán</option>
-            <option value="DA_THANH_TOAN">Đã thanh toán</option>
-            <option value="DA_HUY">Đã hủy</option>
-          </select>
-        </div>
-
-        {/* Check-in/out và Min/Max tiền */}
-        <div className="filter-group">
-          <label className="filter-label">Check-in từ</label>
-          <input
-            type="datetime-local"
-            value={filters.checkInFrom}
-            onChange={(e) => handleDateChange("checkInFrom", e.target.value)}
-            className="input-filter"
-          />
-        </div>
-        <div className="filter-group">
-          <label className="filter-label">Check-in đến</label>
-          <input
-            type="datetime-local"
-            value={filters.checkInTo}
-            onChange={(e) => handleDateChange("checkInTo", e.target.value)}
-            className="input-filter"
-          />
-        </div>
-        <div className="filter-group">
-          <label className="filter-label">Min tiền</label>
-          <input
-            type="number"
-            value={filters.minTongTien}
-            onChange={(e) =>
-              setFilters({ ...filters, minTongTien: e.target.value })
-            }
-            className="input-filter"
-          />
-        </div>
-        <div className="filter-group">
-          <label className="filter-label">Max tiền</label>
-          <input
-            type="number"
-            value={filters.maxTongTien}
-            onChange={(e) =>
-              setFilters({ ...filters, maxTongTien: e.target.value })
-            }
-            className="input-filter"
-          />
-        </div>
-      </div>
-
-      {/* Table */}
-      <div className="rounded-xl shadow-lg bg-[#2b3a4b] overflow-hidden">
-        <div className="max-h-[550px] overflow-y-auto scrollbar-thin scrollbar-thumb-[var(--color-primary)] scrollbar-track-[#2b3a4b]">
-          <table className="w-full text-left">
-            <thead className="bg-[var(--color-primary)] text-[var(--color-background)] sticky top-0 z-10">
-              <tr>
-                <th className="py-3 px-4">STT</th>
-                <th className="py-3 px-4">Mã đặt phòng</th>
-                <th className="py-3 px-4">Họ và tên</th>
-                <th className="py-3 px-4">Số điện thoại</th>
-                <th className="py-3 px-4">Email</th>
-                <th className="py-3 px-4">Tổng tiền</th>
-                <th className="py-3 px-4">Trạng thái</th>
-                <th className="py-3 px-4 text-center">Xem chi tiết</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length > 0 ? (
-                filtered.map((b, i) => (
-                  <tr
-                    key={b.maDatPhong}
-                    className="border-b border-gray-700 hover:bg-[#32465a] transition"
-                  >
-                    <td className="py-3 px-4">{i + 1}</td>
-                    <td className="py-3 px-4">{b.maDatPhong}</td>
-                    <td className="py-3 px-4">{b.hoTenKhachHang}</td>
-                    <td className="py-3 px-4">{b.soDienThoai}</td>
-                    <td className="py-3 px-4">{b.email}</td>
-                    <td className="py-3 px-4">{b.tongTienTT}</td>
-                    <td className="py-3 px-4">{b.trangThai}</td>
-                    <td className="py-3 px-4 text-center">
-                      <button
-                        onClick={() => setViewing(b)}
-                        className="hover:text-blue-400 transition"
-                        title="Xem chi tiết"
-                      >
-                        <Eye size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td
-                    colSpan={8}
-                    className="text-center py-6 text-[var(--color-muted)]"
-                  >
-                    Không tìm thấy đơn đặt phòng nào
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Chi tiết modal */}
-      {viewing && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-[#2b3a4b] p-8 rounded-2xl w-[600px] shadow-2xl text-[var(--color-text)]">
-            <h2 className="text-3xl font-semibold text-[var(--color-accent)] mb-6 text-center">
-              Chi Tiết Đơn Đặt Phòng
-            </h2>
-            <div className="space-y-4 text-lg">
-              <p>
-                <span className="font-semibold text-[var(--color-accent)]">
-                  Mã đặt phòng:
-                </span>{" "}
-                {viewing.maDatPhong}
-              </p>
-              <p>
-                <span className="font-semibold text-[var(--color-accent)]">
-                  Họ tên khách hàng:
-                </span>{" "}
-                {viewing.hoTenKhachHang}
-              </p>
-              <p>
-                <span className="font-semibold text-[var(--color-accent)]">
-                  Số điện thoại:
-                </span>{" "}
-                {viewing.soDienThoai}
-              </p>
-              <p>
-                <span className="font-semibold text-[var(--color-accent)]">
-                  Email:
-                </span>{" "}
-                {viewing.email}
-              </p>
-              <p>
-                <span className="font-semibold text-[var(--color-accent)]">
-                  Tổng tiền:
-                </span>{" "}
-                {viewing.tongTienTT}
-              </p>
-              <p>
-                <span className="font-semibold text-[var(--color-accent)]">
-                  Check-in:
-                </span>{" "}
-                {viewing.checkIn}
-              </p>
-              <p>
-                <span className="font-semibold text-[var(--color-accent)]">
-                  Check-out:
-                </span>{" "}
-                {viewing.checkOut}
-              </p>
-              <p>
-                <span className="font-semibold text-[var(--color-accent)]">
-                  Trạng thái:
-                </span>{" "}
-                {viewing.trangThai}
-              </p>
-              <p>
-                <span className="font-semibold text-[var(--color-accent)]">
-                  Ghi chú:
-                </span>{" "}
-                {viewing.ghiChu || "Không có"}
-              </p>
-            </div>
-            <div className="flex justify-end mt-8">
-              <button
-                onClick={() => setViewing(null)}
-                className="px-5 py-2 bg-[var(--color-primary)] text-[var(--color-background)] rounded hover:bg-[var(--color-accent)] transition"
+        <CardContent>
+          <div className="mb-4 flex justify-between">
+            <div className="flex items-center gap-2">
+              {/* Keyword */}
+              <AdminInput
+                label="Họ tên/SĐT/Email"
+                type="text"
+                placeholder="Nhập thông tin..."
+                value={search.keyword}
+                onChange={(v) => setSearch({ ...search, keyword: v })}
+              />
+              {/* Trạng thái */}
+              <AdminSelect
+                label="Trạng thái"
+                className="w-40"
+                value={search.trangThai || "ALL"}
+                onChange={(v) =>
+                  setSearch({ ...search, trangThai: v === "ALL" ? "" : v })
+                }
+                options={[
+                  { label: "Tất cả", value: "ALL" },
+                  { label: "Chưa thanh toán", value: "CHUA_THANH_TOAN" },
+                  { label: "Đã thanh toán", value: "DA_THANH_TOAN" },
+                  { label: "Đã hủy", value: "DA_HUY" },
+                ]}
+              />
+              {/* Tổng tiền */}
+              <AdminInput
+                label="Tổng tiền tối thiểu"
+                type="number"
+                value={search.minTongTien}
+                onChange={(v) => setSearch({ ...search, minTongTien: v })}
+              />
+              -
+              <AdminInput
+                label="Tổng tiền tối đa"
+                type="number"
+                value={search.maxTongTien}
+                onChange={(v) => setSearch({ ...search, maxTongTien: v })}
+              />
+              {/* Check-in / Check-Out */}
+              <AdminInput
+                label="Check-in"
+                type="datetime-local"
+                value={search.checkIn}
+                onChange={(v) => setSearch({ ...search, checkIn: v })}
+              />
+              -
+              <AdminInput
+                label="Check-out"
+                type="datetime-local"
+                value={search.checkOut}
+                onChange={(v) => setSearch({ ...search, checkOut: v })}
+              />
+              {/* Buttons */}
+              <Button
+                className="rounded-2xl bg-blue-600 h-10"
+                onClick={() => searchBookings(1)}
               >
-                Đóng
-              </button>
+                Tìm kiếm
+              </Button>
+              <Button
+                className="rounded-2xl bg-gray-400 h-10"
+                onClick={resetSearch}
+              >
+                Làm mới
+              </Button>
             </div>
           </div>
-        </div>
+
+          <AdminTable
+            data={bookings}
+            columns={columns}
+            renderActions={(item) => (
+              <ActionButtons onView={() => handleDetail(item)} />
+            )}
+          />
+        </CardContent>
+      </Card>
+
+      {isOpenDetail && currentBooking && (
+        <AdminBookingDetailModal
+          booking={currentBooking}
+          onClose={() => setIsOpenDetail(false)}
+        />
       )}
+
+      <AdminPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onChange={(p) => {
+          setCurrentPage(p);
+          const payload = sanitizeSearch(search);
+          if (Object.keys(payload).length > 0) {
+            searchBookings(p);
+          } else {
+            fetchAllBookings(p);
+          }
+        }}
+      />
     </div>
   );
-};
-
-export default BookingManagement;
+}

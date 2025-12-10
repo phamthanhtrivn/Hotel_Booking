@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import DetailDialog from "@/components/common/DetailDialog";
 import EditCreateDialog from "@/components/common/EditCreateDialog";
 import ConfirmDeleteDialog from "@/components/common/ConfirmDeleteDialog";
 import ActionButtons from "@/components/common/ActionButtons";
+import { AuthContext } from "@/context/AuthContext";
 
 const AmenityManagement = () => {
   const baseUrl = import.meta.env.VITE_BASE_API_URL;
@@ -29,13 +30,20 @@ const AmenityManagement = () => {
   const [openDelete, setOpenDelete] = useState(false);
   const [openDetail, setOpenDetail] = useState(false);
   const [currentAmenity, setCurrentAmenity] = useState(null);
-  const [formData, setFormData] = useState({ name: "", type: "", icon: "",status: true });
+  const [formData, setFormData] = useState({
+    name: "",
+    type: "",
+    icon: "",
+    status: true,
+  });
   const rowsPerPage = 10;
   const [nameError, setNameError] = useState("");
+  const { token } = useContext(AuthContext);
 
   const fetchAmenities = async () => {
     try {
-      const res = await axios.get(baseUrl + "/api/tiennghi");
+      const res = await axios.get(baseUrl + "/api/public/tiennghi");
+      
       if (res.data.success) {
         setAmenities(res.data.data);
       } else {
@@ -63,12 +71,17 @@ const AmenityManagement = () => {
     try {
       if (currentAmenity) {
         const res = await axios.put(
-          `${baseUrl}/api/tiennghi/${currentAmenity.maTienNghi}`,
+          `${baseUrl}/api/admin/tiennghi/${currentAmenity.maTienNghi}`,
           {
             tenTienNghi: formData.name,
             tinhTrang: formData.status,
             icon: formData.icon,
-            loaiTienNghi: formData.type
+            loaiTienNghi: formData.type,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
         if (res.data.success) {
@@ -82,10 +95,20 @@ const AmenityManagement = () => {
           toast.info(res.data.message);
         }
       } else {
-        const res = await axios.post(`${baseUrl}/api/tiennghi`, {
-          tenTienNghi: formData.name,
-          tinhTrang: formData.status,
-        });
+        const res = await axios.post(
+          `${baseUrl}/api/admin/tiennghi`,
+          {
+            tenTienNghi: formData.name,
+            tinhTrang: formData.status,
+            icon: formData.icon,
+            loaiTienNghi: formData.type,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         if (res.data.success) {
           setAmenities((prev) => [...prev, res.data.data]);
           toast.success("Thêm tiện nghi thành công");
@@ -95,6 +118,7 @@ const AmenityManagement = () => {
       }
       setOpenModal(false);
     } catch (error) {
+      toast.error("Lưu tiện nghi thất bại");
       console.error("Lỗi khi lưu tiện nghi:", error);
     }
   };
@@ -102,7 +126,12 @@ const AmenityManagement = () => {
   const handleConfirmDelete = async () => {
     try {
       const res = await axios.delete(
-        `${baseUrl}/api/tiennghi/${currentAmenity.maTienNghi}`
+        `${baseUrl}/api/admin/tiennghi/${currentAmenity.maTienNghi}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       if (res.data.success) {
         toast.success("Xóa tiện nghi thành công");
@@ -115,13 +144,14 @@ const AmenityManagement = () => {
 
       setOpenDelete(false);
     } catch (error) {
+      toast.error("Xóa tiện nghi thất bại");
       console.error("Lỗi khi xóa tiện nghi:", error);
     }
   };
 
   const handleAdd = () => {
     setCurrentAmenity(null);
-    setFormData({ name: "", status: true });
+    setFormData({ name: "", type: "", icon: "", status: true });
     setOpenModal(true);
   };
 
@@ -131,7 +161,7 @@ const AmenityManagement = () => {
       name: item.tenTienNghi || "",
       status: item.tinhTrang ?? true,
       icon: item.icon || "",
-      type: item.loaiTienNghi || ""
+      type: item.loaiTienNghi || "",
     });
     setOpenModal(true);
   };
@@ -163,6 +193,7 @@ const AmenityManagement = () => {
   const columns = [
     { key: "maTienNghi", label: "ID" },
     { key: "tenTienNghi", label: "Tên tiện nghi" },
+    { key: "loaiTienNghi", label: "Loại tiện nghi" },
     {
       key: "tinhTrang",
       label: "Tình trạng",
@@ -234,6 +265,7 @@ const AmenityManagement = () => {
                 onView={() => handleDetail(item)}
                 onEdit={() => handleEdit(item)}
                 onDelete={() => handleDelete(item)}
+                canDelete={true}
               />
             )}
           />
@@ -293,20 +325,24 @@ const AmenityManagement = () => {
             <label>Loại tiện nghi</label>
             <Select
               value={String(formData.type)}
-              onValueChange={(v) =>
-                setFormData({ ...formData, type: v })
-              }
+              onValueChange={(v) => setFormData({ ...formData, type: v })}
             >
               <SelectTrigger className="mt-2">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Mạng Internet và điện thoại">Mạng Internet và điện thoại</SelectItem>
+                <SelectItem value="Mạng Internet và điện thoại">
+                  Mạng Internet và điện thoại
+                </SelectItem>
                 <SelectItem value="Nhà tắm">Nhà tắm</SelectItem>
-                <SelectItem value="Đồ nội thất">Đồ nội thấtĐồ nội thất</SelectItem>
+                <SelectItem value="Đồ nội thất">Đồ nội thất</SelectItem>
                 <SelectItem value="Đồ điện tử">Đồ điện tử</SelectItem>
-                <SelectItem value="Hình ảnh/âm thanh">Hình ảnh/âm thanh</SelectItem>
-                <SelectItem value="Khu vực ngoài trời">Khu vực ngoài trời</SelectItem>
+                <SelectItem value="Hình ảnh/âm thanh">
+                  Hình ảnh/âm thanh
+                </SelectItem>
+                <SelectItem value="Khu vực ngoài trời">
+                  Khu vực ngoài trời
+                </SelectItem>
                 <SelectItem value="Khác">Khác</SelectItem>
               </SelectContent>
             </Select>

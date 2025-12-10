@@ -21,7 +21,7 @@ public class Phong {
     @Column(name = "ma_phong")
     private String maPhong;
 
-    @Column(name = "ten_phong")
+    @Column(name = "ten_phong", unique = true)
     @NotBlank
     private String tenPhong;
 

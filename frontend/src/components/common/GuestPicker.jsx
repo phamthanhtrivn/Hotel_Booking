@@ -50,10 +50,10 @@ export default function GuestPicker({ value, onChange, popoverClassName }) {
       <PopoverTrigger asChild>
         <div className="w-full border rounded-md px-3.5 py-1 cursor-pointer flex items-center justify-between">
           <div>
-            <label className="font-[500] text-xs text-gray-500">
+            <label className="font-medium text-xs text-gray-500">
               Khách hàng
             </label>
-            <p className="font-[500]">
+            <p className="font-medium">
               {guests.adults} người lớn, {guests.children.length} trẻ em
             </p>
           </div>
@@ -68,7 +68,7 @@ export default function GuestPicker({ value, onChange, popoverClassName }) {
         <div className="flex justify-between items-center">
           <div className="gap-2 items-center flex">
             <FaUserTie />
-            <span className="font-[500]">Người lớn</span>
+            <span className="font-medium">Người lớn</span>
           </div>
 
           <Counter value={guests.adults} onChange={updateAdults} />
@@ -78,7 +78,7 @@ export default function GuestPicker({ value, onChange, popoverClassName }) {
         <div className="flex justify-between items-center">
           <div className="gap-2 items-center flex">
             <MdOutlineChildCare />
-            <span className="font-[500]">Trẻ em</span>
+            <span className="font-medium">Trẻ em</span>
           </div>
           <Counter value={guests.children.length} onChange={updateChildren} />
         </div>
@@ -86,7 +86,7 @@ export default function GuestPicker({ value, onChange, popoverClassName }) {
         {/* Input tuổi từng trẻ */}
         {guests.children.length > 0 && (
           <div>
-            <p className="text-[14.5px] font-[500]">Điền tuổi trẻ em</p>
+            <p className="text-[14.5px] font-medium">Điền tuổi trẻ em</p>
             <p className="text-[13px]">
               Cho biết tuổi của trẻ em đi cùng giúp tôi dễ tìm phòng phù hợp cho
               bạn
@@ -95,7 +95,7 @@ export default function GuestPicker({ value, onChange, popoverClassName }) {
               {guests.children.map((age, index) => {
                 // Tạo mảng option từ "<1 tuổi", 1-8
                 const ageOptions = [
-                  ...Array.from({ length: 8 }, (_, i) => i + 1),
+                  ...Array.from({ length: 15 }, (_, i) => i),
                 ];
 
                 return (
@@ -164,7 +164,7 @@ function Counter({ value, onChange }) {
         />
       </button>
 
-      <span className="w-10 h-10 border rounded justify-center flex items-center font-[500]">
+      <span className="w-10 h-10 border rounded justify-center flex items-center font-medium">
         {value}
       </span>
 
@@ -177,7 +177,7 @@ function Counter({ value, onChange }) {
           transition
         "
       >
-        <FaPlus size={13} className="text-[var(--color-primary)]" />
+        <FaPlus size={13} className="text-(--color-primary)" />
       </button>
     </div>
   );

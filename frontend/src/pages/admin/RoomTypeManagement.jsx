@@ -39,6 +39,7 @@ const defaultForm = {
   tenLoaiPhong: "",
   dienTich: null,
   soKhach: null,
+  soTreEm: null,
   gia: null,
   moTa: "",
   tinhTrang: true,
@@ -59,6 +60,7 @@ const RoomTypeManagement = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [loaiPhongs, setLoaiPhongs] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const [filters, setFilters] = useState(defaultFilters);
   const [formData, setFormData] = useState(defaultForm);
@@ -122,7 +124,6 @@ const RoomTypeManagement = () => {
         ...filters,
         tinhTrang: filters.tinhTrang === "ALL" ? null : filters.tinhTrang,
       };
-
       const result = await loaiPhongService.search(currentPage, 10, payload);
       setLoaiPhongs(result.content);
       setTotalPages(result.totalPages);
@@ -144,6 +145,7 @@ const RoomTypeManagement = () => {
 
   // ============================ OPEN / CLOSE MODAL =====================
   const resetFormData = () => {
+    setErrors({});
     setFormData(defaultForm);
     setOldImages([]);
     setFiles([]);
@@ -170,6 +172,7 @@ const RoomTypeManagement = () => {
       tenLoaiPhong: item.tenLoaiPhong,
       dienTich: item.dienTich,
       soKhach: item.soKhach,
+      soTreEm: item.soTreEm,
       gia: item.gia,
       moTa: item.moTa,
       tinhTrang: item.tinhTrang,
@@ -210,7 +213,7 @@ const RoomTypeManagement = () => {
     const { name, value } = e.target;
 
     // xử lý number
-    const numericFields = ["dienTich", "soKhach", "gia"];
+    const numericFields = ["dienTich", "soKhach", "gia", "soTreEm"];
 
     const newValue = numericFields.includes(name)
       ? value === ""
@@ -275,12 +278,16 @@ const RoomTypeManagement = () => {
 
       edit ? await loaiPhongService.update(fd) : await loaiPhongService.add(fd);
 
-      fetchLoaiPhong();
       setLoading(false);
+      toast.success(
+        edit ? "Cập nhật loại phòng thành công" : "Thêm loại phòng thành công!"
+      );
       onClose();
-    } catch (err) {
+      fetchLoaiPhong();
+    } catch (error) {
+      setErrors(error.response?.data?.data || {});
       setLoading(false);
-      console.error("Save error:", err);
+      console.error("Save error:", error);
     }
   };
   // ============================ RENDER ===============================
@@ -290,7 +297,8 @@ const RoomTypeManagement = () => {
     { key: "hinhAnh", label: "Hình ảnh" },
     { key: "tenLoaiPhong", label: "Tên loại phòng" },
     { key: "dienTich", label: "Diện tích" },
-    { key: "soKhach", label: "Khách" },
+    { key: "soKhach", label: "Người lớn" },
+    { key: "soTreEm", label: "Trẻ em" },
     { key: "gia", label: "Giá / đêm" },
     {
       key: "tinhTrang",
@@ -461,6 +469,11 @@ const RoomTypeManagement = () => {
               value={formData.tenLoaiPhong}
               onChange={handleInputChange}
             />
+            {errors.tenLoaiPhong && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.tenLoaiPhong}
+              </span>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Giá</label>
@@ -469,6 +482,11 @@ const RoomTypeManagement = () => {
               value={formData.gia}
               onChange={handleInputChange}
             />
+            {errors.gia && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.gia}
+              </span>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Diện tích</label>
@@ -477,16 +495,37 @@ const RoomTypeManagement = () => {
               value={formData.dienTich}
               onChange={handleInputChange}
             />
+            {errors.dienTich && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.dienTich}
+              </span>
+            )}
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">
-              Khách tối đa
-            </label>
+            <label className="block text-sm font-medium mb-2">Người lớn</label>
             <Input
               name="soKhach"
               value={formData.soKhach}
               onChange={handleInputChange}
             />
+            {errors.soKhach && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.soKhach}
+              </span>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Trẻ em</label>
+            <Input
+              name="soTreEm"
+              value={formData.soTreEm}
+              onChange={handleInputChange}
+            />
+            {errors.soKhach && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.soTreEm}
+              </span>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Active</label>
@@ -501,7 +540,7 @@ const RoomTypeManagement = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectGroup>
+                <SelectGroup className="bg-white">
                   <SelectItem value="true">Hoạt động</SelectItem>
                   <SelectItem value="false">Không hoạt động</SelectItem>
                 </SelectGroup>
@@ -517,6 +556,11 @@ const RoomTypeManagement = () => {
               value={selectedBeds}
               onChange={(list) => setSelectedBeds(list)}
             />
+            {errors.loaiGiuong && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.loaiGiuong}
+              </span>
+            )}
           </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-2">Tiện nghi</label>
@@ -540,6 +584,11 @@ const RoomTypeManagement = () => {
                 </MultiSelectGroup>
               </MultiSelectContent>
             </MultiSelect>
+            {errors.tienNghi && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.tienNghi}
+              </span>
+            )}
           </div>
           <div className="col-span-2">
             <label className="block text-sm font-medium mb-2">Mô tả</label>
@@ -570,7 +619,11 @@ const RoomTypeManagement = () => {
                 onChange={handleFileChange}
               />
             </label>
-
+            {errors.hinhAnh && (
+              <span className="text-red-500 text-[13px] pt-1">
+                {errors.hinhAnh}
+              </span>
+            )}
             <div className="mt-2 flex flex-col gap-1">
               {/* ẢNH CŨ */}
               {oldImages.length > 0 && (

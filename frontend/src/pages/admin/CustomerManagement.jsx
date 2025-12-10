@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useFetch } from "@/hooks/useFetch";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
@@ -18,13 +18,17 @@ import EditCreateDialog from "@/components/common/EditCreateDialog";
 import ConfirmDeleteDialog from "@/components/common/ConfirmDeleteDialog";
 import ActionButtons from "@/components/common/ActionButtons";
 import { Search } from "lucide-react";
+import { AuthContext } from "@/context/AuthContext";
 
 export default function CustomerManagement() {
-  const baseURL = import.meta.env.VITE_BASE_API_URL + "/api/";
+  const { token } = useContext(AuthContext);
+  const baseURL = import.meta.env.VITE_BASE_API_URL;
   const [customers, setCustomers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const { get, put, del } = useFetch(baseURL);
+  const { get, put, del } = useFetch(baseURL, {
+    Authorization: `Bearer ${token}`,
+  });
   const [openDelete, setOpenDelete] = useState(false);
   const [openDetail, setOpenDetail] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
@@ -47,7 +51,7 @@ export default function CustomerManagement() {
       const [field, dir] = fliter.sortField.split("&");
       params += `&sortField=${field}&sortDir=${dir}`;
     }
-    const data = await get("khachhang" + params);
+    const data = await get("/api/admin/khachhang" + params);
     if (data?.content) {
       setCustomers(data.content);
       setTotalPages(data.totalPages);
@@ -120,7 +124,7 @@ export default function CustomerManagement() {
       };
 
       const response = await put(
-        `khachhang/${updatedCustomer.maKhachHang}/${currentCustomer.tinhTrang}`,
+        `/api/admin/khachhang/${updatedCustomer.maKhachHang}/${currentCustomer.tinhTrang}`,
         updatedCustomer
       );
 
@@ -154,7 +158,7 @@ export default function CustomerManagement() {
     const deleteCustomer = async () => {
       try {
         const req = await del(
-          `khachhang/${currentCustomer.khachHang.maKhachHang}`
+          `/api/admin/khachhang/${currentCustomer.khachHang.maKhachHang}`
         );
         if (!req) {
           toast.error("Xóa thất bại! Do khách hàng đã có đơn hàng");
@@ -251,6 +255,7 @@ export default function CustomerManagement() {
             data={customers}
             renderActions={(item) => (
               <ActionButtons
+                canDelete={true}
                 onView={() => handleDetail(item)}
                 onEdit={() => handleEdit(item)}
                 onDelete={() => handleDelete(item)}

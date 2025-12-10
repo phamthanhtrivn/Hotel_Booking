@@ -5,6 +5,7 @@ import iuh.fit.hotel_booking_backend.dto.PhongFilter;
 import iuh.fit.hotel_booking_backend.entity.LoaiPhong;
 import iuh.fit.hotel_booking_backend.entity.Phong;
 import iuh.fit.hotel_booking_backend.helper.PhongSpecification;
+import iuh.fit.hotel_booking_backend.repository.LoaiPhongRepository;
 import iuh.fit.hotel_booking_backend.repository.PhongRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,9 +18,11 @@ import java.util.List;
 @Service
 public class PhongService {
     private PhongRepository repo;
+    private LoaiPhongRepository loaiPhongRepository;
 
-    public PhongService(PhongRepository repo) {
+    public PhongService(PhongRepository repo, LoaiPhongRepository loaiPhongRepository) {
         this.repo = repo;
+        this.loaiPhongRepository = loaiPhongRepository;
     }
 
     public Phong getAvailableRoomByRoomType(String idLoaiPhong, LocalDateTime checkIn, LocalDateTime checkOut) throws Exception {
@@ -47,16 +50,15 @@ public class PhongService {
         return repo.findById(id).orElse(null);
     }
 
-    public Phong save(PhongDTO phong) {
-        Phong p = new Phong();
-        p.setMaPhong(phong.getMaPhong());
-        LoaiPhong lp = new LoaiPhong();
-        lp.setMaLoaiPhong(phong.getMaLoaiPhong());
-        p.setLoaiPhong(lp);
-        p.setViTri(phong.getViTri());
-        p.setTinhTrang(phong.isTinhTrang());
-        p.setTrangThai(phong.getTrangThai());
-
+    public Phong save(PhongDTO dto) {
+        Phong p = repo.findById(dto.getMaPhong())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng"));
+        p.setTenPhong(dto.getTenPhong());
+        p.setViTri(dto.getViTri());
+        p.setTrangThai(dto.getTrangThai());
+        p.setTinhTrang(dto.isTinhTrang());
+        p.setLoaiPhong(loaiPhongRepository.findById(dto.getMaLoaiPhong())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy loại phòng")));
         return repo.save(p);
     }
 

@@ -9,14 +9,6 @@ import { loaiPhongService } from "@/services/loaiPhongService";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import AdminSelect from "@/components/admin/AdminSelect";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 const RoomManagement = () => {
   const [rooms, setRooms] = useState([]);
@@ -99,6 +91,7 @@ const RoomManagement = () => {
   // Submit update
   const handleUpdate = async () => {
     try {
+      console.log(formData)
       await phongService.update(formData);
       fetchRooms();
       resetFormData();

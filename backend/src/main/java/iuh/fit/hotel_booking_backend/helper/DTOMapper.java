@@ -13,6 +13,7 @@ public class DTOMapper {
         dto.setSoKhach(lp.getSoKhach());
         dto.setGia(lp.getGia());
         dto.setMoTa(lp.getMoTa());
+        dto.setSoTreEm(lp.getSoTreEm());
         dto.setTinhTrang(lp.isTinhTrang());
         return dto;
     }

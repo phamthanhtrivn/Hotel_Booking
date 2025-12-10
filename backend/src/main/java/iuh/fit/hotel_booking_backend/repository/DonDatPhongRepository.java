@@ -69,7 +69,7 @@ public interface DonDatPhongRepository extends JpaRepository<DonDatPhong, String
 
     // Tìm tất cả đơn đặt phòng có khoảng thời gian giao thoa với [startDate, endDate]
     // Logic: CheckIn < EndDate VÀ CheckOut > StartDate (và phải Đã thanh toán)
-    @Query("SELECT d FROM DonDatPhong d WHERE d.checkIn < :endDate AND d.checkOut > :startDate AND d.trangThai = 'DA_THANH_TOAN'")
+    @Query("SELECT d FROM DonDatPhong d WHERE d.checkIn < :endDate AND d.checkOut > :startDate AND d.trangThai <> 'DA_HUY'")
     List<DonDatPhong> findBookingsInDateRange(
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
@@ -80,4 +80,6 @@ public interface DonDatPhongRepository extends JpaRepository<DonDatPhong, String
             "WHERE ma_dat_phong = :maDatPhong",
             nativeQuery = true)
     Integer getSoDem(@Param("maDatPhong") String maDatPhong);
+
+    Integer countDonDatPhongByKhachHang_MaKhachHangAndTrangThaiNot(String khachHangMaKhachHang, TrangThaiDon trangThai);
 }

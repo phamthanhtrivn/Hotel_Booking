@@ -7,7 +7,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatVND } from "@/helpers/currencyFormatter";
-import { Image } from "lucide-react";
 
 const AdminTable = ({ columns, data, renderActions }) => {
   return (

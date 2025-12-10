@@ -3,18 +3,17 @@ package iuh.fit.hotel_booking_backend.helper;
 import iuh.fit.hotel_booking_backend.dto.DonDatPhongSearchRequest;
 import iuh.fit.hotel_booking_backend.entity.DonDatPhong;
 import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DonDatPhongSpecification {
-
     public static Specification<DonDatPhong> build(DonDatPhongSearchRequest req) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // 1. Keyword search (OR)
             if (req.getKeyword() != null && !req.getKeyword().isEmpty()) {
                 String kw = "%" + req.getKeyword().toLowerCase() + "%";
                 Predicate byHoTen = cb.like(cb.lower(root.get("hoTenKhachHang")), kw);
@@ -23,7 +22,6 @@ public class DonDatPhongSpecification {
                 predicates.add(cb.or(byHoTen, byEmail, bySoDienThoai));
             }
 
-            // 2. Các trường cụ thể (AND)
             if (req.getHoTenKhachHang() != null && !req.getHoTenKhachHang().isEmpty()) {
                 predicates.add(cb.like(cb.lower(root.get("hoTenKhachHang")), "%" + req.getHoTenKhachHang().toLowerCase() + "%"));
             }
@@ -42,8 +40,6 @@ public class DonDatPhongSpecification {
             if (req.getTrangThai() != null) {
                 predicates.add(cb.equal(root.get("trangThai"), req.getTrangThai()));
             }
-
-            // 3. Khoảng thời gian: chồng lấn với [checkIn, checkOut]
             if (req.getCheckIn() != null && req.getCheckOut() != null) {
                 predicates.add(cb.lessThan(root.get("checkIn"), req.getCheckOut()));
                 predicates.add(cb.greaterThan(root.get("checkOut"), req.getCheckIn()));
@@ -55,8 +51,6 @@ public class DonDatPhongSpecification {
                     predicates.add(cb.lessThanOrEqualTo(root.get("checkOut"), req.getCheckOut()));
                 }
             }
-
-            // 4. Khoảng tiền
             if (req.getMinTongTien() != null) {
                 predicates.add(cb.greaterThanOrEqualTo(root.get("tongTien"), req.getMinTongTien()));
             }

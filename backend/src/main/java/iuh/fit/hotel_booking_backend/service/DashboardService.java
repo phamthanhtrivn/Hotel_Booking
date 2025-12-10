@@ -126,11 +126,10 @@ public class DashboardService {
         // A. Yearly Occupancy
         List<Map<String, Object>> yearlyList = new ArrayList<>();
         for (int year = currentYear - 2; year <= currentYear + 1; year++) {
-            double rate = calculateOccupancyRate(
-                    LocalDate.of(year, 1, 1),
-                    LocalDate.of(year, 12, 31),
-                    totalRooms
-            );
+            LocalDate startYear = LocalDate.of(year, 1, 1);
+            LocalDate endYear = LocalDate.of(year, 12, 31);
+            
+            double rate = calculateOccupancyRate(startYear, endYear, totalRooms);
             Map<String, Object> map = new HashMap<>();
             map.put("year", String.valueOf(year));
             map.put("occupancy", Math.round(rate));
@@ -197,32 +196,32 @@ public class DashboardService {
     private double calculateOccupancyRateFromList(List<DonDatPhong> bookings, LocalDate startDate, LocalDate endDate, long totalRooms) {
         if (totalRooms == 0) return 0;
 
-        // Tổng số đêm phòng khả dụng trong kỳ (Số phòng * Số ngày)
-        long totalDaysInPeriod = ChronoUnit.DAYS.between(startDate, endDate) + 1;
-        long totalAvailableRoomNights = totalRooms * totalDaysInPeriod;
+        long numberOfNightsInPeriod = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        long totalAvailableRoomNights = totalRooms * numberOfNightsInPeriod;
+
+        if (totalAvailableRoomNights == 0) return 0;
+
         long totalSoldRoomNights = 0;
 
         for (DonDatPhong booking : bookings) {
             LocalDate checkIn = booking.getCheckIn().toLocalDate();
             LocalDate checkOut = booking.getCheckOut().toLocalDate();
 
-            LocalDate intersectStart = checkIn.isAfter(startDate) ? checkIn : startDate;
-            LocalDate intersectEnd = checkOut.isBefore(endDate) ? checkOut : endDate;
+            LocalDate actualStart = checkIn.isAfter(startDate) ? checkIn : startDate;
 
-            if (!intersectStart.isAfter(intersectEnd)) {
-                // Logic tính đêm:
-                // EffectiveEnd là checkout thực tế hoặc ngày cuối cùng của kỳ + 1 (để trừ ra đêm cuối)
-                LocalDate effectiveEnd = checkOut.isBefore(endDate.plusDays(1)) ? checkOut : endDate.plusDays(1);
-                LocalDate effectiveStart = checkIn.isAfter(startDate) ? checkIn : startDate;
+            LocalDate periodEndBorder = endDate.plusDays(1);
+            LocalDate actualEnd = checkOut.isBefore(periodEndBorder) ? checkOut : periodEndBorder;
 
-                long nights = ChronoUnit.DAYS.between(effectiveStart, effectiveEnd);
-                if (nights > 0) {
-                    totalSoldRoomNights += nights;
-                }
+            long nights = ChronoUnit.DAYS.between(actualStart, actualEnd);
+
+            if (nights > 0) {
+                totalSoldRoomNights += nights;
             }
         }
 
-        return ((double) totalSoldRoomNights / totalAvailableRoomNights) * 100;
+        double occupancyRate = ((double) totalSoldRoomNights / totalAvailableRoomNights) * 100;
+
+        return Math.round(occupancyRate * 100.0) / 100.0;
     }
 
     private List<Map<String, Object>> calculateWeeklyStats(LocalDate date, long totalRooms) {
