@@ -108,7 +108,7 @@ public class AuthService {
 
             TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(request.getEmail());
 
-            if (taiKhoan == null) {
+            if (taiKhoan == null || !taiKhoan.isTinhTrang()) {
                 response.setMessage("Tài khoản không tồn tại!");
                 return response;
             }

@@ -17,7 +17,7 @@ const AccountInfo = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -30,26 +30,32 @@ const AccountInfo = () => {
   };
 
   const handelSave = () => {
-    const updateUser = async () => {
-      try {
-        const req = await axios.put(
-          `${import.meta.env.VITE_BASE_API_URL}/api/member/taikhoan/update`,
-          acc,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`,
-            },
+    if (acc.khachHang.hoTenKH.trim().length == 0) {
+      toast.error("Tên không được trống !");
+    } else if (!/^0[0-9]{9}$/.test(acc.khachHang.soDienThoai)) {
+      toast.error("Số điện thoại không hơp lệ!");
+    } else {
+      const updateUser = async () => {
+        try {
+          const req = await axios.put(
+            `${import.meta.env.VITE_BASE_API_URL}/api/member/taikhoan/update`,
+            acc,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          if (req) {
+            toast.success("Cập nhật thông tin thành công!");
           }
-        );
-        if (req) {
-          toast.success("Cập nhật thông tin thành công!");
+        } catch (err) {
+          console.log("REQUEST FAILED:", err);
         }
-      } catch (err) {
-        console.log("REQUEST FAILED:", err);
-      }
-    };
-    updateUser();
+      };
+      updateUser();
+    }
   };
 
   useEffect(() => {

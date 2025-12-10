@@ -126,11 +126,10 @@ public class DashboardService {
         // A. Yearly Occupancy
         List<Map<String, Object>> yearlyList = new ArrayList<>();
         for (int year = currentYear - 2; year <= currentYear + 1; year++) {
-            double rate = calculateOccupancyRate(
-                    LocalDate.of(year, 1, 1),
-                    LocalDate.of(year, 12, 31),
-                    totalRooms
-            );
+            LocalDate startYear = LocalDate.of(year, 1, 1);
+            LocalDate endYear = LocalDate.of(year, 12, 31);
+
+            double rate = calculateOccupancyRate(startYear, endYear, totalRooms);
             Map<String, Object> map = new HashMap<>();
             map.put("year", String.valueOf(year));
             map.put("occupancy", Math.round(rate));

@@ -22,6 +22,9 @@ public class PendingBookingCleanupService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private DonDatPhongService donDatPhongService;
+
     // Chạy mỗi phút để kiểm tra đơn quá hạn
     @Scheduled(fixedRate = 60000) // 1 phút
     @Transactional
@@ -37,7 +40,9 @@ public class PendingBookingCleanupService {
         for (DonDatPhong booking : expiredBookings) {
             try {
                 booking.setTrangThai(TrangThaiDon.DA_HUY);
+                donDatPhongService.updateDTLChoDonHuy(booking.getMaDatPhong());
                 donDatPhongRepo.save(booking);
+
 
                 log.info("Đã hủy đơn quá hạn: {}", booking.getMaDatPhong());
 
